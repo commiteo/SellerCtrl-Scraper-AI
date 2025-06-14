@@ -18,10 +18,10 @@ interface ProductResultProps {
 
 export const ProductResult = ({ product }: ProductResultProps) => {
   return (
-    <Card className="w-full max-w-2xl mx-auto bg-gray-900 border-gray-700 text-white">
-      <CardHeader className="border-b border-gray-700">
+    <Card className="w-full max-w-2xl mx-auto bg-gray-900 border-gray-800 text-white">
+      <CardHeader className="border-b border-gray-800">
         <CardTitle className="flex items-center gap-2 text-white">
-          <Package className="h-5 w-5 text-blue-500" />
+          <Package className="h-5 w-5 text-orange-500" />
           Product Data for ASIN: {product.asin}
         </CardTitle>
       </CardHeader>
@@ -33,16 +33,16 @@ export const ProductResult = ({ product }: ProductResultProps) => {
               <img 
                 src={product.image} 
                 alt="Product" 
-                className="w-24 h-24 object-cover rounded-lg border border-gray-600"
+                className="w-24 h-24 object-cover rounded-lg border border-gray-700"
               />
-              <span className="text-sm text-gray-300">Product Image</span>
+              <span className="text-sm text-gray-400">Product Image</span>
             </div>
           </div>
         )}
 
         {product.title && (
           <div className="space-y-2">
-            <Badge variant="outline" className="text-xs border-gray-600 text-gray-300">
+            <Badge variant="outline" className="text-xs border-gray-700 text-gray-400 bg-gray-800">
               Title
             </Badge>
             <p className="text-lg font-medium text-white leading-relaxed">{product.title}</p>
@@ -51,21 +51,21 @@ export const ProductResult = ({ product }: ProductResultProps) => {
 
         {product.price && (
           <div className="flex items-center gap-4">
-            <DollarSign className="h-5 w-5 text-green-500" />
+            <DollarSign className="h-5 w-5 text-orange-500" />
             <div className="space-y-1">
-              <Badge variant="outline" className="text-xs border-gray-600 text-gray-300">
+              <Badge variant="outline" className="text-xs border-gray-700 text-gray-400 bg-gray-800">
                 Price
               </Badge>
-              <p className="text-2xl font-bold text-green-400">{product.price}</p>
+              <p className="text-2xl font-bold text-orange-400">{product.price}</p>
             </div>
           </div>
         )}
 
         {product.buyboxWinner && (
           <div className="flex items-center gap-4">
-            <Award className="h-5 w-5 text-yellow-500" />
+            <Award className="h-5 w-5 text-orange-500" />
             <div className="space-y-1">
-              <Badge variant="outline" className="text-xs border-gray-600 text-gray-300">
+              <Badge variant="outline" className="text-xs border-gray-700 text-gray-400 bg-gray-800">
                 Buybox Winner
               </Badge>
               <p className="text-base font-medium text-white">{product.buyboxWinner}</p>
@@ -75,16 +75,16 @@ export const ProductResult = ({ product }: ProductResultProps) => {
 
         {product.link && (
           <div className="flex items-center gap-4">
-            <ExternalLink className="h-5 w-5 text-blue-500" />
+            <ExternalLink className="h-5 w-5 text-orange-500" />
             <div className="space-y-1">
-              <Badge variant="outline" className="text-xs border-gray-600 text-gray-300">
+              <Badge variant="outline" className="text-xs border-gray-700 text-gray-400 bg-gray-800">
                 Product Link
               </Badge>
               <a 
                 href={product.link} 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="text-blue-400 hover:text-blue-300 underline break-all transition-colors"
+                className="text-orange-400 hover:text-orange-300 underline break-all transition-colors"
               >
                 {product.link}
               </a>

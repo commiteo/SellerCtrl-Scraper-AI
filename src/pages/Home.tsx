@@ -41,43 +41,43 @@ const Home = () => {
       description: 'Extract product data using ASIN',
       icon: Search,
       action: () => navigate('/scraper'),
-      color: 'bg-blue-600'
+      color: 'bg-orange-600'
     },
     {
       title: 'View History',
       description: 'See all scraped products',
       icon: Clock,
       action: () => navigate('/history'),
-      color: 'bg-green-600'
+      color: 'bg-orange-700'
     },
     {
       title: 'Configure Settings',
       description: 'Manage your preferences',
       icon: Settings,
       action: () => navigate('/settings'),
-      color: 'bg-purple-600'
+      color: 'bg-orange-800'
     }
   ];
 
   return (
-    <div className="min-h-full bg-gradient-to-br from-gray-900 via-black to-gray-900 p-6">
+    <div className="min-h-full bg-gray-950 p-6">
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Welcome Section */}
         <div className="text-center space-y-4">
           <h1 className="text-4xl font-bold text-white">
             Welcome to Amazon Scraper
           </h1>
-          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+          <p className="text-xl text-gray-400 max-w-3xl mx-auto">
             Your powerful tool for extracting Amazon product data. Monitor, analyze, and track product information with ease.
           </p>
         </div>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card className="bg-gray-900 border-gray-700">
+          <Card className="bg-gray-900 border-gray-800">
             <CardContent className="p-6">
               <div className="flex items-center gap-4">
-                <div className="p-3 bg-blue-600 rounded-lg">
+                <div className="p-3 bg-orange-600 rounded-lg">
                   <Package className="h-6 w-6 text-white" />
                 </div>
                 <div>
@@ -88,10 +88,10 @@ const Home = () => {
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-900 border-gray-700">
+          <Card className="bg-gray-900 border-gray-800">
             <CardContent className="p-6">
               <div className="flex items-center gap-4">
-                <div className="p-3 bg-green-600 rounded-lg">
+                <div className="p-3 bg-orange-600 rounded-lg">
                   <TrendingUp className="h-6 w-6 text-white" />
                 </div>
                 <div>
@@ -102,10 +102,10 @@ const Home = () => {
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-900 border-gray-700">
+          <Card className="bg-gray-900 border-gray-800">
             <CardContent className="p-6">
               <div className="flex items-center gap-4">
-                <div className="p-3 bg-purple-600 rounded-lg">
+                <div className="p-3 bg-orange-600 rounded-lg">
                   <Database className="h-6 w-6 text-white" />
                 </div>
                 <div>
@@ -116,7 +116,7 @@ const Home = () => {
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-900 border-gray-700">
+          <Card className="bg-gray-900 border-gray-800">
             <CardContent className="p-6">
               <div className="flex items-center gap-4">
                 <div className="p-3 bg-orange-600 rounded-lg">
@@ -134,7 +134,7 @@ const Home = () => {
         {/* Quick Actions */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {quickActions.map((action, index) => (
-            <Card key={index} className="bg-gray-900 border-gray-700 hover:border-gray-600 transition-colors cursor-pointer" onClick={action.action}>
+            <Card key={index} className="bg-gray-900 border-gray-800 hover:border-gray-700 transition-colors cursor-pointer" onClick={action.action}>
               <CardContent className="p-6">
                 <div className="flex items-center gap-4">
                   <div className={`p-3 ${action.color} rounded-lg`}>
@@ -151,7 +151,7 @@ const Home = () => {
         </div>
 
         {/* Recent Activity */}
-        <Card className="bg-gray-900 border-gray-700">
+        <Card className="bg-gray-900 border-gray-800">
           <CardHeader>
             <CardTitle className="text-white flex items-center gap-2">
               <Clock className="h-5 w-5" />
@@ -169,7 +169,7 @@ const Home = () => {
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <Badge variant={activity.status === 'success' ? 'default' : 'destructive'}>
+                  <Badge variant={activity.status === 'success' ? 'default' : 'destructive'} className={activity.status === 'success' ? 'bg-orange-600' : ''}>
                     {activity.status}
                   </Badge>
                   <span className="text-gray-400 text-sm">{activity.time}</span>
@@ -180,11 +180,11 @@ const Home = () => {
         </Card>
 
         {/* Get Started */}
-        <Card className="bg-gradient-to-r from-blue-900 to-purple-900 border-blue-700">
+        <Card className="bg-gradient-to-r from-orange-900 to-orange-800 border-orange-700">
           <CardContent className="p-8 text-center">
             <h2 className="text-2xl font-bold text-white mb-4">Ready to Start Scraping?</h2>
-            <p className="text-blue-100 mb-6">Enter an Amazon ASIN and get detailed product information in seconds.</p>
-            <Button onClick={() => navigate('/scraper')} className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3">
+            <p className="text-orange-100 mb-6">Enter an Amazon ASIN and get detailed product information in seconds.</p>
+            <Button onClick={() => navigate('/scraper')} className="bg-orange-600 hover:bg-orange-700 text-white px-8 py-3">
               Start Scraping Now
             </Button>
           </CardContent>
