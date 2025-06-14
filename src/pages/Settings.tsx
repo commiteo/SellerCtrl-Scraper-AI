@@ -57,37 +57,37 @@ const Settings = () => {
   };
 
   return (
-    <div className="min-h-full bg-gradient-to-br from-gray-900 via-black to-gray-900 p-6">
+    <div className="min-h-full bg-[#0D0D0D] p-6 font-inter">
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
         <div className="text-center space-y-4">
-          <h1 className="text-3xl font-bold text-white flex items-center justify-center gap-3">
-            <SettingsIcon className="h-8 w-8 text-blue-500" />
+          <h1 className="text-3xl font-bold text-[#FFFFFF] flex items-center justify-center gap-3 font-inter">
+            <SettingsIcon className="h-8 w-8 text-[#FF7A00]" />
             Settings
           </h1>
-          <p className="text-gray-400">Configure your Amazon scraper preferences</p>
+          <p className="text-[#E0E0E0]/80">Configure your Amazon scraper preferences</p>
         </div>
 
         {/* API Configuration */}
-        <Card className="bg-gray-900 border-gray-700">
+        <Card className="dashboard-card border-[#2A2A2A]">
           <CardHeader>
-            <CardTitle className="text-white flex items-center gap-2">
-              <Key className="h-5 w-5 text-blue-500" />
+            <CardTitle className="text-[#FFFFFF] flex items-center gap-2">
+              <Key className="h-5 w-5 text-[#FF7A00]" />
               API Configuration
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="apiKey" className="text-gray-300">Crawl4AI API Key</Label>
+              <Label htmlFor="apiKey" className="text-[#E0E0E0]">Crawl4AI API Key</Label>
               <Input
                 id="apiKey"
                 type="password"
                 placeholder="Enter your Crawl4AI API key"
                 value={settings.crawl4aiApiKey}
                 onChange={(e) => setSettings(prev => ({...prev, crawl4aiApiKey: e.target.value}))}
-                className="bg-gray-800 border-gray-600 text-white"
+                className="bg-[#1F1F1F] border-[#2A2A2A] text-[#FAFAFA]"
               />
-              <p className="text-sm text-gray-400">
+              <p className="text-sm text-[#E0E0E0]/60">
                 Your API key is encrypted and stored securely. Get your key from the Crawl4AI dashboard.
               </p>
             </div>
@@ -95,17 +95,17 @@ const Settings = () => {
         </Card>
 
         {/* Scraping Configuration */}
-        <Card className="bg-gray-900 border-gray-700">
+        <Card className="dashboard-card border-[#2A2A2A]">
           <CardHeader>
-            <CardTitle className="text-white flex items-center gap-2">
-              <Database className="h-5 w-5 text-green-500" />
+            <CardTitle className="text-[#FFFFFF] flex items-center gap-2">
+              <Database className="h-5 w-5 text-[#FF7A00]" />
               Scraping Configuration
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="maxRetries" className="text-gray-300">Max Retries</Label>
+                <Label htmlFor="maxRetries" className="text-[#E0E0E0]">Max Retries</Label>
                 <Input
                   id="maxRetries"
                   type="number"
@@ -113,11 +113,11 @@ const Settings = () => {
                   max="10"
                   value={settings.maxRetries}
                   onChange={(e) => setSettings(prev => ({...prev, maxRetries: parseInt(e.target.value)}))}
-                  className="bg-gray-800 border-gray-600 text-white"
+                  className="bg-[#1F1F1F] border-[#2A2A2A] text-[#FAFAFA]"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="requestDelay" className="text-gray-300">Request Delay (ms)</Label>
+                <Label htmlFor="requestDelay" className="text-[#E0E0E0]">Request Delay (ms)</Label>
                 <Input
                   id="requestDelay"
                   type="number"
@@ -125,13 +125,12 @@ const Settings = () => {
                   max="10000"
                   value={settings.requestDelay}
                   onChange={(e) => setSettings(prev => ({...prev, requestDelay: parseInt(e.target.value)}))}
-                  className="bg-gray-800 border-gray-600 text-white"
+                  className="bg-[#1F1F1F] border-[#2A2A2A] text-[#FAFAFA]"
                 />
               </div>
             </div>
-
             <div className="space-y-4">
-              <h4 className="text-white font-medium">Default Output Fields</h4>
+              <h4 className="text-[#FAFAFA] font-medium">Default Output Fields</h4>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {Object.entries(settings.defaultOutputFields).map(([field, enabled]) => (
                   <div key={field} className="flex items-center space-x-2">
@@ -146,7 +145,7 @@ const Settings = () => {
                         }
                       }))}
                     />
-                    <Label htmlFor={field} className="text-gray-300 capitalize">
+                    <Label htmlFor={field} className="text-[#E0E0E0] capitalize">
                       {field.replace(/([A-Z])/g, ' $1').trim()}
                     </Label>
                   </div>
@@ -157,40 +156,38 @@ const Settings = () => {
         </Card>
 
         {/* Preferences */}
-        <Card className="bg-gray-900 border-gray-700">
+        <Card className="dashboard-card border-[#2A2A2A]">
           <CardHeader>
-            <CardTitle className="text-white flex items-center gap-2">
-              <Bell className="h-5 w-5 text-purple-500" />
+            <CardTitle className="text-[#FFFFFF] flex items-center gap-2">
+              <Bell className="h-5 w-5 text-[#FF7A00]" />
               Preferences
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <Label className="text-gray-300">Enable Notifications</Label>
-                <p className="text-sm text-gray-400">Get notified when scraping completes</p>
+                <Label className="text-[#E0E0E0]">Enable Notifications</Label>
+                <p className="text-sm text-[#E0E0E0]/60">Get notified when scraping completes</p>
               </div>
               <Switch
                 checked={settings.enableNotifications}
                 onCheckedChange={(checked) => setSettings(prev => ({...prev, enableNotifications: checked}))}
               />
             </div>
-
             <div className="flex items-center justify-between">
               <div>
-                <Label className="text-gray-300">Auto-save Results</Label>
-                <p className="text-sm text-gray-400">Automatically save scraped data to history</p>
+                <Label className="text-[#E0E0E0]">Auto-save Results</Label>
+                <p className="text-sm text-[#E0E0E0]/60">Automatically save scraped data to history</p>
               </div>
               <Switch
                 checked={settings.autoSaveResults}
                 onCheckedChange={(checked) => setSettings(prev => ({...prev, autoSaveResults: checked}))}
               />
             </div>
-
             <div className="flex items-center justify-between">
               <div>
-                <Label className="text-gray-300">Error Reporting</Label>
-                <p className="text-sm text-gray-400">Send anonymous error reports to improve the service</p>
+                <Label className="text-[#E0E0E0]">Error Reporting</Label>
+                <p className="text-sm text-[#E0E0E0]/60">Send anonymous error reports to improve the service</p>
               </div>
               <Switch
                 checked={settings.enableErrorReporting}
@@ -201,10 +198,10 @@ const Settings = () => {
         </Card>
 
         {/* Data Management */}
-        <Card className="bg-gray-900 border-gray-700">
+        <Card className="dashboard-card border-[#2A2A2A]">
           <CardHeader>
-            <CardTitle className="text-white flex items-center gap-2">
-              <Database className="h-5 w-5 text-orange-500" />
+            <CardTitle className="text-[#FFFFFF] flex items-center gap-2">
+              <Database className="h-5 w-5 text-[#FF7A00]" />
               Data Management
             </CardTitle>
           </CardHeader>
@@ -212,7 +209,7 @@ const Settings = () => {
             <div className="flex flex-col sm:flex-row gap-4">
               <Button 
                 onClick={handleExportData}
-                className="bg-blue-600 hover:bg-blue-700 flex-1"
+                className="bg-[#FF7A00] hover:bg-[#ff9100] text-white flex-1 shadow-orange-500/50 shadow-md"
               >
                 <Download className="h-4 w-4 mr-2" />
                 Export All Data
@@ -220,13 +217,13 @@ const Settings = () => {
               <Button 
                 onClick={handleClearHistory}
                 variant="outline"
-                className="border-red-500 text-red-400 hover:bg-red-900 flex-1"
+                className="border-[#EB5F01] text-[#EB5F01] hover:bg-[#1f150a] flex-1"
               >
                 <Trash2 className="h-4 w-4 mr-2" />
                 Clear History
               </Button>
             </div>
-            <p className="text-sm text-gray-400">
+            <p className="text-sm text-[#E0E0E0]/60">
               Export your data as CSV or JSON, or clear all stored scraping history.
             </p>
           </CardContent>
@@ -236,7 +233,7 @@ const Settings = () => {
         <div className="flex justify-center">
           <Button 
             onClick={handleSave}
-            className="bg-green-600 hover:bg-green-700 px-8 py-3"
+            className="bg-[#FF7A00] hover:bg-[#ff9100] text-white px-8 py-3 shadow-orange-500/50 shadow-md"
           >
             <Save className="h-4 w-4 mr-2" />
             Save Settings

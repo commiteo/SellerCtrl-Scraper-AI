@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -94,32 +93,35 @@ const History = () => {
   };
 
   return (
-    <div className="min-h-full bg-gradient-to-br from-gray-900 via-black to-gray-900 p-6">
+    <div className="min-h-full bg-[#0D0D0D] p-6 font-inter">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-white">Scraping History</h1>
-            <p className="text-gray-400">View and manage your scraped product data</p>
+            <h1 className="text-3xl font-bold text-[#FFFFFF] font-inter">Scraping History</h1>
+            <p className="text-[#E0E0E0]/80">View and manage your scraped product data</p>
           </div>
-          <Button onClick={handleExport} className="bg-green-600 hover:bg-green-700">
+          <Button
+            onClick={handleExport}
+            className="bg-[#FF7A00] hover:bg-[#ff9100] text-white shadow-orange-500/40 shadow-md transition-all"
+          >
             <Download className="h-4 w-4 mr-2" />
             Export to CSV
           </Button>
         </div>
 
         {/* Filters */}
-        <Card className="bg-gray-900 border-gray-700">
+        <Card className="dashboard-card border-[#2A2A2A]">
           <CardContent className="p-6">
             <div className="flex flex-col md:flex-row gap-4">
               <div className="flex-1">
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[#E0E0E0]/60" />
                   <Input
                     placeholder="Search by ASIN or product title..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 bg-gray-800 border-gray-600 text-white"
+                    className="pl-10 bg-[#1F1F1F] border-[#2A2A2A] text-[#E0E0E0]"
                   />
                 </div>
               </div>
@@ -127,21 +129,21 @@ const History = () => {
                 <Button
                   variant={filterStatus === 'all' ? 'default' : 'outline'}
                   onClick={() => setFilterStatus('all')}
-                  className="text-white"
+                  className={`text-[#FAFAFA]  ${filterStatus === 'all' ? 'bg-[#FF7A00] hover:bg-[#ff9100]' : 'border-[#2A2A2A] hover:bg-[#181818]'}`}
                 >
                   All ({historyData.length})
                 </Button>
                 <Button
                   variant={filterStatus === 'success' ? 'default' : 'outline'}
                   onClick={() => setFilterStatus('success')}
-                  className="text-white"
+                  className={`text-[#FAFAFA]  ${filterStatus === 'success' ? 'bg-[#FF7A00] hover:bg-[#ff9100]' : 'border-[#2A2A2A] hover:bg-[#181818]'}`}
                 >
                   Success ({historyData.filter(item => item.status === 'success').length})
                 </Button>
                 <Button
                   variant={filterStatus === 'failed' ? 'default' : 'outline'}
                   onClick={() => setFilterStatus('failed')}
-                  className="text-white"
+                  className={`text-[#FAFAFA]  ${filterStatus === 'failed' ? 'bg-[#FF7A00] hover:bg-[#ff9100]' : 'border-[#2A2A2A] hover:bg-[#181818]'}`}
                 >
                   Failed ({historyData.filter(item => item.status === 'failed').length})
                 </Button>
@@ -151,9 +153,9 @@ const History = () => {
         </Card>
 
         {/* Results */}
-        <Card className="bg-gray-900 border-gray-700">
+        <Card className="dashboard-card border-[#2A2A2A]">
           <CardHeader>
-            <CardTitle className="text-white flex items-center gap-2">
+            <CardTitle className="text-[#FFFFFF] flex items-center gap-2">
               <Calendar className="h-5 w-5" />
               Scraped Products ({filteredData.length})
             </CardTitle>
@@ -162,19 +164,19 @@ const History = () => {
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
-                  <TableRow className="border-gray-700">
-                    <TableHead className="text-gray-300">Product</TableHead>
-                    <TableHead className="text-gray-300">ASIN</TableHead>
-                    <TableHead className="text-gray-300">Price</TableHead>
-                    <TableHead className="text-gray-300">Buybox Winner</TableHead>
-                    <TableHead className="text-gray-300">Scraped At</TableHead>
-                    <TableHead className="text-gray-300">Status</TableHead>
-                    <TableHead className="text-gray-300">Actions</TableHead>
+                  <TableRow className="border-[#2A2A2A]">
+                    <TableHead className="text-[#E0E0E0]/90">Product</TableHead>
+                    <TableHead className="text-[#E0E0E0]/90">ASIN</TableHead>
+                    <TableHead className="text-[#E0E0E0]/90">Price</TableHead>
+                    <TableHead className="text-[#E0E0E0]/90">Buybox Winner</TableHead>
+                    <TableHead className="text-[#E0E0E0]/90">Scraped At</TableHead>
+                    <TableHead className="text-[#E0E0E0]/90">Status</TableHead>
+                    <TableHead className="text-[#E0E0E0]/90">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filteredData.map((item) => (
-                    <TableRow key={item.id} className="border-gray-700 hover:bg-gray-800">
+                    <TableRow key={item.id} className="border-[#2A2A2A] hover:bg-[#171717]">
                       <TableCell>
                         <div className="flex items-center gap-3">
                           <img 
@@ -183,22 +185,22 @@ const History = () => {
                             className="w-10 h-10 object-cover rounded"
                           />
                           <div>
-                            <p className="font-medium text-white text-sm max-w-xs truncate">
+                            <p className="font-medium text-[#FAFAFA] text-sm max-w-xs truncate font-inter">
                               {item.title}
                             </p>
                           </div>
                         </div>
                       </TableCell>
-                      <TableCell className="text-gray-300 font-mono text-sm">
+                      <TableCell className="text-[#E0E0E0] font-mono text-sm">
                         {item.asin}
                       </TableCell>
-                      <TableCell className="text-green-400 font-semibold">
+                      <TableCell className="text-[#FF7A00] font-semibold">
                         {item.price}
                       </TableCell>
-                      <TableCell className="text-gray-300">
+                      <TableCell className="text-[#E0E0E0]">
                         {item.buyboxWinner}
                       </TableCell>
-                      <TableCell className="text-gray-400 text-sm">
+                      <TableCell className="text-[#E0E0E0]/60 text-sm">
                         {new Date(item.scrapedAt).toLocaleString()}
                       </TableCell>
                       <TableCell>
@@ -212,7 +214,7 @@ const History = () => {
                             size="sm"
                             variant="outline"
                             onClick={() => window.open(`https://amazon.com/dp/${item.asin}`, '_blank')}
-                            className="text-white border-gray-600 hover:bg-gray-700"
+                            className="text-white border-[#2A2A2A] hover:bg-[#1F1F1F]"
                           >
                             <ExternalLink className="h-3 w-3" />
                           </Button>
@@ -220,7 +222,7 @@ const History = () => {
                             size="sm"
                             variant="outline"
                             onClick={() => handleDelete(item.id)}
-                            className="text-red-400 border-red-400 hover:bg-red-900"
+                            className="text-[#EB5F01] border-[#EB5F01] hover:bg-[#1f150a]"
                           >
                             <Trash2 className="h-3 w-3" />
                           </Button>
@@ -234,7 +236,7 @@ const History = () => {
 
             {filteredData.length === 0 && (
               <div className="text-center py-8">
-                <p className="text-gray-400">No scraped products found matching your criteria.</p>
+                <p className="text-[#E0E0E0]/60">No scraped products found matching your criteria.</p>
               </div>
             )}
           </CardContent>
