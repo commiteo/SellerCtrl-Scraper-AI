@@ -11,11 +11,16 @@ export default function Account() {
   const [phone, setPhone] = useState("+1 888 888 8888");
   const [password, setPassword] = useState("••••••••");
 
+  // This will be set after "Save" in AvatarUploader
+  const handleAvatarChange = (data: string) => {
+    setAvatar(data); // Updates user context, reflects everywhere
+  };
+
   return (
     <div className="flex flex-col items-center justify-center min-h-full py-10 px-4">
       <div className="bg-[#161616] border border-[#232323] rounded-2xl shadow-md p-8 w-full max-w-lg flex flex-col gap-6 animate-fade-in">
         <div className="flex flex-col items-center mb-1">
-          <AvatarUploader avatar={user.avatar} setAvatar={setAvatar} />
+          <AvatarUploader avatar={user.avatar} onAvatarChange={handleAvatarChange} />
           <h2 className="text-2xl font-semibold text-[#FF7A00] text-center mt-2">Account</h2>
           <p className="text-[#E0E0E0] text-center">Manage your personal information and account details.</p>
         </div>
