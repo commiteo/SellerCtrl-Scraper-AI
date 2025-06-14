@@ -4,6 +4,13 @@
 
 SellerCtrl Scraper AI is a smart Amazon product data extractor that uses Crawl4AI and OpenAI. It scrapes detailed data using ASINs — including title, image, price, buybox winner, link, reviews, bullet points, rank, and more.
 
+## Tool Overview
+- **Backend**: Node.js server (`server.js`) launching a Python scraper.
+- **Scraping**: Uses `crawl4ai` with BeautifulSoup to parse Amazon pages.
+- **Frontend**: React, Vite, Tailwind CSS and shadcn-ui.
+- **Usage**: Submit an ASIN to get product details including title, price, image and buy box.
+
+
 **Important:** SellerCtrl Scraper AI is proprietary software. The code in this repository is provided for reference only and is **not** licensed for public installation or redistribution.
 
 ## Getting Started
