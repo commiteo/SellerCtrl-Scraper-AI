@@ -21,59 +21,8 @@ const History = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState<'all' | 'success' | 'failed'>('all');
 
-  // Mock history data
-  const historyData: HistoryItem[] = [
-    {
-      id: '1',
-      asin: 'B08N5WRWNW',
-      title: 'Echo Dot (4th Gen) Smart speaker with Alexa',
-      price: '$49.99',
-      buyboxWinner: 'Amazon.com',
-      scrapedAt: '2024-06-14 10:30:00',
-      status: 'success',
-      image: 'https://images.unsplash.com/photo-1543512214-318c7553f230?w=100&h=100&fit=crop'
-    },
-    {
-      id: '2',
-      asin: 'B0B7RFBVYX',
-      title: 'iPhone 14 Pro Max Silicone Case with MagSafe',
-      price: '$49.00',
-      buyboxWinner: 'Apple',
-      scrapedAt: '2024-06-14 09:15:00',
-      status: 'success',
-      image: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=100&h=100&fit=crop'
-    },
-    {
-      id: '3',
-      asin: 'B09DFCB8Q4',
-      title: 'Anker Wireless Charger, PowerWave Pad Qi-Certified',
-      price: 'N/A',
-      buyboxWinner: 'N/A',
-      scrapedAt: '2024-06-14 08:45:00',
-      status: 'failed',
-      image: 'https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=100&h=100&fit=crop'
-    },
-    {
-      id: '4',
-      asin: 'B08FBM7G5J',
-      title: 'Logitech G Pro X Superlight Wireless Gaming Mouse',
-      price: '$149.99',
-      buyboxWinner: 'Logitech',
-      scrapedAt: '2024-06-13 16:20:00',
-      status: 'success',
-      image: 'https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=100&h=100&fit=crop'
-    },
-    {
-      id: '5',
-      asin: 'B07PFFMP9P',
-      title: 'Echo Show 5 (2nd Gen) Smart display with Alexa',
-      price: '$84.99',
-      buyboxWinner: 'Amazon.com',
-      scrapedAt: '2024-06-13 14:10:00',
-      status: 'success',
-      image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop'
-    }
-  ];
+  // History data will be loaded from the backend in the future
+  const historyData: HistoryItem[] = [];
 
   const filteredData = historyData.filter(item => {
     const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||

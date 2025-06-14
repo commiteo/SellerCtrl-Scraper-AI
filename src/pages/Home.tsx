@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -8,32 +8,14 @@ import { useNavigate } from 'react-router-dom';
 
 const Home = () => {
   const navigate = useNavigate();
-  const [stats, setStats] = useState({
-    totalScraped: 247,
-    todayScraped: 12,
-    successRate: 94.8,
-    avgResponseTime: 2.3
+  const [stats] = useState({
+    totalScraped: 0,
+    todayScraped: 0,
+    successRate: 0,
+    avgResponseTime: 0
   });
 
-  // Simulate real-time updates
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setStats(prev => ({
-        ...prev,
-        todayScraped: prev.todayScraped + Math.floor(Math.random() * 2),
-        totalScraped: prev.totalScraped + Math.floor(Math.random() * 2)
-      }));
-    }, 30000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  const recentActivity = [
-    { asin: 'B08N5WRWNW', product: 'Echo Dot (4th Gen)', time: '2 minutes ago', status: 'success' },
-    { asin: 'B0B7RFBVYX', product: 'iPhone 14 Pro Case', time: '5 minutes ago', status: 'success' },
-    { asin: 'B09DFCB8Q4', product: 'Wireless Charger', time: '12 minutes ago', status: 'failed' },
-    { asin: 'B08FBM7G5J', product: 'Gaming Mouse', time: '18 minutes ago', status: 'success' },
-  ];
+  const recentActivity: { asin: string; product: string; time: string; status: string }[] = [];
 
   const quickActions = [
     {
@@ -159,6 +141,9 @@ const Home = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
+            {recentActivity.length === 0 && (
+              <p className="text-center text-sm text-[#A3A3A3]">No recent activity.</p>
+            )}
             {recentActivity.map((activity, index) => (
               <div key={index} className="flex items-center justify-between p-3 bg-[#1A1A1A] rounded-lg">
                 <div className="flex items-center gap-3">
