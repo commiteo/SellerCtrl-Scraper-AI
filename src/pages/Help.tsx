@@ -98,41 +98,41 @@ const Help = () => {
   );
 
   return (
-    <div className="min-h-full bg-gradient-to-br from-gray-900 via-black to-gray-900 p-6">
+    <div className="min-h-full bg-[#0D0D0D] p-6 font-inter">
       <div className="max-w-6xl mx-auto space-y-8">
         {/* Header */}
         <div className="text-center space-y-4">
-          <h1 className="text-4xl font-bold text-white flex items-center justify-center gap-3">
-            <HelpCircle className="h-10 w-10 text-blue-500" />
+          <h1 className="text-4xl font-bold text-[#FFFFFF] flex items-center justify-center gap-3 font-inter">
+            <HelpCircle className="h-10 w-10 text-[#FF7A00]" />
             Help & Support
           </h1>
-          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+          <p className="text-xl text-[#E0E0E0] max-w-3xl mx-auto">
             Get help with Amazon Product Scraper. Find answers, tutorials, and contact our support team.
           </p>
         </div>
 
         <Tabs defaultValue="faq" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 bg-gray-800 border-gray-700">
-            <TabsTrigger value="faq" className="text-gray-300 data-[state=active]:bg-blue-600 data-[state=active]:text-white">
+          <TabsList className="grid w-full grid-cols-4 bg-[#1A1A1A] border-[#2A2A2A]">
+            <TabsTrigger value="faq" className="text-[#E0E0E0] data-[state=active]:bg-[#FF7A00] data-[state=active]:text-white font-inter">
               FAQ
             </TabsTrigger>
-            <TabsTrigger value="guides" className="text-gray-300 data-[state=active]:bg-blue-600 data-[state=active]:text-white">
+            <TabsTrigger value="guides" className="text-[#E0E0E0] data-[state=active]:bg-[#FF7A00] data-[state=active]:text-white font-inter">
               Guides
             </TabsTrigger>
-            <TabsTrigger value="contact" className="text-gray-300 data-[state=active]:bg-blue-600 data-[state=active]:text-white">
+            <TabsTrigger value="contact" className="text-[#E0E0E0] data-[state=active]:bg-[#FF7A00] data-[state=active]:text-white font-inter">
               Contact
             </TabsTrigger>
-            <TabsTrigger value="status" className="text-gray-300 data-[state=active]:bg-blue-600 data-[state=active]:text-white">
+            <TabsTrigger value="status" className="text-[#E0E0E0] data-[state=active]:bg-[#FF7A00] data-[state=active]:text-white font-inter">
               Status
             </TabsTrigger>
           </TabsList>
 
           {/* FAQ Tab */}
           <TabsContent value="faq" className="space-y-6">
-            <Card className="bg-gray-900 border-gray-700">
+            <Card className="bg-[#1F1F1F] border-[#2A2A2A]">
               <CardHeader>
-                <CardTitle className="text-white flex items-center gap-2">
-                  <Search className="h-5 w-5" />
+                <CardTitle className="text-[#FFFFFF] flex items-center gap-2">
+                  <Search className="h-5 w-5 text-[#FF7A00]" />
                   Search FAQ
                 </CardTitle>
               </CardHeader>
@@ -141,23 +141,23 @@ const Help = () => {
                   placeholder="Search frequently asked questions..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="bg-gray-800 border-gray-600 text-white placeholder-gray-400"
+                  className="bg-[#171717] border-[#2A2A2A] text-[#E0E0E0] placeholder-[#B0B0B0] font-inter"
                 />
               </CardContent>
             </Card>
 
-            <Card className="bg-gray-900 border-gray-700">
+            <Card className="bg-[#1F1F1F] border-[#2A2A2A] shadow-[0_4px_40px_0_rgba(0,0,0,0.10)] rounded-xl">
               <CardHeader>
-                <CardTitle className="text-white">Frequently Asked Questions</CardTitle>
+                <CardTitle className="text-[#FFFFFF]">Frequently Asked Questions</CardTitle>
               </CardHeader>
               <CardContent>
                 <Accordion type="single" collapsible className="space-y-2">
                   {filteredFAQs.map((faq, index) => (
-                    <AccordionItem key={index} value={`item-${index}`} className="border-gray-700">
-                      <AccordionTrigger className="text-white hover:text-blue-400 text-left">
+                    <AccordionItem key={index} value={`item-${index}`} className="border-[#2A2A2A]">
+                      <AccordionTrigger className="text-[#FFFFFF] hover:text-[#FF7A00] text-left font-inter">
                         {faq.question}
                       </AccordionTrigger>
-                      <AccordionContent className="text-gray-300">
+                      <AccordionContent className="text-[#E0E0E0]">
                         {faq.answer}
                       </AccordionContent>
                     </AccordionItem>
@@ -171,16 +171,19 @@ const Help = () => {
           <TabsContent value="guides" className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {quickGuides.map((guide, index) => (
-                <Card key={index} className="bg-gray-900 border-gray-700 hover:border-blue-600 transition-colors cursor-pointer">
+                <Card 
+                  key={index}
+                  className="bg-[#1F1F1F] border-[#2A2A2A] hover:border-[#FF7A00] transition-colors cursor-pointer shadow-md rounded-xl"
+                >
                   <CardContent className="p-6">
                     <div className="flex items-start gap-4">
-                      <div className="p-3 bg-blue-600 rounded-lg">
+                      <div className="p-3 bg-[#FF7A00] rounded-lg shadow-orange-500/30">
                         <guide.icon className="h-6 w-6 text-white" />
                       </div>
                       <div className="flex-1">
-                        <h3 className="text-lg font-semibold text-white mb-2">{guide.title}</h3>
-                        <p className="text-gray-400 mb-3">{guide.description}</p>
-                        <Badge variant="secondary" className="bg-gray-800 text-gray-300">
+                        <h3 className="text-lg font-semibold text-[#FFFFFF] mb-2 font-inter">{guide.title}</h3>
+                        <p className="text-[#B0B0B0] mb-3">{guide.description}</p>
+                        <Badge variant="secondary" className="bg-[#171717] text-[#E0E0E0]">
                           {guide.duration}
                         </Badge>
                       </div>
@@ -190,12 +193,12 @@ const Help = () => {
               ))}
             </div>
 
-            <Card className="bg-gradient-to-r from-blue-900 to-purple-900 border-blue-700">
+            <Card className="bg-gradient-to-r from-[#1A1A1A] to-[#171717] border-[#FF7A00] shadow-orange-500/20">
               <CardContent className="p-8 text-center">
-                <Video className="h-12 w-12 text-blue-400 mx-auto mb-4" />
-                <h2 className="text-2xl font-bold text-white mb-4">Video Tutorials</h2>
-                <p className="text-blue-100 mb-6">Watch step-by-step video guides to master the Amazon Product Scraper.</p>
-                <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+                <Video className="h-12 w-12 text-[#FF7A00] mx-auto mb-4" />
+                <h2 className="text-2xl font-bold text-[#FFFFFF] mb-4">Video Tutorials</h2>
+                <p className="text-[#E0E0E0] mb-6">Watch step-by-step video guides to master the Amazon Product Scraper.</p>
+                <Button className="bg-[#FF7A00] hover:bg-[#FF9100] text-white shadow-[0_0_8px_2px_#FF7A00] font-inter transition-shadow">
                   Watch Tutorials
                 </Button>
               </CardContent>
@@ -205,53 +208,53 @@ const Help = () => {
           {/* Contact Tab */}
           <TabsContent value="contact" className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Card className="bg-gray-900 border-gray-700">
+              <Card className="bg-[#1F1F1F] border-[#2A2A2A] shadow-md rounded-xl">
                 <CardHeader>
-                  <CardTitle className="text-white flex items-center gap-2">
-                    <MessageSquare className="h-5 w-5" />
+                  <CardTitle className="text-[#FFFFFF] flex items-center gap-2">
+                    <MessageSquare className="h-5 w-5 text-[#FF7A00]" />
                     Contact Us
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <form onSubmit={handleContactSubmit} className="space-y-4">
                     <div>
-                      <label className="block text-gray-300 text-sm font-medium mb-2">Name</label>
+                      <label className="block text-[#E0E0E0] text-sm font-medium mb-2">Name</label>
                       <Input
                         value={contactForm.name}
                         onChange={(e) => setContactForm({...contactForm, name: e.target.value})}
-                        className="bg-gray-800 border-gray-600 text-white"
+                        className="bg-[#171717] border-[#2A2A2A] text-[#FAFAFA] font-inter"
                         required
                       />
                     </div>
                     <div>
-                      <label className="block text-gray-300 text-sm font-medium mb-2">Email</label>
+                      <label className="block text-[#E0E0E0] text-sm font-medium mb-2">Email</label>
                       <Input
                         type="email"
                         value={contactForm.email}
                         onChange={(e) => setContactForm({...contactForm, email: e.target.value})}
-                        className="bg-gray-800 border-gray-600 text-white"
+                        className="bg-[#171717] border-[#2A2A2A] text-[#FAFAFA] font-inter"
                         required
                       />
                     </div>
                     <div>
-                      <label className="block text-gray-300 text-sm font-medium mb-2">Subject</label>
+                      <label className="block text-[#E0E0E0] text-sm font-medium mb-2">Subject</label>
                       <Input
                         value={contactForm.subject}
                         onChange={(e) => setContactForm({...contactForm, subject: e.target.value})}
-                        className="bg-gray-800 border-gray-600 text-white"
+                        className="bg-[#171717] border-[#2A2A2A] text-[#FAFAFA] font-inter"
                         required
                       />
                     </div>
                     <div>
-                      <label className="block text-gray-300 text-sm font-medium mb-2">Message</label>
+                      <label className="block text-[#E0E0E0] text-sm font-medium mb-2">Message</label>
                       <Textarea
                         value={contactForm.message}
                         onChange={(e) => setContactForm({...contactForm, message: e.target.value})}
-                        className="bg-gray-800 border-gray-600 text-white min-h-[120px]"
+                        className="bg-[#171717] border-[#2A2A2A] text-[#FAFAFA] min-h-[120px] font-inter"
                         required
                       />
                     </div>
-                    <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+                    <Button type="submit" className="w-full bg-[#FF7A00] hover:bg-[#FF9100] text-white shadow-[0_0_8px_2px_#FF7A00] font-inter">
                       <Send className="h-4 w-4 mr-2" />
                       Send Message
                     </Button>
@@ -260,55 +263,55 @@ const Help = () => {
               </Card>
 
               <div className="space-y-6">
-                <Card className="bg-gray-900 border-gray-700">
+                <Card className="bg-[#1F1F1F] border-[#2A2A2A] shadow rounded-xl">
                   <CardContent className="p-6">
                     <div className="flex items-center gap-4 mb-4">
-                      <div className="p-3 bg-green-600 rounded-lg">
+                      <div className="p-3 bg-[#29C36A] rounded-lg">
                         <Mail className="h-6 w-6 text-white" />
                       </div>
                       <div>
-                        <h3 className="text-lg font-semibold text-white">Email Support</h3>
-                        <p className="text-gray-400">support@amazonscraper.com</p>
+                        <h3 className="text-lg font-semibold text-[#FAFAFA]">Email Support</h3>
+                        <p className="text-[#B0B0B0]">support@amazonscraper.com</p>
                       </div>
                     </div>
-                    <p className="text-gray-300 text-sm">
+                    <p className="text-[#E0E0E0] text-sm">
                       We typically respond within 24 hours during business days.
                     </p>
                   </CardContent>
                 </Card>
 
-                <Card className="bg-gray-900 border-gray-700">
+                <Card className="bg-[#1F1F1F] border-[#2A2A2A] shadow rounded-xl">
                   <CardContent className="p-6">
                     <div className="flex items-center gap-4 mb-4">
-                      <div className="p-3 bg-purple-600 rounded-lg">
+                      <div className="p-3 bg-[#6C50FA] rounded-lg">
                         <Phone className="h-6 w-6 text-white" />
                       </div>
                       <div>
-                        <h3 className="text-lg font-semibold text-white">Phone Support</h3>
-                        <p className="text-gray-400">+1 (555) 123-4567</p>
+                        <h3 className="text-lg font-semibold text-[#FAFAFA]">Phone Support</h3>
+                        <p className="text-[#B0B0B0]">+1 (555) 123-4567</p>
                       </div>
                     </div>
-                    <p className="text-gray-300 text-sm">
-                      Available Monday-Friday, 9 AM - 6 PM EST
+                    <p className="text-[#E0E0E0] text-sm">
+                      Available Monday–Friday, 9 AM – 6 PM EST
                     </p>
                   </CardContent>
                 </Card>
 
-                <Card className="bg-gray-900 border-gray-700">
+                <Card className="bg-[#1F1F1F] border-[#2A2A2A] shadow rounded-xl">
                   <CardContent className="p-6">
-                    <h3 className="text-lg font-semibold text-white mb-4">Response Times</h3>
+                    <h3 className="text-lg font-semibold text-[#FAFAFA] mb-4">Response Times</h3>
                     <div className="space-y-3">
                       <div className="flex justify-between items-center">
-                        <span className="text-gray-300">General Inquiries</span>
-                        <Badge className="bg-green-600">24 hours</Badge>
+                        <span className="text-[#E0E0E0]">General Inquiries</span>
+                        <Badge className="bg-[#29C36A] text-white">24 hours</Badge>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-gray-300">Technical Issues</span>
-                        <Badge className="bg-blue-600">12 hours</Badge>
+                        <span className="text-[#E0E0E0]">Technical Issues</span>
+                        <Badge className="bg-[#FF7A00] text-white">12 hours</Badge>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-gray-300">Billing Questions</span>
-                        <Badge className="bg-purple-600">6 hours</Badge>
+                        <span className="text-[#E0E0E0]">Billing Questions</span>
+                        <Badge className="bg-[#6C50FA] text-white">6 hours</Badge>
                       </div>
                     </div>
                   </CardContent>
@@ -319,67 +322,67 @@ const Help = () => {
 
           {/* Status Tab */}
           <TabsContent value="status" className="space-y-6">
-            <Card className="bg-gray-900 border-gray-700">
+            <Card className="bg-[#1F1F1F] border-[#2A2A2A] shadow rounded-xl">
               <CardHeader>
-                <CardTitle className="text-white flex items-center gap-2">
-                  <CheckCircle className="h-5 w-5 text-green-500" />
+                <CardTitle className="text-[#FFFFFF] flex items-center gap-2">
+                  <CheckCircle className="h-5 w-5 text-[#29C36A]" />
                   System Status
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between p-4 bg-gray-800 rounded-lg">
+                  <div className="flex items-center justify-between p-4 bg-[#171717]/80 rounded-lg">
                     <div className="flex items-center gap-3">
-                      <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                      <span className="text-white font-medium">API Service</span>
+                      <div className="w-3 h-3 bg-[#29C36A] rounded-full"></div>
+                      <span className="text-[#FAFAFA] font-medium">API Service</span>
                     </div>
-                    <Badge className="bg-green-600">Operational</Badge>
+                    <Badge className="bg-[#29C36A] text-white">Operational</Badge>
                   </div>
                   
-                  <div className="flex items-center justify-between p-4 bg-gray-800 rounded-lg">
+                  <div className="flex items-center justify-between p-4 bg-[#171717]/80 rounded-lg">
                     <div className="flex items-center gap-3">
-                      <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                      <span className="text-white font-medium">Web Scraper</span>
+                      <div className="w-3 h-3 bg-[#29C36A] rounded-full"></div>
+                      <span className="text-[#FAFAFA] font-medium">Web Scraper</span>
                     </div>
-                    <Badge className="bg-green-600">Operational</Badge>
+                    <Badge className="bg-[#29C36A] text-white">Operational</Badge>
                   </div>
                   
-                  <div className="flex items-center justify-between p-4 bg-gray-800 rounded-lg">
+                  <div className="flex items-center justify-between p-4 bg-[#171717]/80 rounded-lg">
                     <div className="flex items-center gap-3">
-                      <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                      <span className="text-white font-medium">Database</span>
+                      <div className="w-3 h-3 bg-[#FFD600] rounded-full"></div>
+                      <span className="text-[#FAFAFA] font-medium">Database</span>
                     </div>
-                    <Badge className="bg-yellow-600">Degraded</Badge>
+                    <Badge className="bg-[#FFD600] text-black">Degraded</Badge>
                   </div>
                   
-                  <div className="flex items-center justify-between p-4 bg-gray-800 rounded-lg">
+                  <div className="flex items-center justify-between p-4 bg-[#171717]/80 rounded-lg">
                     <div className="flex items-center gap-3">
-                      <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                      <span className="text-white font-medium">Export Service</span>
+                      <div className="w-3 h-3 bg-[#29C36A] rounded-full"></div>
+                      <span className="text-[#FAFAFA] font-medium">Export Service</span>
                     </div>
-                    <Badge className="bg-green-600">Operational</Badge>
+                    <Badge className="bg-[#29C36A] text-white">Operational</Badge>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="bg-gray-900 border-gray-700">
+            <Card className="bg-[#1F1F1F] border-[#2A2A2A] shadow rounded-xl">
               <CardHeader>
-                <CardTitle className="text-white">Recent Incidents</CardTitle>
+                <CardTitle className="text-[#FFFFFF]">Recent Incidents</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <div className="border-l-4 border-yellow-500 pl-4">
+                  <div className="border-l-4 border-[#FFD600] pl-4">
                     <div className="flex items-center gap-2 mb-2">
-                      <AlertCircle className="h-4 w-4 text-yellow-500" />
-                      <span className="text-white font-medium">Database Performance Issues</span>
-                      <Badge variant="outline" className="border-yellow-500 text-yellow-500">Investigating</Badge>
+                      <AlertCircle className="h-4 w-4 text-[#FFD600]" />
+                      <span className="text-[#FFFFFF] font-medium">Database Performance Issues</span>
+                      <Badge variant="outline" className="border-[#FFD600] text-[#FFD600]">Investigating</Badge>
                     </div>
-                    <p className="text-gray-400 text-sm">
+                    <p className="text-[#B0B0B0] text-sm">
                       We're experiencing slower than normal database response times. 
                       Our team is investigating and working on a fix.
                     </p>
-                    <p className="text-gray-500 text-xs mt-2">Started: 2 hours ago</p>
+                    <p className="text-[#7A7A7A] text-xs mt-2">Started: 2 hours ago</p>
                   </div>
                 </div>
               </CardContent>
