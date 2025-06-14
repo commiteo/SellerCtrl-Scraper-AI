@@ -46,22 +46,22 @@ const helpItems = [
 
 export function AppSidebar() {
   return (
-    <Sidebar className="border-r border-gray-800">
-      <SidebarHeader className="border-b border-gray-800 p-6">
+    <Sidebar className="border-r border-[#404040] bg-[#171717]">
+      <SidebarHeader className="border-b border-[#404040] p-6">
         <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600">
-            <Package className="h-4 w-4 text-white" />
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#EB5F01]">
+            <Package className="h-4 w-4 text-[#FAFAFA]" />
           </div>
           <div>
-            <h2 className="text-lg font-semibold text-white">Amazon Scraper</h2>
-            <p className="text-sm text-gray-400">Product Data Extraction</p>
+            <h2 className="text-lg font-semibold text-[#FAFAFA]">Amazon Scraper</h2>
+            <p className="text-sm text-[#A3A3A3]">Product Data Extraction</p>
           </div>
         </div>
       </SidebarHeader>
       
       <SidebarContent className="px-4 py-6">
         <SidebarGroup>
-          <SidebarGroupLabel className="text-gray-400 text-xs font-medium uppercase tracking-wider mb-2">
+          <SidebarGroupLabel className="text-[#A3A3A3] text-xs font-medium uppercase tracking-wider mb-2">
             Navigation
           </SidebarGroupLabel>
           <SidebarGroupContent>
@@ -70,7 +70,7 @@ export function AppSidebar() {
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton 
                     asChild 
-                    className="text-gray-300 hover:text-white hover:bg-gray-800 transition-colors duration-200"
+                    className="text-[#A3A3A3] hover:text-[#FAFAFA] hover:bg-[#0A0A0A] transition-colors duration-200"
                   >
                     <a href={item.url} className="flex items-center gap-3 px-3 py-2 rounded-lg">
                       <item.icon className="h-4 w-4" />
@@ -84,7 +84,7 @@ export function AppSidebar() {
         </SidebarGroup>
 
         <SidebarGroup className="mt-8">
-          <SidebarGroupLabel className="text-gray-400 text-xs font-medium uppercase tracking-wider mb-2">
+          <SidebarGroupLabel className="text-[#A3A3A3] text-xs font-medium uppercase tracking-wider mb-2">
             Support
           </SidebarGroupLabel>
           <SidebarGroupContent>
@@ -93,7 +93,7 @@ export function AppSidebar() {
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton 
                     asChild 
-                    className="text-gray-300 hover:text-white hover:bg-gray-800 transition-colors duration-200"
+                    className="text-[#A3A3A3] hover:text-[#FAFAFA] hover:bg-[#0A0A0A] transition-colors duration-200"
                   >
                     <a href={item.url} className="flex items-center gap-3 px-3 py-2 rounded-lg">
                       <item.icon className="h-4 w-4" />
@@ -107,14 +107,14 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
       
-      <SidebarFooter className="border-t border-gray-800 p-4">
+      <SidebarFooter className="border-t border-[#404040] p-4">
         <div className="flex items-center gap-3 px-3 py-2">
-          <div className="h-8 w-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
-            <span className="text-white text-sm font-medium">U</span>
+          <div className="h-8 w-8 rounded-full bg-gradient-to-r from-[#EB5F01] to-[#F97316] flex items-center justify-center">
+            <span className="text-[#FAFAFA] text-sm font-medium">U</span>
           </div>
           <div className="flex-1">
-            <p className="text-sm font-medium text-white">User Account</p>
-            <p className="text-xs text-gray-400">Free Plan</p>
+            <p className="text-sm font-medium text-[#FAFAFA]">User Account</p>
+            <p className="text-xs text-[#A3A3A3]">Free Plan</p>
           </div>
         </div>
       </SidebarFooter>

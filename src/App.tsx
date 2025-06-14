@@ -22,15 +22,15 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <SidebarProvider>
-          <div className="min-h-screen flex w-full bg-black text-white">
+          <div className="min-h-screen flex w-full bg-[#0A0A0A] text-[#FAFAFA]">
             <AppSidebar />
             <main className="flex-1 flex flex-col">
-              <header className="border-b border-gray-800 bg-black/50 backdrop-blur-sm">
+              <header className="border-b border-[#404040] bg-[#171717]/50 backdrop-blur-sm">
                 <div className="flex items-center gap-4 px-6 py-4">
-                  <SidebarTrigger className="text-white hover:bg-gray-800" />
+                  <SidebarTrigger className="text-[#FAFAFA] hover:bg-[#171717]" />
                   <div className="flex-1">
-                    <h1 className="text-xl font-semibold text-white">Amazon Product Scraper</h1>
-                    <p className="text-sm text-gray-400">Extract product data using ASIN</p>
+                    <h1 className="text-xl font-semibold text-[#FAFAFA]">Amazon Product Scraper</h1>
+                    <p className="text-sm text-[#A3A3A3]">Extract product data using ASIN</p>
                   </div>
                 </div>
               </header>
@@ -41,7 +41,6 @@ const App = () => (
                   <Route path="/history" element={<History />} />
                   <Route path="/settings" element={<Settings />} />
                   <Route path="/help" element={<Help />} />
-                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </div>

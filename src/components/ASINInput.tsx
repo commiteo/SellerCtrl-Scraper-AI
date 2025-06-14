@@ -45,17 +45,17 @@ export const ASINInput = ({ onScrape, isLoading }: ASINInputProps) => {
   };
 
   return (
-    <Card className="w-full max-w-2xl mx-auto bg-gray-900 border-gray-800">
-      <CardHeader className="border-b border-gray-800">
-        <CardTitle className="flex items-center gap-2 text-2xl text-white">
-          <Package className="h-6 w-6 text-orange-500" />
+    <Card className="w-full max-w-2xl mx-auto bg-[#171717] border-[#404040]">
+      <CardHeader className="border-b border-[#404040]">
+        <CardTitle className="flex items-center gap-2 text-2xl text-[#FAFAFA]">
+          <Package className="h-6 w-6 text-[#EB5F01]" />
           Amazon Product Scraper
         </CardTitle>
       </CardHeader>
       <CardContent className="p-6">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="asin" className="text-base font-medium text-gray-200">
+            <Label htmlFor="asin" className="text-base font-medium text-[#FAFAFA]">
               Amazon ASIN
             </Label>
             <div className="relative">
@@ -64,20 +64,20 @@ export const ASINInput = ({ onScrape, isLoading }: ASINInputProps) => {
                 type="text"
                 value={asin}
                 onChange={(e) => setAsin(e.target.value)}
-                className="pl-10 text-lg bg-gray-800 border-gray-700 text-white placeholder-gray-400 focus:border-orange-500"
+                className="pl-10 text-lg bg-[#0A0A0A] border-[#404040] text-[#FAFAFA] placeholder-[#A3A3A3] focus:border-[#EB5F01]"
                 placeholder="e.g., B08N5WRWNW"
                 required
                 maxLength={10}
               />
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[#A3A3A3]" />
             </div>
-            <p className="text-sm text-gray-400">
+            <p className="text-sm text-[#A3A3A3]">
               Enter a 10-character Amazon Standard Identification Number
             </p>
           </div>
 
           <div className="space-y-4">
-            <Label className="text-base font-medium text-gray-200">Select data to extract:</Label>
+            <Label className="text-base font-medium text-[#FAFAFA]">Select data to extract:</Label>
             <div className="grid grid-cols-2 gap-4">
               <div className="flex items-center space-x-2">
                 <Checkbox
@@ -85,7 +85,7 @@ export const ASINInput = ({ onScrape, isLoading }: ASINInputProps) => {
                   checked={options.includeTitle}
                   onCheckedChange={(checked) => handleOptionChange('includeTitle', checked as boolean)}
                 />
-                <Label htmlFor="title" className="text-sm font-normal cursor-pointer text-gray-300">
+                <Label htmlFor="title" className="text-sm font-normal cursor-pointer text-[#FAFAFA]">
                   Product Title
                 </Label>
               </div>
@@ -96,7 +96,7 @@ export const ASINInput = ({ onScrape, isLoading }: ASINInputProps) => {
                   checked={options.includeImage}
                   onCheckedChange={(checked) => handleOptionChange('includeImage', checked as boolean)}
                 />
-                <Label htmlFor="image" className="text-sm font-normal cursor-pointer text-gray-300">
+                <Label htmlFor="image" className="text-sm font-normal cursor-pointer text-[#FAFAFA]">
                   Product Image
                 </Label>
               </div>
@@ -107,7 +107,7 @@ export const ASINInput = ({ onScrape, isLoading }: ASINInputProps) => {
                   checked={options.includePrice}
                   onCheckedChange={(checked) => handleOptionChange('includePrice', checked as boolean)}
                 />
-                <Label htmlFor="price" className="text-sm font-normal cursor-pointer text-gray-300">
+                <Label htmlFor="price" className="text-sm font-normal cursor-pointer text-[#FAFAFA]">
                   Price
                 </Label>
               </div>
@@ -118,7 +118,7 @@ export const ASINInput = ({ onScrape, isLoading }: ASINInputProps) => {
                   checked={options.includeBuyboxWinner}
                   onCheckedChange={(checked) => handleOptionChange('includeBuyboxWinner', checked as boolean)}
                 />
-                <Label htmlFor="buybox" className="text-sm font-normal cursor-pointer text-gray-300">
+                <Label htmlFor="buybox" className="text-sm font-normal cursor-pointer text-[#FAFAFA]">
                   Buybox Winner
                 </Label>
               </div>
@@ -129,7 +129,7 @@ export const ASINInput = ({ onScrape, isLoading }: ASINInputProps) => {
                   checked={options.includeLink}
                   onCheckedChange={(checked) => handleOptionChange('includeLink', checked as boolean)}
                 />
-                <Label htmlFor="link" className="text-sm font-normal cursor-pointer text-gray-300">
+                <Label htmlFor="link" className="text-sm font-normal cursor-pointer text-[#FAFAFA]">
                   Product Link
                 </Label>
               </div>
@@ -139,7 +139,7 @@ export const ASINInput = ({ onScrape, isLoading }: ASINInputProps) => {
           <Button
             type="submit"
             disabled={isLoading || !asin.trim()}
-            className="w-full bg-orange-600 hover:bg-orange-700 text-white py-3 text-lg border-0"
+            className="w-full bg-[#EB5F01] hover:bg-[#D35400] text-[#FAFAFA] py-3 text-lg border-0"
           >
             {isLoading ? "Scraping..." : "Scrape Product Data"}
           </Button>

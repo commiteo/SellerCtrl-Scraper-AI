@@ -74,13 +74,13 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-full bg-gray-950 p-6">
+    <div className="min-h-full bg-[#0A0A0A] p-6">
       <div className="max-w-4xl mx-auto space-y-8">
         <div className="text-center space-y-4">
-          <h2 className="text-3xl font-bold text-white">
+          <h2 className="text-3xl font-bold text-[#FAFAFA]">
             Product Data Extraction
           </h2>
-          <p className="text-lg text-gray-400 max-w-2xl mx-auto">
+          <p className="text-lg text-[#A3A3A3] max-w-2xl mx-auto">
             Enter an Amazon ASIN to extract detailed product information. 
             Select which data fields you want to retrieve.
           </p>
@@ -90,7 +90,7 @@ const Index = () => {
 
         {productData && (
           <div className="space-y-4">
-            <h3 className="text-2xl font-semibold text-center text-white">
+            <h3 className="text-2xl font-semibold text-center text-[#FAFAFA]">
               Scraped Product Data
             </h3>
             <ProductResult product={productData} />
@@ -99,8 +99,8 @@ const Index = () => {
 
         {isLoading && (
           <div className="text-center py-8">
-            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
-            <p className="mt-4 text-gray-400">Scraping product data...</p>
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#EB5F01]"></div>
+            <p className="mt-4 text-[#A3A3A3]">Scraping product data...</p>
           </div>
         )}
       </div>
