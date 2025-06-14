@@ -4,17 +4,15 @@
 
 SellerCtrl Scraper AI is a smart Amazon product data extractor that uses Crawl4AI and OpenAI. It scrapes detailed data using ASINs — including title, image, price, buybox winner, link, reviews, bullet points, rank, and more.
 
+**Important:** SellerCtrl Scraper AI is proprietary software. The code in this repository is provided for reference only and is **not** licensed for public installation or redistribution.
+
 ## Getting Started
 
 ### Run on Lovable
 Visit the [Lovable Project](https://lovable.dev/projects/77be9585-29f7-4d03-94b0-0ce9b51d6b84) and start prompting.
 
-### Run locally
-```sh
-npm install
-npm run dev
-node server.js
-```
+### Run locally (for internal development only)
+SellerCtrl Scraper AI is not an open source project. Running the code locally is intended only for the SellerCtrl team and contributors.
 
 ## 🔗 Try it Live
 [https://sellerctrl-ai.lovable.app/scraper](https://sellerctrl-ai.lovable.app/scraper)
@@ -31,7 +29,7 @@ Changes made via Lovable will be committed automatically to this repo.
 
 **Use your preferred IDE**
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable. These instructions are intended for authorized SellerCtrl developers only.
 
 The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
 
