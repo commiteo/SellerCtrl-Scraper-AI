@@ -1,6 +1,7 @@
 {
   "name": "vite_react_shadcn_ts",
   "private": true,
+  "description": "Proprietary SellerCtrl Scraper AI application - not for public installation",
   "version": "0.0.0",
   "type": "module",
   "scripts": {
