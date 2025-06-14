@@ -74,15 +74,15 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8 px-4">
-      <div className="container mx-auto space-y-8">
+    <div className="min-h-full bg-gradient-to-br from-gray-900 via-black to-gray-900 p-6">
+      <div className="max-w-4xl mx-auto space-y-8">
         <div className="text-center space-y-4">
-          <h1 className="text-4xl font-bold text-gray-900">
-            Amazon Product Scraper
-          </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Extract detailed product information from Amazon using ASIN. 
-            Powered by Crawl4AI for accurate and efficient data scraping.
+          <h2 className="text-3xl font-bold text-white">
+            Product Data Extraction
+          </h2>
+          <p className="text-lg text-gray-300 max-w-2xl mx-auto">
+            Enter an Amazon ASIN to extract detailed product information. 
+            Select which data fields you want to retrieve.
           </p>
         </div>
 
@@ -90,17 +90,17 @@ const Index = () => {
 
         {productData && (
           <div className="space-y-4">
-            <h2 className="text-2xl font-semibold text-center text-gray-800">
+            <h3 className="text-2xl font-semibold text-center text-white">
               Scraped Product Data
-            </h2>
+            </h3>
             <ProductResult product={productData} />
           </div>
         )}
 
         {isLoading && (
-          <div className="text-center">
-            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-            <p className="mt-2 text-gray-600">Scraping product data...</p>
+          <div className="text-center py-8">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+            <p className="mt-4 text-gray-300">Scraping product data...</p>
           </div>
         )}
       </div>

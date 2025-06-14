@@ -18,65 +18,73 @@ interface ProductResultProps {
 
 export const ProductResult = ({ product }: ProductResultProps) => {
   return (
-    <Card className="w-full max-w-2xl mx-auto">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Package className="h-5 w-5 text-green-600" />
+    <Card className="w-full max-w-2xl mx-auto bg-gray-900 border-gray-700 text-white">
+      <CardHeader className="border-b border-gray-700">
+        <CardTitle className="flex items-center gap-2 text-white">
+          <Package className="h-5 w-5 text-blue-500" />
           Product Data for ASIN: {product.asin}
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-6 p-6">
         {product.image && (
-          <div className="flex items-center gap-3">
-            <ImageIcon className="h-4 w-4 text-gray-500 flex-shrink-0" />
-            <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
+            <ImageIcon className="h-5 w-5 text-gray-400 flex-shrink-0" />
+            <div className="flex items-center gap-4">
               <img 
                 src={product.image} 
                 alt="Product" 
-                className="w-20 h-20 object-cover rounded-lg border"
+                className="w-24 h-24 object-cover rounded-lg border border-gray-600"
               />
-              <span className="text-sm text-gray-600">Product Image</span>
+              <span className="text-sm text-gray-300">Product Image</span>
             </div>
           </div>
         )}
 
         {product.title && (
           <div className="space-y-2">
-            <Badge variant="outline" className="text-xs">Title</Badge>
-            <p className="text-lg font-medium text-gray-800">{product.title}</p>
+            <Badge variant="outline" className="text-xs border-gray-600 text-gray-300">
+              Title
+            </Badge>
+            <p className="text-lg font-medium text-white leading-relaxed">{product.title}</p>
           </div>
         )}
 
         {product.price && (
-          <div className="flex items-center gap-3">
-            <DollarSign className="h-4 w-4 text-green-600" />
+          <div className="flex items-center gap-4">
+            <DollarSign className="h-5 w-5 text-green-500" />
             <div className="space-y-1">
-              <Badge variant="outline" className="text-xs">Price</Badge>
-              <p className="text-xl font-bold text-green-600">{product.price}</p>
+              <Badge variant="outline" className="text-xs border-gray-600 text-gray-300">
+                Price
+              </Badge>
+              <p className="text-2xl font-bold text-green-400">{product.price}</p>
             </div>
           </div>
         )}
 
         {product.buyboxWinner && (
-          <div className="flex items-center gap-3">
-            <Award className="h-4 w-4 text-yellow-600" />
+          <div className="flex items-center gap-4">
+            <Award className="h-5 w-5 text-yellow-500" />
             <div className="space-y-1">
-              <Badge variant="outline" className="text-xs">Buybox Winner</Badge>
-              <p className="text-base font-medium">{product.buyboxWinner}</p>
+              <Badge variant="outline" className="text-xs border-gray-600 text-gray-300">
+                Buybox Winner
+              </Badge>
+              <p className="text-base font-medium text-white">{product.buyboxWinner}</p>
             </div>
           </div>
         )}
 
         {product.link && (
-          <div className="flex items-center gap-3">
-            <ExternalLink className="h-4 w-4 text-blue-600" />
+          <div className="flex items-center gap-4">
+            <ExternalLink className="h-5 w-5 text-blue-500" />
             <div className="space-y-1">
-              <Badge variant="outline" className="text-xs">Product Link</Badge>
+              <Badge variant="outline" className="text-xs border-gray-600 text-gray-300">
+                Product Link
+              </Badge>
               <a 
                 href={product.link} 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="text-blue-600 hover:text-blue-800 underline break-all"
+                className="text-blue-400 hover:text-blue-300 underline break-all transition-colors"
               >
                 {product.link}
               </a>
