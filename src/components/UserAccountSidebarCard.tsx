@@ -11,25 +11,26 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
+import { useUser } from "./UserContext";
 
 export function UserAccountSidebarCard() {
   const navigate = useNavigate();
+  const { user } = useUser();
 
   return (
     <div className="flex items-center gap-3 px-3 py-2">
       <Avatar className="h-10 w-10 border-2 border-[#FF7A00] shadow-sm">
-        {/* Example fun avatar, use your real avatar here if available */}
         <AvatarImage
-          src="https://avatars.githubusercontent.com/u/10590799?s=460&v=4"
-          alt="Ali Hassan"
+          src={user.avatar || ""}
+          alt={user.name}
         />
         <AvatarFallback className="bg-gradient-to-r from-[#FF7A00] to-[#D46A00] text-white text-lg">
-          AH
+          {user.name.split(" ").map((n) => n[0]).join("")}
         </AvatarFallback>
       </Avatar>
       <div className="flex-1 min-w-0">
-        <p className="truncate text-sm font-semibold text-[#FFFFFF]">Ali Hassan</p>
-        <p className="truncate text-xs text-[#E0E0E0]/80">3lol@sellerctrl.com</p>
+        <p className="truncate text-sm font-semibold text-[#FFFFFF]">{user.name}</p>
+        <p className="truncate text-xs text-[#E0E0E0]/80">{user.email}</p>
       </div>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -46,8 +47,8 @@ export function UserAccountSidebarCard() {
           className="w-52 bg-[#161616] border-[#232323] shadow-lg"
         >
           <DropdownMenuLabel className="flex flex-col !px-4 !py-3">
-            <span className="font-semibold text-white">Ali Hassan</span>
-            <span className="text-xs text-[#A3A3A3]">3lol@sellerctrl.com</span>
+            <span className="font-semibold text-white">{user.name}</span>
+            <span className="text-xs text-[#A3A3A3]">{user.email}</span>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem

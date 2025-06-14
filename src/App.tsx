@@ -14,6 +14,7 @@ import NotFound from "./pages/NotFound";
 import Account from "./pages/Account";
 import Billing from "./pages/Billing";
 import Notifications from "./pages/Notifications";
+import { UserProvider } from "./components/UserContext";
 
 const queryClient = new QueryClient();
 
@@ -23,35 +24,37 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <SidebarProvider>
-          <div className="min-h-screen flex w-full font-inter bg-[#0D0D0D] text-[#E0E0E0]">
-            <AppSidebar />
-            <main className="flex-1 flex flex-col min-h-screen bg-[#0D0D0D]">
-              <header className="border-b border-[#2A2A2A] bg-[#1A1A1A]/60 backdrop-blur-md">
-                <div className="flex items-center gap-4 px-6 py-4">
-                  <SidebarTrigger className="text-[#E0E0E0] hover:bg-[#1F1F1F]" />
-                  <div className="flex-1">
-                    <h1 className="text-xl font-semibold text-[#FFFFFF] font-inter">Amazon Product Scraper</h1>
-                    <p className="text-sm text-[#E0E0E0]/80">Extract product data using ASIN</p>
+        <UserProvider>
+          <SidebarProvider>
+            <div className="min-h-screen flex w-full font-inter bg-[#0D0D0D] text-[#E0E0E0]">
+              <AppSidebar />
+              <main className="flex-1 flex flex-col min-h-screen bg-[#0D0D0D]">
+                <header className="border-b border-[#2A2A2A] bg-[#1A1A1A]/60 backdrop-blur-md">
+                  <div className="flex items-center gap-4 px-6 py-4">
+                    <SidebarTrigger className="text-[#E0E0E0] hover:bg-[#1F1F1F]" />
+                    <div className="flex-1">
+                      <h1 className="text-xl font-semibold text-[#FFFFFF] font-inter">Amazon Product Scraper</h1>
+                      <p className="text-sm text-[#E0E0E0]/80">Extract product data using ASIN</p>
+                    </div>
                   </div>
+                </header>
+                <div className="flex-1 overflow-auto bg-[#0D0D0D]">
+                  <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/scraper" element={<Index />} />
+                    <Route path="/history" element={<History />} />
+                    <Route path="/settings" element={<Settings />} />
+                    <Route path="/help" element={<Help />} />
+                    <Route path="/account" element={<Account />} />
+                    <Route path="/billing" element={<Billing />} />
+                    <Route path="/notifications" element={<Notifications />} />
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
                 </div>
-              </header>
-              <div className="flex-1 overflow-auto bg-[#0D0D0D]">
-                <Routes>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/scraper" element={<Index />} />
-                  <Route path="/history" element={<History />} />
-                  <Route path="/settings" element={<Settings />} />
-                  <Route path="/help" element={<Help />} />
-                  <Route path="/account" element={<Account />} />
-                  <Route path="/billing" element={<Billing />} />
-                  <Route path="/notifications" element={<Notifications />} />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </div>
-            </main>
-          </div>
-        </SidebarProvider>
+              </main>
+            </div>
+          </SidebarProvider>
+        </UserProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

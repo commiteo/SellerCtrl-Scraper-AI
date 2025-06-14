@@ -12,40 +12,40 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { UserAccountSidebarCard } from "./UserAccountSidebarCard"
-
-const menuItems = [
-  {
-    title: "Home",
-    url: "/",
-    icon: Home,
-  },
-  {
-    title: "Product Scraper",
-    url: "/scraper",
-    icon: Search,
-  },
-  {
-    title: "History",
-    url: "/history", 
-    icon: History,
-  },
-  {
-    title: "Settings",
-    url: "/settings",
-    icon: Settings,
-  },
-];
-
-const helpItems = [
-  {
-    title: "Help & Support",
-    url: "/help",
-    icon: HelpCircle,
-  },
-];
+import { UserAccountSidebarCard } from "./UserAccountSidebarCard";
 
 export function AppSidebar() {
+  const menuItems = [
+    {
+      title: "Home",
+      url: "/",
+      icon: Home,
+    },
+    {
+      title: "Product Scraper",
+      url: "/scraper",
+      icon: Search,
+    },
+    {
+      title: "History",
+      url: "/history", 
+      icon: History,
+    },
+    {
+      title: "Settings",
+      url: "/settings",
+      icon: Settings,
+    },
+  ];
+
+  const helpItems = [
+    {
+      title: "Help & Support",
+      url: "/help",
+      icon: HelpCircle,
+    },
+  ];
+
   return (
     <Sidebar className="border-r border-[#2A2A2A] bg-[#1A1A1A]">
       <SidebarHeader className="border-b border-[#2A2A2A] p-6">
@@ -59,7 +59,6 @@ export function AppSidebar() {
           </div>
         </div>
       </SidebarHeader>
-      
       <SidebarContent className="px-4 py-6">
         <SidebarGroup>
           <SidebarGroupLabel className="text-[#FFFFFF]/60 text-xs font-medium uppercase tracking-wider mb-2">
@@ -83,7 +82,6 @@ export function AppSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-
         <SidebarGroup className="mt-8">
           <SidebarGroupLabel className="text-[#FFFFFF]/60 text-xs font-medium uppercase tracking-wider mb-2">
             Support
@@ -107,7 +105,6 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      
       <SidebarFooter className="border-t border-[#2A2A2A] p-4">
         <UserAccountSidebarCard />
       </SidebarFooter>
