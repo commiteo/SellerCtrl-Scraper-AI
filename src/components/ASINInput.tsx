@@ -7,7 +7,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Search, Package } from 'lucide-react';
 
 interface ASINInputProps {
-  onScrape: (asin: string, options: ScrapingOptions) => void;
+  onScrape: (asins: string[], options: ScrapingOptions) => void;
   isLoading: boolean;
 }
 
@@ -20,7 +20,7 @@ interface ScrapingOptions {
 }
 
 export const ASINInput = ({ onScrape, isLoading }: ASINInputProps) => {
-  const [asin, setAsin] = useState('');
+  const [asinInput, setAsinInput] = useState('');
   const [options, setOptions] = useState<ScrapingOptions>({
     includeTitle: true,
     includeImage: true,
@@ -31,8 +31,12 @@ export const ASINInput = ({ onScrape, isLoading }: ASINInputProps) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (asin.trim()) {
-      onScrape(asin.trim().toUpperCase(), options);
+    // Split ASINs by newlines, commas or whitespace, and filter out empties and dupes:
+    let raw = asinInput.split(/[\s,]+/).map(s => s.trim().toUpperCase()).filter(Boolean);
+    // Only keep unique, non-empty, 10-char entries:
+    let asins = Array.from(new Set(raw.filter(a => a.length === 10)));
+    if (asins.length > 0) {
+      onScrape(asins, options);
     }
   };
 
@@ -54,24 +58,23 @@ export const ASINInput = ({ onScrape, isLoading }: ASINInputProps) => {
       <CardContent className="p-6">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="asin" className="text-base font-medium text-[#FFFFFF] font-inter">
-              Amazon ASIN
+            <Label htmlFor="asins" className="text-base font-medium text-[#FFFFFF] font-inter">
+              Amazon ASINs
             </Label>
             <div className="relative">
-              <Input
-                id="asin"
-                type="text"
-                value={asin}
-                onChange={(e) => setAsin(e.target.value)}
-                className="pl-10 text-lg bg-[#1F1F1F] border-[#2A2A2A] text-[#FFFFFF] placeholder-[#A3A3A3] focus:border-[#FF7A00] font-inter"
-                placeholder="e.g., B08N5WRWNW"
+              <textarea
+                id="asins"
+                value={asinInput}
+                onChange={(e) => setAsinInput(e.target.value)}
+                rows={3}
+                className="pl-10 text-lg bg-[#1F1F1F] border-[#2A2A2A] text-[#FFFFFF] placeholder-[#A3A3A3] focus:border-[#FF7A00] font-inter rounded w-full resize-y min-h-[48px] max-h-[150px]"
+                placeholder="e.g., B08N5WRWNW, B002QYW8LW or one ASIN per line"
                 required
-                maxLength={10}
               />
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[#A3A3A3]" />
+              <Search className="absolute left-3 top-3 h-4 w-4 text-[#A3A3A3] pointer-events-none" />
             </div>
             <p className="text-sm text-[#A3A3A3]">
-              Enter a 10-character Amazon Standard Identification Number
+              Enter one or more 10-character Amazon ASINs, separated by commas, spaces, or new lines.
             </p>
           </div>
 
@@ -122,7 +125,7 @@ export const ASINInput = ({ onScrape, isLoading }: ASINInputProps) => {
           </div>
           <Button
             type="submit"
-            disabled={isLoading || !asin.trim()}
+            disabled={isLoading || !asinInput.trim()}
             className="w-full btn-glow py-3 text-lg border-0 font-inter"
           >
             {isLoading ? "Scraping..." : "Scrape Product Data"}
