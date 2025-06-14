@@ -46,22 +46,22 @@ const helpItems = [
 
 export function AppSidebar() {
   return (
-    <Sidebar className="border-r border-[#404040] bg-[#171717]">
-      <SidebarHeader className="border-b border-[#404040] p-6">
+    <Sidebar className="border-r border-[#2A2A2A] bg-[#1A1A1A]">
+      <SidebarHeader className="border-b border-[#2A2A2A] p-6">
         <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#EB5F01]">
-            <Package className="h-4 w-4 text-[#FAFAFA]" />
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#FF7A00]">
+            <Package className="h-4 w-4 text-[#FFFFFF]" />
           </div>
           <div>
-            <h2 className="text-lg font-semibold text-[#FAFAFA]">Amazon Scraper</h2>
-            <p className="text-sm text-[#A3A3A3]">Product Data Extraction</p>
+            <h2 className="text-lg font-semibold text-[#FFFFFF] font-inter">Amazon Scraper</h2>
+            <p className="text-sm text-[#E0E0E0]/80">Product Data Extraction</p>
           </div>
         </div>
       </SidebarHeader>
       
       <SidebarContent className="px-4 py-6">
         <SidebarGroup>
-          <SidebarGroupLabel className="text-[#A3A3A3] text-xs font-medium uppercase tracking-wider mb-2">
+          <SidebarGroupLabel className="text-[#FFFFFF]/60 text-xs font-medium uppercase tracking-wider mb-2">
             Navigation
           </SidebarGroupLabel>
           <SidebarGroupContent>
@@ -70,9 +70,9 @@ export function AppSidebar() {
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton 
                     asChild 
-                    className="text-[#A3A3A3] hover:text-[#FAFAFA] hover:bg-[#0A0A0A] transition-colors duration-200"
+                    className="text-[#E0E0E0] hover:text-[#FF7A00] hover:bg-[#1F1F1F] transition-colors duration-200"
                   >
-                    <a href={item.url} className="flex items-center gap-3 px-3 py-2 rounded-lg">
+                    <a href={item.url} className="flex items-center gap-3 px-3 py-2 rounded-lg font-inter">
                       <item.icon className="h-4 w-4" />
                       <span>{item.title}</span>
                     </a>
@@ -84,7 +84,7 @@ export function AppSidebar() {
         </SidebarGroup>
 
         <SidebarGroup className="mt-8">
-          <SidebarGroupLabel className="text-[#A3A3A3] text-xs font-medium uppercase tracking-wider mb-2">
+          <SidebarGroupLabel className="text-[#FFFFFF]/60 text-xs font-medium uppercase tracking-wider mb-2">
             Support
           </SidebarGroupLabel>
           <SidebarGroupContent>
@@ -93,9 +93,9 @@ export function AppSidebar() {
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton 
                     asChild 
-                    className="text-[#A3A3A3] hover:text-[#FAFAFA] hover:bg-[#0A0A0A] transition-colors duration-200"
+                    className="text-[#E0E0E0] hover:text-[#FF7A00] hover:bg-[#1F1F1F] transition-colors duration-200"
                   >
-                    <a href={item.url} className="flex items-center gap-3 px-3 py-2 rounded-lg">
+                    <a href={item.url} className="flex items-center gap-3 px-3 py-2 rounded-lg font-inter">
                       <item.icon className="h-4 w-4" />
                       <span>{item.title}</span>
                     </a>
@@ -107,14 +107,14 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
       
-      <SidebarFooter className="border-t border-[#404040] p-4">
+      <SidebarFooter className="border-t border-[#2A2A2A] p-4">
         <div className="flex items-center gap-3 px-3 py-2">
-          <div className="h-8 w-8 rounded-full bg-gradient-to-r from-[#EB5F01] to-[#F97316] flex items-center justify-center">
-            <span className="text-[#FAFAFA] text-sm font-medium">U</span>
+          <div className="h-8 w-8 rounded-full bg-gradient-to-r from-[#FF7A00] to-[#1A1A1A] flex items-center justify-center">
+            <span className="text-[#FFFFFF] text-sm font-medium">U</span>
           </div>
           <div className="flex-1">
-            <p className="text-sm font-medium text-[#FAFAFA]">User Account</p>
-            <p className="text-xs text-[#A3A3A3]">Free Plan</p>
+            <p className="text-sm font-medium text-[#FFFFFF]">User Account</p>
+            <p className="text-xs text-[#E0E0E0]/80">Free Plan</p>
           </div>
         </div>
       </SidebarFooter>

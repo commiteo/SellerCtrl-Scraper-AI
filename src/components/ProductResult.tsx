@@ -18,10 +18,10 @@ interface ProductResultProps {
 
 export const ProductResult = ({ product }: ProductResultProps) => {
   return (
-    <Card className="w-full max-w-2xl mx-auto bg-[#171717] border-[#404040] text-[#FAFAFA]">
-      <CardHeader className="border-b border-[#404040]">
-        <CardTitle className="flex items-center gap-2 text-[#FAFAFA]">
-          <Package className="h-5 w-5 text-[#EB5F01]" />
+    <Card className="w-full max-w-2xl mx-auto dashboard-card font-inter">
+      <CardHeader className="border-b border-[#2A2A2A]">
+        <CardTitle className="flex items-center gap-2 text-[#FFFFFF] font-inter">
+          <Package className="h-5 w-5 text-[#FF7A00]" />
           Product Data for ASIN: {product.asin}
         </CardTitle>
       </CardHeader>
@@ -32,59 +32,59 @@ export const ProductResult = ({ product }: ProductResultProps) => {
             <div className="flex items-center gap-4">
               <img 
                 src={product.image} 
-                alt="Product" 
-                className="w-24 h-24 object-cover rounded-lg border border-[#404040]"
+                alt="Product"
+                className="w-24 h-24 object-cover rounded-lg border border-[#2A2A2A] shadow"
               />
-              <span className="text-sm text-[#A3A3A3]">Product Image</span>
+              <span className="text-sm text-[#A3A3A3] font-inter">Product Image</span>
             </div>
           </div>
         )}
 
         {product.title && (
           <div className="space-y-2">
-            <Badge variant="outline" className="text-xs border-[#404040] text-[#A3A3A3] bg-[#0A0A0A]">
+            <Badge variant="outline" className="text-xs border-[#2A2A2A] text-[#A3A3A3] bg-[#1F1F1F] font-inter">
               Title
             </Badge>
-            <p className="text-lg font-medium text-[#FAFAFA] leading-relaxed">{product.title}</p>
+            <p className="text-lg font-medium text-[#E0E0E0] leading-relaxed font-inter">{product.title}</p>
           </div>
         )}
 
         {product.price && (
           <div className="flex items-center gap-4">
-            <DollarSign className="h-5 w-5 text-[#EB5F01]" />
+            <DollarSign className="h-5 w-5 text-[#FF7A00]" />
             <div className="space-y-1">
-              <Badge variant="outline" className="text-xs border-[#404040] text-[#A3A3A3] bg-[#0A0A0A]">
+              <Badge variant="outline" className="text-xs border-[#2A2A2A] text-[#A3A3A3] bg-[#1F1F1F] font-inter">
                 Price
               </Badge>
-              <p className="text-2xl font-bold text-[#EB5F01]">{product.price}</p>
+              <p className="text-2xl font-bold text-[#FF7A00] font-inter">{product.price}</p>
             </div>
           </div>
         )}
 
         {product.buyboxWinner && (
           <div className="flex items-center gap-4">
-            <Award className="h-5 w-5 text-[#EB5F01]" />
+            <Award className="h-5 w-5 text-[#FF7A00]" />
             <div className="space-y-1">
-              <Badge variant="outline" className="text-xs border-[#404040] text-[#A3A3A3] bg-[#0A0A0A]">
+              <Badge variant="outline" className="text-xs border-[#2A2A2A] text-[#A3A3A3] bg-[#1F1F1F] font-inter">
                 Buybox Winner
               </Badge>
-              <p className="text-base font-medium text-[#FAFAFA]">{product.buyboxWinner}</p>
+              <p className="text-base font-medium text-[#E0E0E0] font-inter">{product.buyboxWinner}</p>
             </div>
           </div>
         )}
 
         {product.link && (
           <div className="flex items-center gap-4">
-            <ExternalLink className="h-5 w-5 text-[#EB5F01]" />
+            <ExternalLink className="h-5 w-5 text-[#FF7A00]" />
             <div className="space-y-1">
-              <Badge variant="outline" className="text-xs border-[#404040] text-[#A3A3A3] bg-[#0A0A0A]">
+              <Badge variant="outline" className="text-xs border-[#2A2A2A] text-[#A3A3A3] bg-[#1F1F1F] font-inter">
                 Product Link
               </Badge>
               <a 
-                href={product.link} 
-                target="_blank" 
+                href={product.link}
+                target="_blank"
                 rel="noopener noreferrer"
-                className="text-[#EB5F01] hover:text-[#D35400] underline break-all transition-colors"
+                className="text-[#FF7A00] hover:text-[#ff9100] underline break-all transition-colors font-inter"
               >
                 {product.link}
               </a>
@@ -95,3 +95,4 @@ export const ProductResult = ({ product }: ProductResultProps) => {
     </Card>
   );
 };
+

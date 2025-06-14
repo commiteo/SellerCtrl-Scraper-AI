@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -45,17 +44,17 @@ export const ASINInput = ({ onScrape, isLoading }: ASINInputProps) => {
   };
 
   return (
-    <Card className="w-full max-w-2xl mx-auto bg-[#171717] border-[#404040]">
-      <CardHeader className="border-b border-[#404040]">
-        <CardTitle className="flex items-center gap-2 text-2xl text-[#FAFAFA]">
-          <Package className="h-6 w-6 text-[#EB5F01]" />
+    <Card className="w-full max-w-2xl mx-auto dashboard-card font-inter">
+      <CardHeader className="border-b border-[#2A2A2A]">
+        <CardTitle className="flex items-center gap-2 text-2xl text-[#FFFFFF] font-inter">
+          <Package className="h-6 w-6 text-[#FF7A00]" />
           Amazon Product Scraper
         </CardTitle>
       </CardHeader>
       <CardContent className="p-6">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="asin" className="text-base font-medium text-[#FAFAFA]">
+            <Label htmlFor="asin" className="text-base font-medium text-[#FFFFFF] font-inter">
               Amazon ASIN
             </Label>
             <div className="relative">
@@ -64,7 +63,7 @@ export const ASINInput = ({ onScrape, isLoading }: ASINInputProps) => {
                 type="text"
                 value={asin}
                 onChange={(e) => setAsin(e.target.value)}
-                className="pl-10 text-lg bg-[#0A0A0A] border-[#404040] text-[#FAFAFA] placeholder-[#A3A3A3] focus:border-[#EB5F01]"
+                className="pl-10 text-lg bg-[#1F1F1F] border-[#2A2A2A] text-[#FFFFFF] placeholder-[#A3A3A3] focus:border-[#FF7A00] font-inter"
                 placeholder="e.g., B08N5WRWNW"
                 required
                 maxLength={10}
@@ -77,7 +76,7 @@ export const ASINInput = ({ onScrape, isLoading }: ASINInputProps) => {
           </div>
 
           <div className="space-y-4">
-            <Label className="text-base font-medium text-[#FAFAFA]">Select data to extract:</Label>
+            <Label className="text-base font-medium text-[#FFFFFF] font-inter">Select data to extract:</Label>
             <div className="grid grid-cols-2 gap-4">
               <div className="flex items-center space-x-2">
                 <Checkbox
@@ -85,61 +84,46 @@ export const ASINInput = ({ onScrape, isLoading }: ASINInputProps) => {
                   checked={options.includeTitle}
                   onCheckedChange={(checked) => handleOptionChange('includeTitle', checked as boolean)}
                 />
-                <Label htmlFor="title" className="text-sm font-normal cursor-pointer text-[#FAFAFA]">
-                  Product Title
-                </Label>
+                <Label htmlFor="title" className="text-sm font-normal cursor-pointer text-[#E0E0E0]">Product Title</Label>
               </div>
-              
               <div className="flex items-center space-x-2">
                 <Checkbox
                   id="image"
                   checked={options.includeImage}
                   onCheckedChange={(checked) => handleOptionChange('includeImage', checked as boolean)}
                 />
-                <Label htmlFor="image" className="text-sm font-normal cursor-pointer text-[#FAFAFA]">
-                  Product Image
-                </Label>
+                <Label htmlFor="image" className="text-sm font-normal cursor-pointer text-[#E0E0E0]">Product Image</Label>
               </div>
-              
               <div className="flex items-center space-x-2">
                 <Checkbox
                   id="price"
                   checked={options.includePrice}
                   onCheckedChange={(checked) => handleOptionChange('includePrice', checked as boolean)}
                 />
-                <Label htmlFor="price" className="text-sm font-normal cursor-pointer text-[#FAFAFA]">
-                  Price
-                </Label>
+                <Label htmlFor="price" className="text-sm font-normal cursor-pointer text-[#E0E0E0]">Price</Label>
               </div>
-              
               <div className="flex items-center space-x-2">
                 <Checkbox
                   id="buybox"
                   checked={options.includeBuyboxWinner}
                   onCheckedChange={(checked) => handleOptionChange('includeBuyboxWinner', checked as boolean)}
                 />
-                <Label htmlFor="buybox" className="text-sm font-normal cursor-pointer text-[#FAFAFA]">
-                  Buybox Winner
-                </Label>
+                <Label htmlFor="buybox" className="text-sm font-normal cursor-pointer text-[#E0E0E0]">Buybox Winner</Label>
               </div>
-              
               <div className="flex items-center space-x-2 col-span-2">
                 <Checkbox
                   id="link"
                   checked={options.includeLink}
                   onCheckedChange={(checked) => handleOptionChange('includeLink', checked as boolean)}
                 />
-                <Label htmlFor="link" className="text-sm font-normal cursor-pointer text-[#FAFAFA]">
-                  Product Link
-                </Label>
+                <Label htmlFor="link" className="text-sm font-normal cursor-pointer text-[#E0E0E0]">Product Link</Label>
               </div>
             </div>
           </div>
-
           <Button
             type="submit"
             disabled={isLoading || !asin.trim()}
-            className="w-full bg-[#EB5F01] hover:bg-[#D35400] text-[#FAFAFA] py-3 text-lg border-0"
+            className="w-full btn-glow py-3 text-lg border-0 font-inter"
           >
             {isLoading ? "Scraping..." : "Scrape Product Data"}
           </Button>
