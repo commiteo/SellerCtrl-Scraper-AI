@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -9,6 +10,7 @@ import Home from "./pages/Home";
 import Index from "./pages/Index";
 import History from "./pages/History";
 import Settings from "./pages/Settings";
+import Help from "./pages/Help";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -38,6 +40,7 @@ const App = () => (
                   <Route path="/scraper" element={<Index />} />
                   <Route path="/history" element={<History />} />
                   <Route path="/settings" element={<Settings />} />
+                  <Route path="/help" element={<Help />} />
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>
