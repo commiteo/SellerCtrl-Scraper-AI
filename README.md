@@ -1,8 +1,23 @@
-# Welcome to your Lovable project
+[![Live App](https://img.shields.io/badge/Visit%20App-sellerctrl--ai.lovable.app-orange?style=for-the-badge)](https://sellerctrl-ai.lovable.app/scraper)
 
-## Project info
+# SellerCtrl Scraper AI
 
-**URL**: https://lovable.dev/projects/77be9585-29f7-4d03-94b0-0ce9b51d6b84
+SellerCtrl Scraper AI is a smart Amazon product data extractor that uses Crawl4AI and OpenAI. It scrapes detailed data using ASINs — including title, image, price, buybox winner, link, reviews, bullet points, rank, and more.
+
+## Getting Started
+
+### Run on Lovable
+Visit the [Lovable Project](https://lovable.dev/projects/77be9585-29f7-4d03-94b0-0ce9b51d6b84) and start prompting.
+
+### Run locally
+```sh
+npm install
+npm run dev
+node server.js
+```
+
+## 🔗 Try it Live
+[https://sellerctrl-ai.lovable.app/scraper](https://sellerctrl-ai.lovable.app/scraper)
 
 ## How can I edit this code?
 
@@ -62,12 +77,12 @@ This project is built with:
 
 ## How can I deploy this project?
 
-Simply open [Lovable](https://lovable.dev/projects/77be9585-29f7-4d03-94b0-0ce9b51d6b84) and click on Share -> Publish.
+This project is now a live production tool with a hosted frontend. Simply open [Lovable](https://lovable.dev/projects/77be9585-29f7-4d03-94b0-0ce9b51d6b84) and click on **Share -> Publish** to deploy your updates.
 
 ## Can I connect a custom domain to my Lovable project?
 
 Yes, you can!
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+To connect a domain, navigate to **Project > Settings > Domains** and click **Connect Domain**.
 
 Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
