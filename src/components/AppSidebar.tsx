@@ -12,6 +12,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { UserAccountSidebarCard } from "./UserAccountSidebarCard"
 
 const menuItems = [
   {
@@ -108,15 +109,7 @@ export function AppSidebar() {
       </SidebarContent>
       
       <SidebarFooter className="border-t border-[#2A2A2A] p-4">
-        <div className="flex items-center gap-3 px-3 py-2">
-          <div className="h-8 w-8 rounded-full bg-gradient-to-r from-[#FF7A00] to-[#1A1A1A] flex items-center justify-center">
-            <span className="text-[#FFFFFF] text-sm font-medium">U</span>
-          </div>
-          <div className="flex-1">
-            <p className="text-sm font-medium text-[#FFFFFF]">User Account</p>
-            <p className="text-xs text-[#E0E0E0]/80">Free Plan</p>
-          </div>
-        </div>
+        <UserAccountSidebarCard />
       </SidebarFooter>
     </Sidebar>
   );
