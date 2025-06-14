@@ -61,8 +61,8 @@ const Index = () => {
     setResults(validAsins.map(a => ({ asin: a, loading: true })));
 
     // Scrape serially for better rate limit handling, but could be changed to parallel if backend allows
-    let newResults: ResultState[] = [];
-    for (let asin of validAsins) {
+    const newResults: ResultState[] = [];
+    for (const asin of validAsins) {
       setResults(prev => prev.map(r => r.asin === asin ? { ...r, loading: true } : r));
       try {
         const result = await AmazonScraper.scrapeProduct(asin, options);
@@ -71,8 +71,9 @@ const Index = () => {
         } else {
           newResults.push({ asin, loading: false, error: result.error || "Failed to scrape" });
         }
-      } catch (error: any) {
-        newResults.push({ asin, loading: false, error: error?.message || "Failed to scrape" });
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Failed to scrape';
+        newResults.push({ asin, loading: false, error: message });
       }
       setResults(current =>
         current.map(r =>

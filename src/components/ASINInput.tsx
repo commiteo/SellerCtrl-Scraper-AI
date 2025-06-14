@@ -32,9 +32,9 @@ export const ASINInput = ({ onScrape, isLoading }: ASINInputProps) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Split ASINs by newlines, commas or whitespace, and filter out empties and dupes:
-    let raw = asinInput.split(/[\s,]+/).map(s => s.trim().toUpperCase()).filter(Boolean);
+    const raw = asinInput.split(/[\s,]+/).map(s => s.trim().toUpperCase()).filter(Boolean);
     // Only keep unique, non-empty, 10-char entries:
-    let asins = Array.from(new Set(raw.filter(a => a.length === 10)));
+    const asins = Array.from(new Set(raw.filter(a => a.length === 10)));
     if (asins.length > 0) {
       onScrape(asins, options);
     }
