@@ -3,190 +3,255 @@ import { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Search, Package, Clock, Settings, TrendingUp, Database, Zap } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
+import { TrendingUp, TrendingDown, Users, Package, DollarSign, Activity, BarChart3, Filter } from 'lucide-react';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts';
 
 const Home = () => {
-  const navigate = useNavigate();
-  const [stats, setStats] = useState({
-    totalScraped: 247,
-    todayScraped: 12,
-    successRate: 94.8,
-    avgResponseTime: 2.3
-  });
+  const [timeFilter, setTimeFilter] = useState('Last 30 days');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
-  // Simulate real-time updates
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setStats(prev => ({
-        ...prev,
-        todayScraped: prev.todayScraped + Math.floor(Math.random() * 2),
-        totalScraped: prev.totalScraped + Math.floor(Math.random() * 2)
-      }));
-    }, 30000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  const recentActivity = [
-    { asin: 'B08N5WRWNW', product: 'Echo Dot (4th Gen)', time: '2 minutes ago', status: 'success' },
-    { asin: 'B0B7RFBVYX', product: 'iPhone 14 Pro Case', time: '5 minutes ago', status: 'success' },
-    { asin: 'B09DFCB8Q4', product: 'Wireless Charger', time: '12 minutes ago', status: 'failed' },
-    { asin: 'B08FBM7G5J', product: 'Gaming Mouse', time: '18 minutes ago', status: 'success' },
-  ];
-
-  const quickActions = [
+  // Mock data for metrics
+  const metrics = [
     {
-      title: 'Start Scraping',
-      description: 'Extract product data using ASIN',
-      icon: Search,
-      action: () => navigate('/scraper'),
-      color: 'bg-blue-600'
+      title: 'Total Revenue',
+      value: '$1,250.00',
+      change: '+12.5%',
+      trend: 'up',
+      description: 'Trending up this month',
+      subtitle: 'Products scraped for last 6 months'
     },
     {
-      title: 'View History',
-      description: 'See all scraped products',
-      icon: Clock,
-      action: () => navigate('/history'),
-      color: 'bg-green-600'
+      title: 'New Products',
+      value: '1,234',
+      change: '-20%',
+      trend: 'down',
+      description: 'Down 20% this period',
+      subtitle: 'Acquisition needs attention'
     },
     {
-      title: 'Configure Settings',
-      description: 'Manage your preferences',
-      icon: Settings,
-      action: () => navigate('/settings'),
-      color: 'bg-purple-600'
+      title: 'Active Scrapers',
+      value: '45,678',
+      change: '+12.5%',
+      trend: 'up',
+      description: 'Strong user retention',
+      subtitle: 'Engagement exceed targets'
+    },
+    {
+      title: 'Success Rate',
+      value: '4.5%',
+      change: '+4.5%',
+      trend: 'up',
+      description: 'Steady performance increase',
+      subtitle: 'Meets growth projections'
     }
   ];
 
+  // Mock chart data
+  const chartData = [
+    { date: 'Apr 6', value: 120 },
+    { date: 'Apr 12', value: 280 },
+    { date: 'Apr 18', value: 180 },
+    { date: 'Apr 24', value: 420 },
+    { date: 'Apr 30', value: 350 },
+    { date: 'May 6', value: 480 },
+    { date: 'May 12', value: 320 },
+    { date: 'May 18', value: 560 },
+    { date: 'May 24', value: 420 },
+    { date: 'May 30', value: 650 },
+    { date: 'Jun 5', value: 580 },
+    { date: 'Jun 11', value: 720 },
+    { date: 'Jun 17', value: 680 },
+    { date: 'Jun 23', value: 780 },
+    { date: 'Jun 30', value: 850 }
+  ];
+
+  // Mock table data
+  const tableData = [
+    { id: 1, header: 'Cover page', sectionType: 'Cover page', status: 'In Process', target: 18, limit: 5, reviewer: 'Eddie Lake' },
+    { id: 2, header: 'Table of contents', sectionType: 'Table of contents', status: 'Done', target: 29, limit: 24, reviewer: 'Eddie Lake' },
+    { id: 3, header: 'Executive summary', sectionType: 'Narrative', status: 'Done', target: 10, limit: 13, reviewer: 'Eddie Lake' },
+    { id: 4, header: 'Technical approach', sectionType: 'Narrative', status: 'Done', target: 27, limit: 23, reviewer: 'Jamie Tashputukov' },
+    { id: 5, header: 'Design', sectionType: 'Narrative', status: 'In Process', target: 2, limit: 16, reviewer: 'Jamie Tashputukov' },
+    { id: 6, header: 'Capabilities', sectionType: 'Narrative', status: 'In Process', target: 20, limit: 8, reviewer: 'Jamie Tashputukov' },
+    { id: 7, header: 'Integration with existing systems', sectionType: 'Narrative', status: 'In Process', target: 19, limit: 21, reviewer: 'Jamie Tashputukov' },
+    { id: 8, header: 'Innovation and Advantages', sectionType: 'Narrative', status: 'Done', target: 25, limit: 26, reviewer: 'Assign review...' },
+    { id: 9, header: 'Overview of BMFs Innovative Solutions', sectionType: 'Technical content', status: 'Done', target: 7, limit: 23, reviewer: 'Assign review...' },
+    { id: 10, header: 'Advanced Algorithms and Machine Learning', sectionType: 'Narrative', status: 'Done', target: 30, limit: 28, reviewer: 'Assign review...' }
+  ];
+
+  const totalPages = Math.ceil(tableData.length / itemsPerPage);
+  const paginatedData = tableData.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
   return (
-    <div className="min-h-full bg-gradient-to-br from-gray-900 via-black to-gray-900 p-6">
-      <div className="max-w-7xl mx-auto space-y-8">
-        {/* Welcome Section */}
-        <div className="text-center space-y-4">
-          <h1 className="text-4xl font-bold text-white">
-            Welcome to Amazon Scraper
-          </h1>
-          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            Your powerful tool for extracting Amazon product data. Monitor, analyze, and track product information with ease.
-          </p>
+    <div className="min-h-full bg-black p-6">
+      <div className="max-w-7xl mx-auto space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-white">Dashboard</h1>
+            <p className="text-gray-400">Monitor your scraping performance</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" className="bg-gray-800 border-gray-600 text-white hover:bg-gray-700">
+              <Filter className="h-4 w-4 mr-2" />
+              {timeFilter}
+            </Button>
+          </div>
         </div>
 
-        {/* Stats Cards */}
+        {/* Metrics Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card className="bg-gray-900 border-gray-700">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-blue-600 rounded-lg">
-                  <Package className="h-6 w-6 text-white" />
-                </div>
-                <div>
-                  <p className="text-gray-400 text-sm">Total Scraped</p>
-                  <p className="text-2xl font-bold text-white">{stats.totalScraped.toLocaleString()}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gray-900 border-gray-700">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-green-600 rounded-lg">
-                  <TrendingUp className="h-6 w-6 text-white" />
-                </div>
-                <div>
-                  <p className="text-gray-400 text-sm">Today</p>
-                  <p className="text-2xl font-bold text-white">{stats.todayScraped}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gray-900 border-gray-700">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-purple-600 rounded-lg">
-                  <Database className="h-6 w-6 text-white" />
-                </div>
-                <div>
-                  <p className="text-gray-400 text-sm">Success Rate</p>
-                  <p className="text-2xl font-bold text-white">{stats.successRate}%</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gray-900 border-gray-700">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-orange-600 rounded-lg">
-                  <Zap className="h-6 w-6 text-white" />
-                </div>
-                <div>
-                  <p className="text-gray-400 text-sm">Avg Response</p>
-                  <p className="text-2xl font-bold text-white">{stats.avgResponseTime}s</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {quickActions.map((action, index) => (
-            <Card key={index} className="bg-gray-900 border-gray-700 hover:border-gray-600 transition-colors cursor-pointer" onClick={action.action}>
+          {metrics.map((metric, index) => (
+            <Card key={index} className="bg-gray-900 border-gray-700">
               <CardContent className="p-6">
-                <div className="flex items-center gap-4">
-                  <div className={`p-3 ${action.color} rounded-lg`}>
-                    <action.icon className="h-6 w-6 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-white">{action.title}</h3>
-                    <p className="text-gray-400">{action.description}</p>
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-gray-400 text-sm font-medium">{metric.title}</p>
+                  <div className={`flex items-center text-sm ${metric.trend === 'up' ? 'text-green-500' : 'text-red-500'}`}>
+                    {metric.trend === 'up' ? <TrendingUp className="h-4 w-4 mr-1" /> : <TrendingDown className="h-4 w-4 mr-1" />}
+                    {metric.change}
                   </div>
                 </div>
+                <p className="text-2xl font-bold text-white mb-1">{metric.value}</p>
+                <p className="text-green-500 text-sm font-medium mb-1">{metric.description}</p>
+                <p className="text-gray-500 text-xs">{metric.subtitle}</p>
               </CardContent>
             </Card>
           ))}
         </div>
 
-        {/* Recent Activity */}
+        {/* Chart Section */}
         <Card className="bg-gray-900 border-gray-700">
-          <CardHeader>
-            <CardTitle className="text-white flex items-center gap-2">
-              <Clock className="h-5 w-5" />
-              Recent Activity
-            </CardTitle>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <div>
+              <CardTitle className="text-white">Total Visitors</CardTitle>
+              <p className="text-gray-400 text-sm">Data for the last 3 months</p>
+            </div>
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" className="bg-gray-800 border-gray-600 text-white hover:bg-gray-700">
+                Last 3 months
+              </Button>
+              <Button variant="outline" size="sm" className="bg-gray-800 border-gray-600 text-white hover:bg-gray-700">
+                Last 30 days
+              </Button>
+              <Button variant="outline" size="sm" className="bg-gray-800 border-gray-600 text-white hover:bg-gray-700">
+                Last 7 days
+              </Button>
+            </div>
           </CardHeader>
-          <CardContent className="space-y-4">
-            {recentActivity.map((activity, index) => (
-              <div key={index} className="flex items-center justify-between p-3 bg-gray-800 rounded-lg">
-                <div className="flex items-center gap-3">
-                  <Package className="h-4 w-4 text-gray-400" />
-                  <div>
-                    <p className="text-white font-medium">{activity.product}</p>
-                    <p className="text-gray-400 text-sm">ASIN: {activity.asin}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Badge variant={activity.status === 'success' ? 'default' : 'destructive'}>
-                    {activity.status}
-                  </Badge>
-                  <span className="text-gray-400 text-sm">{activity.time}</span>
-                </div>
-              </div>
-            ))}
+          <CardContent>
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={chartData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                <XAxis dataKey="date" stroke="#9CA3AF" fontSize={12} />
+                <YAxis stroke="#9CA3AF" fontSize={12} />
+                <Line 
+                  type="monotone" 
+                  dataKey="value" 
+                  stroke="#F97316" 
+                  strokeWidth={2}
+                  dot={false}
+                  activeDot={{ r: 4, fill: "#F97316" }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
           </CardContent>
         </Card>
 
-        {/* Get Started */}
-        <Card className="bg-gradient-to-r from-blue-900 to-purple-900 border-blue-700">
-          <CardContent className="p-8 text-center">
-            <h2 className="text-2xl font-bold text-white mb-4">Ready to Start Scraping?</h2>
-            <p className="text-blue-100 mb-6">Enter an Amazon ASIN and get detailed product information in seconds.</p>
-            <Button onClick={() => navigate('/scraper')} className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3">
-              Start Scraping Now
-            </Button>
+        {/* Data Table */}
+        <Card className="bg-gray-900 border-gray-700">
+          <CardHeader className="flex flex-row items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Button variant="outline" size="sm" className="bg-blue-600 border-blue-600 text-white hover:bg-blue-700">
+                Outline
+              </Button>
+              <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white">
+                Past Performance
+              </Button>
+              <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white">
+                Key Personnel
+              </Button>
+              <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white">
+                Focus Documents
+              </Button>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button variant="outline" size="sm" className="bg-gray-800 border-gray-600 text-white hover:bg-gray-700">
+                Customize Columns
+              </Button>
+              <Button variant="outline" size="sm" className="bg-gray-800 border-gray-600 text-white hover:bg-gray-700">
+                + Add Section
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow className="border-gray-700 hover:bg-gray-800">
+                  <TableHead className="text-gray-300">Header</TableHead>
+                  <TableHead className="text-gray-300">Section Type</TableHead>
+                  <TableHead className="text-gray-300">Status</TableHead>
+                  <TableHead className="text-gray-300">Target</TableHead>
+                  <TableHead className="text-gray-300">Limit</TableHead>
+                  <TableHead className="text-gray-300">Reviewer</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {paginatedData.map((item) => (
+                  <TableRow key={item.id} className="border-gray-700 hover:bg-gray-800">
+                    <TableCell className="text-white">{item.header}</TableCell>
+                    <TableCell className="text-gray-300">{item.sectionType}</TableCell>
+                    <TableCell>
+                      <Badge 
+                        variant={item.status === 'Done' ? 'default' : 'secondary'}
+                        className={item.status === 'Done' ? 'bg-green-600 text-white' : 'bg-yellow-600 text-white'}
+                      >
+                        {item.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-gray-300">{item.target}</TableCell>
+                    <TableCell className="text-gray-300">{item.limit}</TableCell>
+                    <TableCell className="text-blue-400">{item.reviewer}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+            
+            {/* Pagination */}
+            <div className="flex items-center justify-between mt-6">
+              <p className="text-gray-400 text-sm">
+                0 of 55 row(s) selected.
+              </p>
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <span className="text-gray-400 text-sm">Rows per page</span>
+                  <select className="bg-gray-800 border-gray-600 text-white rounded px-2 py-1 text-sm">
+                    <option>10</option>
+                    <option>20</option>
+                    <option>50</option>
+                  </select>
+                </div>
+                <span className="text-gray-400 text-sm">Page {currentPage} of {totalPages}</span>
+                <Pagination>
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious 
+                        onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                        className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer text-white hover:bg-gray-700'}
+                      />
+                    </PaginationItem>
+                    <PaginationItem>
+                      <PaginationNext 
+                        onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                        className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer text-white hover:bg-gray-700'}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>
