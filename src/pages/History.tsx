@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Search, ExternalLink, Download, Trash2, Calendar, Filter } from 'lucide-react';
+import { supabase } from '@/lib/supabaseClient';
 
 interface HistoryItem {
   id: string;
@@ -20,13 +21,36 @@ interface HistoryItem {
 const History = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState<'all' | 'success' | 'failed'>('all');
+  const [historyData, setHistoryData] = useState<HistoryItem[]>([]);
 
-  // History data will be loaded from the backend in the future
-  const historyData: HistoryItem[] = [];
+  useEffect(() => {
+    const fetchHistory = async () => {
+      const { data, error } = await supabase
+        .from('scraping_history')
+        .select('*')
+        .order('scraped_at', { ascending: false });
+      if (!error && data) {
+        // Map DB fields to HistoryItem interface
+        setHistoryData(
+          data.map((row: any) => ({
+            id: row.id,
+            asin: row.asin,
+            title: row.title,
+            price: row.price,
+            buyboxWinner: row.buybox_winner,
+            scrapedAt: row.scraped_at,
+            status: row.status,
+            image: row.image,
+          }))
+        );
+      }
+    };
+    fetchHistory();
+  }, []);
 
   const filteredData = historyData.filter(item => {
-    const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         item.asin.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSearch = item.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         item.asin?.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesFilter = filterStatus === 'all' || item.status === filterStatus;
     return matchesSearch && matchesFilter;
   });

@@ -1,4 +1,3 @@
-
 interface ProductData {
   asin: string;
   title?: string;
@@ -20,13 +19,13 @@ export class AmazonScraper {
 
   static async scrapeProduct(
     asin: string,
-    _options: ScrapingOptions,
+    options: ScrapingOptions,
   ): Promise<{ success: boolean; data?: ProductData; error?: string }> {
     try {
       const start = await fetch('/api/scrape', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ asin }),
+        body: JSON.stringify({ asin, options }),
       });
 
       if (!start.ok) {

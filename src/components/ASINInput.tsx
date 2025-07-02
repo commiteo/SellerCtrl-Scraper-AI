@@ -48,7 +48,7 @@ export const ASINInput = ({ onScrape, isLoading }: ASINInputProps) => {
   };
 
   return (
-    <Card className="w-full max-w-2xl mx-auto dashboard-card font-inter">
+    <Card className="w-full max-w-6xl mx-auto dashboard-card font-inter px-8">
       <CardHeader className="border-b border-[#2A2A2A]">
         <CardTitle className="flex items-center gap-2 text-2xl text-[#FFFFFF] font-inter">
           <Package className="h-6 w-6 text-[#FF7A00]" />

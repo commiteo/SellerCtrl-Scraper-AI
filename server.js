@@ -2,7 +2,7 @@ const http = require('http');
 const { spawn } = require('child_process');
 const path = require('path');
 
-const PORT = process.env.API_PORT || 3001;
+const PORT = process.env.API_PORT || 3002;
 
 const sendJSON = (res, statusCode, data) => {
   res.writeHead(statusCode, {

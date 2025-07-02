@@ -1,9 +1,9 @@
-
 import { useState } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { ASINInput } from '@/components/ASINInput';
 import { ProductResult } from '@/components/ProductResult';
 import { AmazonScraper } from '@/services/AmazonScraper';
+import { supabase } from '@/lib/supabaseClient';
 
 interface ProductData {
   asin: string;
@@ -34,6 +34,13 @@ const Index = () => {
   const [isScraping, setIsScraping] = useState(false);
   // State: for each ASIN, track its scrape status (loading/data/error)
   const [results, setResults] = useState<ResultState[]>([]);
+  const [options, setOptions] = useState<ScrapingOptions>({
+    includeTitle: true,
+    includeImage: true,
+    includePrice: true,
+    includeBuyboxWinner: true,
+    includeLink: true,
+  });
 
   // Accepts an array of ASINs
   const handleScrape = async (asins: string[], options: ScrapingOptions) => {
@@ -68,6 +75,18 @@ const Index = () => {
         const result = await AmazonScraper.scrapeProduct(asin, options);
         if (result.success && result.data) {
           newResults.push({ asin, loading: false, data: result.data });
+          await supabase.from('scraping_history').insert([
+            {
+              asin: result.data.asin,
+              title: result.data.title,
+              image: result.data.image,
+              price: result.data.price,
+              buybox_winner: result.data.buyboxWinner,
+              link: result.data.link,
+              status: 'success',
+              scraped_at: new Date().toISOString(),
+            }
+          ]);
         } else {
           newResults.push({ asin, loading: false, error: result.error || "Failed to scrape" });
         }
@@ -111,7 +130,7 @@ const Index = () => {
 
   return (
     <div className="min-h-full bg-[#0D0D0D] p-6 font-inter">
-      <div className="max-w-4xl mx-auto space-y-8">
+      <div className="max-w-7xl mx-auto space-y-8 px-4">
         <div className="text-center space-y-4">
           <h2 className="text-3xl font-bold text-[#FFFFFF] font-inter">
             Product Data Extraction
@@ -129,23 +148,41 @@ const Index = () => {
             <h3 className="text-2xl font-semibold text-center text-[#FFFFFF] font-inter">
               Scraped Product Data
             </h3>
-            {/* List each result */}
-            <div className="flex flex-col gap-7 w-full max-w-3xl mx-auto">
-              {results.map((result, i) =>
-                result.loading ? (
-                  <div key={result.asin} className="flex flex-col items-center justify-center py-10 w-full rounded-2xl border border-[#232323] bg-[#1C1C1C]/70">
-                    <span className="font-mono text-[#A3A3A3] text-sm">Scraping ASIN: {result.asin}</span>
-                    <div className="inline-block animate-spin rounded-full h-7 w-7 border-b-2 border-[#FF7A00] mt-2" />
-                  </div>
-                ) : result.data ? (
-                  <ProductResult key={result.asin} product={result.data} />
-                ) : (
-                  <div key={result.asin} className="flex flex-col items-center justify-center py-10 w-full rounded-2xl border border-[#462323] bg-[#251C1C]/60">
-                    <span className="font-mono text-[#FF2F00] text-sm mb-2">ASIN: {result.asin}</span>
-                    <div className="font-semibold text-lg text-[#FF2F00]">Failed to scrape: {result.error}</div>
-                  </div>
-                )
-              )}
+            <div className="w-full max-w-6xl mx-auto overflow-x-auto">
+              <table className="min-w-full text-left border-separate border-spacing-y-2">
+                <thead>
+                  <tr className="bg-[#181818]">
+                    {options.includeImage && <th className="px-4 py-2 text-[#E0E0E0]">Image</th>}
+                    {options.includeTitle && <th className="px-4 py-2 text-[#E0E0E0]">Title</th>}
+                    {options.includePrice && <th className="px-4 py-2 text-[#E0E0E0]">Price</th>}
+                    {options.includeBuyboxWinner && <th className="px-4 py-2 text-[#E0E0E0]">Buybox Winner</th>}
+                    {options.includeLink && <th className="px-4 py-2 text-[#E0E0E0]">Product Link</th>}
+                    <th className="px-4 py-2 text-[#E0E0E0]">ASIN</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {results.map((result, i) =>
+                    result.loading ? (
+                      <tr key={result.asin}>
+                        <td colSpan={6} className="text-center py-8 text-[#A3A3A3]">Scraping ASIN: {result.asin} ...</td>
+                      </tr>
+                    ) : result.data ? (
+                      <tr key={result.asin} className="bg-[#232323] hover:bg-[#181818] rounded-lg">
+                        {options.includeImage && <td className="px-4 py-2"><img src={result.data.image} alt="Product" className="w-16 h-16 object-contain rounded border border-[#2A2A2A] bg-[#181818]" /></td>}
+                        {options.includeTitle && <td className="px-4 py-2 text-[#FAFAFA] max-w-xs truncate">{result.data.title}</td>}
+                        {options.includePrice && <td className="px-4 py-2 text-[#FF7A00] font-bold">{result.data.price}</td>}
+                        {options.includeBuyboxWinner && <td className="px-4 py-2 text-[#E0E0E0]">{result.data.buyboxWinner}</td>}
+                        {options.includeLink && <td className="px-4 py-2"><a href={result.data.link} target="_blank" rel="noopener noreferrer" className="text-[#FF7A00] underline">Link</a></td>}
+                        <td className="px-4 py-2 font-mono text-[#FF7A00]">{result.data.asin}</td>
+                      </tr>
+                    ) : (
+                      <tr key={result.asin}>
+                        <td colSpan={6} className="text-center py-8 text-[#FF2F00]">Failed to scrape: {result.error}</td>
+                      </tr>
+                    )
+                  )}
+                </tbody>
+              </table>
             </div>
           </div>
         )}
