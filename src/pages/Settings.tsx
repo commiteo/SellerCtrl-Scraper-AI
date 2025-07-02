@@ -6,12 +6,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
-import { Settings as SettingsIcon, Save, Key, Bell, Database, Download, Trash2 } from 'lucide-react';
+import { Settings as SettingsIcon, Save, Bell, Database, Download, Trash2 } from 'lucide-react';
 
 const Settings = () => {
   const { toast } = useToast();
   const [settings, setSettings] = useState({
-    crawl4aiApiKey: '',
     maxRetries: 3,
     requestDelay: 1000,
     enableNotifications: true,
@@ -68,31 +67,6 @@ const Settings = () => {
           <p className="text-[#E0E0E0]/80">Configure your Amazon scraper preferences</p>
         </div>
 
-        {/* API Configuration */}
-        <Card className="dashboard-card border-[#2A2A2A]">
-          <CardHeader>
-            <CardTitle className="text-[#FFFFFF] flex items-center gap-2">
-              <Key className="h-5 w-5 text-[#FF7A00]" />
-              API Configuration
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="apiKey" className="text-[#E0E0E0]">Crawl4AI API Key</Label>
-              <Input
-                id="apiKey"
-                type="password"
-                placeholder="Enter your Crawl4AI API key"
-                value={settings.crawl4aiApiKey}
-                onChange={(e) => setSettings(prev => ({...prev, crawl4aiApiKey: e.target.value}))}
-                className="bg-[#1F1F1F] border-[#2A2A2A] text-[#FAFAFA]"
-              />
-              <p className="text-sm text-[#E0E0E0]/60">
-                Your API key is encrypted and stored securely. Get your key from the Crawl4AI dashboard.
-              </p>
-            </div>
-          </CardContent>
-        </Card>
 
         {/* Scraping Configuration */}
         <Card className="dashboard-card border-[#2A2A2A]">
