@@ -21,26 +21,41 @@ export class AmazonScraper {
 
   static async scrapeProduct(
     asin: string,
-    options: ScrapingOptions,
+    _options: ScrapingOptions,
   ): Promise<{ success: boolean; data?: ProductData; error?: string }> {
     try {
-      const res = await fetch('/api/scrape', {
+      const start = await fetch('/api/scrape', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ asin, options }),
+        body: JSON.stringify({ asin }),
       });
 
-      if (!res.ok) {
-        const text = await res.text();
+      if (!start.ok) {
+        const text = await start.text();
         return { success: false, error: text || 'Request failed' };
       }
 
-      const json = await res.json();
-      if (json.error) {
-        return { success: false, error: json.error };
+      const startJson = await start.json();
+      if (!startJson.jobId) {
+        return { success: false, error: startJson.error || 'Failed to queue job' };
       }
 
-      return { success: true, data: json.data as ProductData };
+      const jobId = startJson.jobId as string;
+
+      for (let i = 0; i < 30; i++) {
+        await new Promise(r => setTimeout(r, 2000));
+        const statusRes = await fetch(`/job-status/${jobId}`);
+        if (!statusRes.ok) continue;
+        const status = await statusRes.json();
+        if (status.state === 'completed') {
+          return { success: true, data: status.result as ProductData };
+        }
+        if (status.state === 'failed') {
+          return { success: false, error: 'Scrape failed' };
+        }
+      }
+
+      return { success: false, error: 'Timed out waiting for result' };
     } catch (error) {
       return {
         success: false,
