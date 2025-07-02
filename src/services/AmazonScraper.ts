@@ -17,7 +17,6 @@ interface ScrapingOptions {
 }
 
 export class AmazonScraper {
-  private static API_KEY_STORAGE_KEY = 'crawl4ai_settings';
 
   static async scrapeProduct(
     asin: string,

@@ -1,24 +1,23 @@
-import asyncio
 import json
 import sys
-from typing import Dict, Any
+from typing import Any, Dict
 
-try:
-    from crawl4ai import AsyncWebCrawler
-except Exception as e:  # library missing or import error
-    AsyncWebCrawler = None  # type: ignore
-
+import requests
 from bs4 import BeautifulSoup
 
 
-async def fetch_page(url: str) -> str:
-    if AsyncWebCrawler is None:
-        raise ImportError("crawl4ai library not available")
-    crawler = AsyncWebCrawler()
-    result = await crawler.crawl(url)
-    if isinstance(result, dict):
-        return result.get("body", "")
-    return result
+def fetch_page(url: str) -> str:
+    """Download HTML for the given Amazon product URL."""
+    headers = {
+        "User-Agent": (
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Chrome/120.0 Safari/537.36"
+        )
+    }
+    response = requests.get(url, headers=headers, timeout=30)
+    response.raise_for_status()
+    return response.text
 
 
 def extract_fields(html: str, options: Dict[str, Any], url: str) -> Dict[str, Any]:
@@ -31,7 +30,9 @@ def extract_fields(html: str, options: Dict[str, Any], url: str) -> Dict[str, An
             data["title"] = title.get_text(strip=True)
 
     if options.get("price"):
-        price = soup.select_one("#priceblock_ourprice, #priceblock_dealprice, #priceblock_saleprice")
+        price = soup.select_one(
+            "#priceblock_ourprice, #priceblock_dealprice, #priceblock_saleprice"
+        )
         if price:
             data["price"] = price.get_text(strip=True)
 
@@ -51,9 +52,12 @@ def extract_fields(html: str, options: Dict[str, Any], url: str) -> Dict[str, An
     return data
 
 
-async def main() -> None:
+def main() -> None:
     if len(sys.argv) < 3:
-        print("Usage: python amazon_scrape.py <ASIN> '<options_json>'", file=sys.stderr)
+        print(
+            "Usage: python amazon_scrape.py <ASIN> '<options_json>'",
+            file=sys.stderr,
+        )
         sys.exit(1)
 
     asin = sys.argv[1]
@@ -66,13 +70,14 @@ async def main() -> None:
     url = f"https://www.amazon.eg/dp/{asin}"
 
     try:
-        html = await fetch_page(url)
+        html = fetch_page(url)
         data = extract_fields(html, options, url)
         print(json.dumps(data, ensure_ascii=False))
-    except Exception as exc:
+    except Exception as exc:  # pragma: no cover - network dependent
         print(json.dumps({"error": str(exc)}))
         sys.exit(1)
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()
+
