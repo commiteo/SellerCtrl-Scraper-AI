@@ -7,18 +7,29 @@ services:
       - "6379:6379"
     volumes:
       - redis_data:/data
-    restart: unless-stopped
 
   scraper-server:
     build: .
     ports:
       - "3001:3001"
-    depends_on:
-      - redis
     environment:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
-    restart: unless-stopped
+      - PORT=3001
+    depends_on:
+      - redis
+    volumes:
+      - ./backend:/app/backend
+      - ./src:/app/src
+
+  api-server:
+    build: .
+    ports:
+      - "3002:3002"
+    environment:
+      - API_PORT=3002
+    volumes:
+      - ./backend:/app/backend
 
 volumes:
   redis_data: 

@@ -74,19 +74,23 @@ const Index = () => {
       try {
         const result = await AmazonScraper.scrapeProduct(asin, options);
         if (result.success && result.data) {
+          const priceValue = result.data.price
+            ? Number(String(result.data.price).replace(/[^0-9.]/g, ''))
+            : null;
           newResults.push({ asin, loading: false, data: result.data });
-          await supabase.from('scraping_history').insert([
+          // Save only to amazon_scraping_history
+          console.log('Inserting Amazon data:', result.data);
+          const { error, data } = await supabase.from('amazon_scraping_history').insert([
             {
               asin: result.data.asin,
               title: result.data.title,
-              image: result.data.image,
-              price: result.data.price,
-              buybox_winner: result.data.buyboxWinner,
-              link: result.data.link,
-              status: 'success',
+              price: priceValue,
+              current_seller: result.data.buyboxWinner,
               scraped_at: new Date().toISOString(),
+              // user_id: أضف هنا user_id إذا كان متوفر من السياق
             }
           ]);
+          console.log('Insert result:', { error, data });
         } else {
           newResults.push({ asin, loading: false, error: result.error || "Failed to scrape" });
         }
@@ -143,6 +147,26 @@ const Index = () => {
 
         <ASINInput onScrape={handleScrape} isLoading={isScraping} />
 
+        {/* Loading message */}
+        {isScraping && (
+          <div className="text-center py-4">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#FF7A00]" />
+            <p className="mt-2 text-[#FF7A00] font-bold">Fetching data from Amazon... Please wait</p>
+          </div>
+        )}
+
+        {/* Success/Error messages */}
+        {!isScraping && results.length > 0 && results.every(r => r.data) && (
+          <div className="text-center py-2">
+            <p className="text-green-500 font-bold">Product data fetched successfully!</p>
+          </div>
+        )}
+        {!isScraping && results.some(r => r.error) && (
+          <div className="text-center py-2">
+            <p className="text-red-500 font-bold">حدث خطأ أثناء السحب: {results.find(r => r.error)?.error}</p>
+          </div>
+        )}
+
         {results.length > 0 && (
           <div className="space-y-6">
             <h3 className="text-2xl font-semibold text-center text-[#FFFFFF] font-inter">
@@ -162,11 +186,8 @@ const Index = () => {
                 </thead>
                 <tbody>
                   {results.map((result, i) =>
-                    result.loading ? (
-                      <tr key={result.asin}>
-                        <td colSpan={6} className="text-center py-8 text-[#A3A3A3]">Scraping ASIN: {result.asin} ...</td>
-                      </tr>
-                    ) : result.data ? (
+                    result.loading ? null : // Hide loading row
+                    result.data ? (
                       <tr key={result.asin} className="bg-[#232323] hover:bg-[#181818] rounded-lg">
                         {options.includeImage && <td className="px-4 py-2"><img src={result.data.image} alt="Product" className="w-16 h-16 object-contain rounded border border-[#2A2A2A] bg-[#181818]" /></td>}
                         {options.includeTitle && <td className="px-4 py-2 text-[#FAFAFA] max-w-xs truncate">{result.data.title}</td>}

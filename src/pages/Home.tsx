@@ -1,33 +1,35 @@
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Search, Package, Clock, Settings, TrendingUp, Database, Zap } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/lib/supabaseClient';
+import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 
 const Home = () => {
   const navigate = useNavigate();
-  const [stats] = useState({
+  const [stats, setStats] = useState({
     totalScraped: 0,
     todayScraped: 0,
     successRate: 0,
     avgResponseTime: 0
   });
-
-  const recentActivity: { asin: string; product: string; time: string; status: string }[] = [];
+  const [recentActivity, setRecentActivity] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [openDialog, setOpenDialog] = useState(false);
 
   const quickActions = [
     {
       title: 'Start Scraping',
-      description: 'Extract product data using ASIN',
+      description: 'Extract product data from Amazon or Noon',
       icon: Search,
       action: () => navigate('/scraper'),
       color: 'bg-[#EB5F01]'
     },
     {
       title: 'View History',
-      description: 'See all scraped products',
+      description: 'See all your scraped products',
       icon: Clock,
       action: () => navigate('/history'),
       color: 'bg-[#D35400]'
@@ -41,16 +43,52 @@ const Home = () => {
     }
   ];
 
+  useEffect(() => {
+    const fetchStats = async () => {
+      setLoading(true);
+      // Fetch Amazon
+      const { data: amazon } = await supabase
+        .from('amazon_scraping_history')
+        .select('*');
+      // Fetch Noon
+      const { data: noon } = await supabase
+        .from('noon_scraping_history')
+        .select('*');
+      const all = [...(amazon || []), ...(noon || [])];
+      // Total scraped
+      const totalScraped = all.length;
+      // Today scraped
+      const today = new Date();
+      today.setHours(0,0,0,0);
+      const todayScraped = all.filter(item => new Date(item.scraped_at) >= today).length;
+      // Success rate
+      const successCount = all.filter(item => item.status === 'success').length;
+      const successRate = totalScraped ? Math.round((successCount / totalScraped) * 100) : 0;
+      // Recent activity (last 5)
+      const recent = all.sort((a, b) => new Date(b.scraped_at).getTime() - new Date(a.scraped_at).getTime()).slice(0, 5);
+      setStats({
+        totalScraped,
+        todayScraped,
+        successRate,
+        avgResponseTime: 0 // Not tracked
+      });
+      setRecentActivity(recent);
+      setLoading(false);
+    };
+    fetchStats();
+  }, []);
+
   return (
     <div className="min-h-full bg-[#0D0D0D] p-6 font-inter">
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Welcome Section */}
         <div className="text-center space-y-4">
           <h1 className="text-4xl font-bold text-[#FFFFFF] font-inter">
-            Welcome to Amazon Scraper
+            Welcome to SellerCtrl Scraper
           </h1>
           <p className="text-xl text-[#E0E0E0]/80 max-w-3xl mx-auto font-inter">
-            Your powerful tool for extracting Amazon product data. Monitor, analyze, and track product information with ease.
+            Your all-in-one tool for extracting product data from <span className='text-[#FFD600] font-bold'>Noon</span> and <span className='text-[#FF7A00] font-bold'>Amazon</span>.<br/>
+            SellerCtrl Scraper helps sellers monitor their own products and keep an eye on competitors—track prices, sellers, and more with ease.
           </p>
         </div>
 
@@ -64,7 +102,7 @@ const Home = () => {
                 </div>
                 <div>
                   <p className="text-[#A3A3A3] text-sm">Total Scraped</p>
-                  <p className="text-2xl font-bold text-[#FFFFFF]">{stats.totalScraped.toLocaleString()}</p>
+                  <p className="text-2xl font-bold text-[#FFFFFF]">{loading ? '...' : stats.totalScraped.toLocaleString()}</p>
                 </div>
               </div>
             </CardContent>
@@ -78,7 +116,7 @@ const Home = () => {
                 </div>
                 <div>
                   <p className="text-[#A3A3A3] text-sm">Today</p>
-                  <p className="text-2xl font-bold text-[#FFFFFF]">{stats.todayScraped}</p>
+                  <p className="text-2xl font-bold text-[#FFFFFF]">{loading ? '...' : stats.todayScraped}</p>
                 </div>
               </div>
             </CardContent>
@@ -92,7 +130,7 @@ const Home = () => {
                 </div>
                 <div>
                   <p className="text-[#A3A3A3] text-sm">Success Rate</p>
-                  <p className="text-2xl font-bold text-[#FFFFFF]">{stats.successRate}%</p>
+                  <p className="text-2xl font-bold text-[#FFFFFF]">{loading ? '...' : stats.successRate + '%'}</p>
                 </div>
               </div>
             </CardContent>
@@ -106,7 +144,7 @@ const Home = () => {
                 </div>
                 <div>
                   <p className="text-[#A3A3A3] text-sm">Avg Response</p>
-                  <p className="text-2xl font-bold text-[#FFFFFF]">{stats.avgResponseTime}s</p>
+                  <p className="text-2xl font-bold text-[#FFFFFF]">-</p>
                 </div>
               </div>
             </CardContent>
@@ -141,23 +179,24 @@ const Home = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {recentActivity.length === 0 && (
+            {loading && <p className="text-center text-sm text-[#A3A3A3]">Loading...</p>}
+            {!loading && recentActivity.length === 0 && (
               <p className="text-center text-sm text-[#A3A3A3]">No recent activity.</p>
             )}
-            {recentActivity.map((activity, index) => (
+            {!loading && recentActivity.map((activity, index) => (
               <div key={index} className="flex items-center justify-between p-3 bg-[#1A1A1A] rounded-lg">
                 <div className="flex items-center gap-3">
                   <Package className="h-4 w-4 text-[#A3A3A3]" />
                   <div>
-                    <p className="text-[#E0E0E0] font-medium font-inter">{activity.product}</p>
-                    <p className="text-[#A3A3A3] text-sm">ASIN: {activity.asin}</p>
+                    <p className="text-[#E0E0E0] font-medium font-inter">{activity.title || activity.code}</p>
+                    <p className="text-[#A3A3A3] text-sm">{activity.asin || activity.code}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
                   <Badge variant={activity.status === 'success' ? 'default' : 'destructive'} className={activity.status === 'success' ? 'bg-[#FF7A00] text-[#FFFFFF]' : ''}>
                     {activity.status}
                   </Badge>
-                  <span className="text-[#A3A3A3] text-sm">{activity.time}</span>
+                  <span className="text-[#A3A3A3] text-sm">{new Date(activity.scraped_at).toLocaleString()}</span>
                 </div>
               </div>
             ))}
@@ -165,16 +204,35 @@ const Home = () => {
         </Card>
 
         {/* Get Started */}
-        <Card className="bg-gradient-to-r from-[#FF7A00] to-[#FF6A00] border-[#FF7A00] rounded-2xl shadow-dashboard">
+        <Card className="bg-gradient-to-r from-[#FF7A00] to-[#FFD600] border-[#FF7A00] rounded-2xl shadow-dashboard">
           <CardContent className="p-8 text-center">
             <h2 className="text-2xl font-bold text-[#FFFFFF] mb-4 font-inter">Ready to Start Scraping?</h2>
-            <p className="text-[#FFFFFF]/90 mb-6 font-inter">Enter an Amazon ASIN and get detailed product information in seconds.</p>
-            <Button onClick={() => navigate('/scraper')} className="btn-glow px-8 py-3 text-lg font-inter">
+            <p className="text-[#FFFFFF]/90 mb-6 font-inter">Enter an Amazon ASIN or Noon product code and get detailed product information in seconds.</p>
+            <Button onClick={() => setOpenDialog(true)} className="btn-glow px-8 py-3 text-lg font-inter">
               Start Scraping Now
             </Button>
           </CardContent>
         </Card>
       </div>
+
+      <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Select Source</DialogTitle>
+          </DialogHeader>
+          <div className="flex flex-col gap-4 py-4">
+            <Button className="bg-[#FF7A00] text-white text-lg" onClick={() => { setOpenDialog(false); navigate('/scraper'); }}>
+              Amazon Scraper
+            </Button>
+            <Button className="bg-[#FFD600] text-black text-lg" onClick={() => { setOpenDialog(false); navigate('/noon-scraper'); }}>
+              Noon Scraper
+            </Button>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setOpenDialog(false)}>Cancel</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

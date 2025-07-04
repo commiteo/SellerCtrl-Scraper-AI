@@ -9,60 +9,101 @@ import { supabase } from '@/lib/supabaseClient';
 
 interface HistoryItem {
   id: string;
-  asin: string;
-  title: string;
-  price: string;
-  buyboxWinner: string;
+  code: string;
+  title?: string;
+  price?: string;
+  buyboxWinner?: string;
+  seller?: string;
+  url?: string;
+  link?: string;
   scrapedAt: string;
   status: 'success' | 'failed';
-  image: string;
+  image?: string;
+  source: 'Amazon' | 'Noon';
 }
 
 const History = () => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [filterSource, setFilterSource] = useState<'all' | 'Amazon' | 'Noon'>('all');
   const [filterStatus, setFilterStatus] = useState<'all' | 'success' | 'failed'>('all');
   const [historyData, setHistoryData] = useState<HistoryItem[]>([]);
 
   useEffect(() => {
     const fetchHistory = async () => {
-      const { data, error } = await supabase
-        .from('scraping_history')
+      // Fetch Amazon
+      const { data: amazon, error: amazonError } = await supabase
+        .from('amazon_scraping_history')
         .select('*')
         .order('scraped_at', { ascending: false });
-      if (!error && data) {
-        // Map DB fields to HistoryItem interface
-        setHistoryData(
-          data.map((row: any) => ({
-            id: row.id,
-            asin: row.asin,
-            title: row.title,
-            price: row.price,
-            buyboxWinner: row.buybox_winner,
-            scrapedAt: row.scraped_at,
-            status: row.status,
-            image: row.image,
-          }))
-        );
-      }
+      // Fetch Noon
+      const { data: noon, error: noonError } = await supabase
+        .from('noon_scraping_history')
+        .select('*')
+        .order('scraped_at', { ascending: false });
+      const amazonItems = (amazon || []).map((row: any) => ({
+        id: row.id,
+        code: row.asin,
+        title: row.title,
+        price: row.price,
+        buyboxWinner: row.buybox_winner,
+        seller: undefined,
+        url: row.link,
+        link: row.link,
+        scrapedAt: row.scraped_at,
+        status: row.status,
+        image: row.image,
+        source: 'Amazon',
+      }));
+      const noonItems = (noon || []).map((row: any) => ({
+        id: row.id,
+        code: row.code,
+        title: row.title,
+        price: row.price,
+        buyboxWinner: undefined,
+        seller: row.seller,
+        url: row.url,
+        link: row.url,
+        scrapedAt: row.scraped_at,
+        status: row.status,
+        image: row.image,
+        source: 'Noon',
+      }));
+      // Merge and sort
+      const merged = [...amazonItems, ...noonItems].sort((a, b) => new Date(b.scrapedAt).getTime() - new Date(a.scrapedAt).getTime());
+      setHistoryData(merged);
     };
     fetchHistory();
   }, []);
 
   const filteredData = historyData.filter(item => {
-    const matchesSearch = item.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         item.asin?.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesFilter = filterStatus === 'all' || item.status === filterStatus;
-    return matchesSearch && matchesFilter;
+    const matchesSearch = (item.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.code?.toLowerCase().includes(searchQuery.toLowerCase()));
+    const matchesSource = filterSource === 'all' || item.source === filterSource;
+    const matchesStatus = filterStatus === 'all' || item.status === filterStatus;
+    return matchesSearch && matchesSource && matchesStatus;
   });
 
-  const handleDelete = (id: string) => {
-    console.log('Delete item:', id);
-    // In a real app, this would remove the item from the data
-  };
-
   const handleExport = () => {
-    console.log('Export data to CSV');
-    // In a real app, this would generate a CSV file
+    // Export filteredData to CSV
+    const headers = ['Source', 'Code', 'Title', 'Price', 'Seller', 'Link', 'Scraped At', 'Status'];
+    const rows = filteredData.map(item => [
+      item.source,
+      item.code,
+      item.title,
+      item.price,
+      item.source === 'Amazon' ? (item.buyboxWinner || item.seller) : item.seller,
+      item.link,
+      item.scrapedAt,
+      item.status
+    ]);
+    const csv = [headers, ...rows].map(r => r.map(x => '"' + (x ?? '') + '"').join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'scraping_history.csv';
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -82,7 +123,6 @@ const History = () => {
             Export to CSV
           </Button>
         </div>
-
         {/* Filters */}
         <Card className="dashboard-card border-[#2A2A2A]">
           <CardContent className="p-6">
@@ -91,7 +131,7 @@ const History = () => {
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[#E0E0E0]/60" />
                   <Input
-                    placeholder="Search by ASIN or product title..."
+                    placeholder="Search by code or product title..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="pl-10 bg-[#1F1F1F] border-[#2A2A2A] text-[#E0E0E0]"
@@ -100,31 +140,53 @@ const History = () => {
               </div>
               <div className="flex gap-2">
                 <Button
+                  variant={filterSource === 'all' ? 'default' : 'outline'}
+                  onClick={() => setFilterSource('all')}
+                  className={`text-[#FAFAFA]  ${filterSource === 'all' ? 'bg-[#FF7A00] hover:bg-[#ff9100]' : 'border-[#2A2A2A] hover:bg-[#181818]'}`}
+                >
+                  All ({historyData.length})
+                </Button>
+                <Button
+                  variant={filterSource === 'Amazon' ? 'default' : 'outline'}
+                  onClick={() => setFilterSource('Amazon')}
+                  className={`text-[#FAFAFA]  ${filterSource === 'Amazon' ? 'bg-[#FF7A00] hover:bg-[#ff9100]' : 'border-[#2A2A2A] hover:bg-[#181818]'}`}
+                >
+                  Amazon ({historyData.filter(item => item.source === 'Amazon').length})
+                </Button>
+                <Button
+                  variant={filterSource === 'Noon' ? 'default' : 'outline'}
+                  onClick={() => setFilterSource('Noon')}
+                  className={`text-[#FAFAFA]  ${filterSource === 'Noon' ? 'bg-[#FFD600] hover:bg-[#ffe066] text-black' : 'border-[#2A2A2A] hover:bg-[#181818]'}`}
+                >
+                  Noon ({historyData.filter(item => item.source === 'Noon').length})
+                </Button>
+              </div>
+              <div className="flex gap-2">
+                <Button
                   variant={filterStatus === 'all' ? 'default' : 'outline'}
                   onClick={() => setFilterStatus('all')}
                   className={`text-[#FAFAFA]  ${filterStatus === 'all' ? 'bg-[#FF7A00] hover:bg-[#ff9100]' : 'border-[#2A2A2A] hover:bg-[#181818]'}`}
                 >
-                  All ({historyData.length})
+                  All Status
                 </Button>
                 <Button
                   variant={filterStatus === 'success' ? 'default' : 'outline'}
                   onClick={() => setFilterStatus('success')}
                   className={`text-[#FAFAFA]  ${filterStatus === 'success' ? 'bg-[#FF7A00] hover:bg-[#ff9100]' : 'border-[#2A2A2A] hover:bg-[#181818]'}`}
                 >
-                  Success ({historyData.filter(item => item.status === 'success').length})
+                  Success
                 </Button>
                 <Button
                   variant={filterStatus === 'failed' ? 'default' : 'outline'}
                   onClick={() => setFilterStatus('failed')}
                   className={`text-[#FAFAFA]  ${filterStatus === 'failed' ? 'bg-[#FF7A00] hover:bg-[#ff9100]' : 'border-[#2A2A2A] hover:bg-[#181818]'}`}
                 >
-                  Failed ({historyData.filter(item => item.status === 'failed').length})
+                  Failed
                 </Button>
               </div>
             </div>
           </CardContent>
         </Card>
-
         {/* Results */}
         <Card className="dashboard-card border-[#2A2A2A]">
           <CardHeader>
@@ -139,9 +201,10 @@ const History = () => {
                 <TableHeader>
                   <TableRow className="border-[#2A2A2A]">
                     <TableHead className="text-[#E0E0E0]/90">Product</TableHead>
-                    <TableHead className="text-[#E0E0E0]/90">ASIN</TableHead>
+                    <TableHead className="text-[#E0E0E0]/90">Code</TableHead>
                     <TableHead className="text-[#E0E0E0]/90">Price</TableHead>
-                    <TableHead className="text-[#E0E0E0]/90">Buybox Winner</TableHead>
+                    <TableHead className="text-[#E0E0E0]/90">Seller</TableHead>
+                    <TableHead className="text-[#E0E0E0]/90">Source</TableHead>
                     <TableHead className="text-[#E0E0E0]/90">Scraped At</TableHead>
                     <TableHead className="text-[#E0E0E0]/90">Status</TableHead>
                     <TableHead className="text-[#E0E0E0]/90">Actions</TableHead>
@@ -165,13 +228,16 @@ const History = () => {
                         </div>
                       </TableCell>
                       <TableCell className="text-[#E0E0E0] font-mono text-sm">
-                        {item.asin}
+                        {item.code}
                       </TableCell>
                       <TableCell className="text-[#FF7A00] font-semibold">
                         {item.price}
                       </TableCell>
                       <TableCell className="text-[#E0E0E0]">
-                        {item.buyboxWinner}
+                        {item.source === 'Amazon' ? (item.buyboxWinner || item.seller) : item.seller}
+                      </TableCell>
+                      <TableCell className="text-[#E0E0E0]">
+                        {item.source}
                       </TableCell>
                       <TableCell className="text-[#E0E0E0]/60 text-sm">
                         {new Date(item.scrapedAt).toLocaleString()}
@@ -186,7 +252,7 @@ const History = () => {
                           <Button
                             size="sm"
                             variant="outline"
-                            onClick={() => window.open(`https://amazon.com/dp/${item.asin}`, '_blank')}
+                            onClick={() => window.open(item.link, '_blank')}
                             className="text-white border-[#2A2A2A] hover:bg-[#1F1F1F]"
                           >
                             <ExternalLink className="h-3 w-3" />
@@ -194,7 +260,7 @@ const History = () => {
                           <Button
                             size="sm"
                             variant="outline"
-                            onClick={() => handleDelete(item.id)}
+                            onClick={() => {}}
                             className="text-[#EB5F01] border-[#EB5F01] hover:bg-[#1f150a]"
                           >
                             <Trash2 className="h-3 w-3" />
@@ -206,12 +272,6 @@ const History = () => {
                 </TableBody>
               </Table>
             </div>
-
-            {filteredData.length === 0 && (
-              <div className="text-center py-8">
-                <p className="text-[#E0E0E0]/60">No scraped products found matching your criteria.</p>
-              </div>
-            )}
           </CardContent>
         </Card>
       </div>

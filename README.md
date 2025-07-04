@@ -4,12 +4,35 @@
 
 SellerCtrl Scraper AI is a smart Amazon product data extractor powered by OpenAI. It scrapes detailed data using ASINs — including title, image, price, buybox winner, link, reviews, bullet points, rank, and more.
 
-## Tool Overview
-- **Backend**: Node.js server (`server.js`) launching a Python scraper.
-- **Scraping**: Uses `requests` with BeautifulSoup to parse Amazon pages.
-- **Frontend**: React, Vite, Tailwind CSS and shadcn-ui.
-- **Usage**: Submit an ASIN to get product details including title, price, image and buy box.
+## Project Structure
 
+```
+asin-amazon-oracle/
+├── backend/                 # Backend services and scrapers
+│   ├── server.cjs          # Main Node.js server
+│   ├── scraper-server.js   # Advanced scraper with queue system
+│   ├── main.py             # FastAPI server
+│   ├── amazon_puppeteer.cjs # Amazon scraper
+│   ├── noon_puppeteer.cjs  # Noon scraper
+│   ├── amazon_scrape.py    # Python Amazon scraper
+│   ├── noon_scrape.py      # Python Noon scraper
+│   ├── solve_captcha.py    # CAPTCHA solver
+│   └── requirements.txt    # Python dependencies
+├── src/                    # Frontend React application
+│   ├── components/         # React components
+│   ├── pages/             # Page components
+│   ├── services/          # API services
+│   ├── lib/               # Utilities and configurations
+│   └── hooks/             # Custom React hooks
+├── public/                # Static assets
+└── package.json           # Node.js dependencies and scripts
+```
+
+## Tool Overview
+- **Backend**: Node.js server (`backend/server.cjs`) launching scrapers
+- **Scraping**: Uses Puppeteer and Python with BeautifulSoup to parse Amazon/Noon pages
+- **Frontend**: React, Vite, Tailwind CSS and shadcn-ui
+- **Usage**: Submit an ASIN to get product details including title, price, image and buy box
 
 **Important:** SellerCtrl Scraper AI is proprietary software. The code in this repository is provided for reference only and is **not** licensed for public installation or redistribution.
 
@@ -77,11 +100,19 @@ npm run scraper-server
 
 This project is built with:
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+- **Frontend**: Vite, TypeScript, React, shadcn-ui, Tailwind CSS
+- **Backend**: Node.js, Express, Puppeteer, Python, FastAPI
+- **Database**: Redis (for job queues)
+- **Deployment**: Docker, Render
+
+## Available Scripts
+
+- `npm run dev` - Start frontend development server
+- `npm run backend` - Start Node.js backend server
+- `npm run scraper-server` - Start advanced scraper with queue system
+- `npm run dev:full` - Start both frontend and scraper server
+- `npm run build` - Build for production
+- `npm run lint` - Run ESLint
 
 ## How can I deploy this project?
 
