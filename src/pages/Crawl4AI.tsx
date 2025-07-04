@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { Crawl4AIService } from '@/services/Crawl4AI';
+import { Crawl4AIService, CrawlData } from '@/services/Crawl4AI';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
@@ -8,7 +8,7 @@ const Crawl4AIPage = () => {
   const { toast } = useToast();
   const [url, setUrl] = useState('');
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<CrawlData | null>(null);
 
   const handleScrape = async () => {
     setLoading(true);
@@ -27,14 +27,14 @@ const Crawl4AIPage = () => {
       <div className="max-w-4xl mx-auto space-y-6">
         <div className="space-y-2">
           <h2 className="text-3xl font-bold text-[#FFFFFF]">Crawl Any Link</h2>
-          <p className="text-[#E0E0E0]/80">Enter a product link to extract data using Crawl4AI and Gemini.</p>
+          <p className="text-[#E0E0E0]/80">Enter a link to convert the page to Markdown using Crawl4AI and Gemini.</p>
         </div>
         <div className="flex gap-2">
           <Input value={url} onChange={e => setUrl(e.target.value)} placeholder="https://example.com/product" className="flex-1" />
           <Button onClick={handleScrape} disabled={loading || !url.trim()}> {loading ? 'Scraping...' : 'Scrape'} </Button>
         </div>
         {result && (
-          <pre className="bg-[#1F1F1F] p-4 rounded text-[#E0E0E0] overflow-auto">{JSON.stringify(result, null, 2)}</pre>
+          <pre className="bg-[#1F1F1F] p-4 rounded text-[#E0E0E0] overflow-auto whitespace-pre-wrap">{result.markdown}</pre>
         )}
       </div>
     </div>

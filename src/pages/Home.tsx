@@ -15,6 +15,7 @@ const Home = () => {
     successRate: 0,
     avgResponseTime: 0
   });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [recentActivity, setRecentActivity] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [openDialog, setOpenDialog] = useState(false);
