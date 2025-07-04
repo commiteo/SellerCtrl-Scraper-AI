@@ -18,7 +18,9 @@ import { useState } from "react";
 
 export function AppSidebar() {
   const [scraperOpen, setScraperOpen] = useState(
-    window.location.pathname.startsWith("/scraper") || window.location.pathname.startsWith("/noon-scraper")
+    window.location.pathname.startsWith("/scraper") ||
+    window.location.pathname.startsWith("/noon-scraper") ||
+    window.location.pathname.startsWith("/crawl")
   );
 
   const menuItems = [
@@ -104,6 +106,11 @@ export function AppSidebar() {
                     <SidebarMenuItem key="Noon">
                       <SidebarMenuButton asChild isActive={isActiveRoute("/noon-scraper")} className="ml-8 text-[#E0E0E0] hover:text-[#FF7A00] hover:bg-[#232323] transition-colors duration-200">
                         <NavLink to="/noon-scraper" className={({ isActive }) => `flex items-center gap-2 px-2 py-1.5 rounded font-inter w-full ${isActive ? 'bg-[#232323] text-[#FF7A00]' : ''}`}>Noon</NavLink>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem key="Crawl">
+                      <SidebarMenuButton asChild isActive={isActiveRoute("/crawl")} className="ml-8 text-[#E0E0E0] hover:text-[#FF7A00] hover:bg-[#232323] transition-colors duration-200">
+                        <NavLink to="/crawl" className={({ isActive }) => `flex items-center gap-2 px-2 py-1.5 rounded font-inter w-full ${isActive ? 'bg-[#232323] text-[#FF7A00]' : ''}`}>Any Link</NavLink>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                   </SidebarMenu>

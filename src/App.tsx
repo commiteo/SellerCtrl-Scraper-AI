@@ -16,6 +16,7 @@ import Billing from "./pages/Billing";
 import Notifications from "./pages/Notifications";
 import { UserProvider } from "./components/UserContext";
 import NoonScraperPage from "./pages/NoonScraper";
+import Crawl4AIPage from "./pages/Crawl4AI";
 import { Package } from 'lucide-react';
 
 const queryClient = new QueryClient();
@@ -28,6 +29,8 @@ function AppLayout() {
     subtitle = 'Extract product data from Amazon';
   } else if (location.pathname.startsWith('/noon-scraper')) {
     subtitle = 'Extract product data from Noon';
+  } else if (location.pathname.startsWith('/crawl')) {
+    subtitle = 'Crawl any link for product data';
   } else if (location.pathname.startsWith('/history')) {
     subtitle = 'View and export your scraping history';
   } else if (location.pathname.startsWith('/settings')) {
@@ -58,6 +61,7 @@ function AppLayout() {
             <Route path="/" element={<Home />} />
             <Route path="/scraper" element={<Index />} />
             <Route path="/noon-scraper" element={<NoonScraperPage />} />
+            <Route path="/crawl" element={<Crawl4AIPage />} />
             <Route path="/history" element={<History />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/help" element={<Help />} />
