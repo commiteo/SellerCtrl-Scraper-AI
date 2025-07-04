@@ -2,6 +2,7 @@ const http = require('http');
 const { spawn } = require('child_process');
 const path = require('path');
 const { createClient } = require('@supabase/supabase-js');
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
 
 const PORT = process.env.API_PORT || 3002;
 
@@ -16,6 +17,33 @@ const sendJSON = (res, statusCode, data) => {
   });
   res.end(JSON.stringify(data));
 };
+
+async function crawlUrl(url) {
+  try {
+    const response = await fetch(url);
+    const html = await response.text();
+    if (!GEMINI_API_KEY) throw new Error('Missing GEMINI_API_KEY');
+    const prompt = `Extract product data as JSON from the following HTML:`;
+    const gemRes = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contents: [{ parts: [{ text: `${prompt}\n${html}` }] }] }),
+      }
+    );
+    const gemJson = await gemRes.json();
+    const text = gemJson.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
+    try {
+      return JSON.parse(text);
+    } catch {
+      return { text };
+    }
+  } catch (err) {
+    console.error('crawlUrl error:', err);
+    throw err;
+  }
+}
 
 const server = http.createServer((req, res) => {
   if (req.method === 'OPTIONS') {
@@ -114,6 +142,22 @@ const server = http.createServer((req, res) => {
       } catch (err) {
         console.error('Request parse error:', err);
         sendJSON(res, 400, { error: 'Invalid JSON' });
+      }
+    });
+  } else if (req.method === 'POST' && req.url === '/api/crawl') {
+    let body = '';
+    req.on('data', chunk => {
+      body += chunk.toString();
+    });
+    req.on('end', async () => {
+      try {
+        const { url } = JSON.parse(body);
+        if (!url) return sendJSON(res, 400, { error: 'URL is required' });
+        const result = await crawlUrl(url);
+        sendJSON(res, 200, { data: result });
+      } catch (err) {
+        console.error('crawl error:', err);
+        sendJSON(res, 500, { error: 'Failed to crawl url' });
       }
     });
   } else {
