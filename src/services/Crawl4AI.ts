@@ -1,10 +1,7 @@
 
-interface CrawlData {
+export interface CrawlData {
   url: string;
-  title?: string;
-  image?: string;
-  price?: string;
-  description?: string;
+  markdown: string;
 }
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || '';

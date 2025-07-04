@@ -40,6 +40,7 @@ const History = () => {
         .from('noon_scraping_history')
         .select('*')
         .order('scraped_at', { ascending: false });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const amazonItems = (amazon || []).map((row: any) => ({
         id: row.id,
         code: row.asin,
@@ -54,6 +55,7 @@ const History = () => {
         image: row.image,
         source: 'Amazon',
       }));
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const noonItems = (noon || []).map((row: any) => ({
         id: row.id,
         code: row.code,

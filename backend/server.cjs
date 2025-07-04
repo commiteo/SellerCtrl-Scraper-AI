@@ -1,8 +1,13 @@
+require('dotenv').config();
 const http = require('http');
 const { spawn } = require('child_process');
 const path = require('path');
 const { createClient } = require('@supabase/supabase-js');
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
+
+if (!GEMINI_API_KEY) {
+  console.warn('Warning: GEMINI_API_KEY is not set. /api/crawl will fail.');
+}
 
 const PORT = process.env.API_PORT || 3002;
 
@@ -23,7 +28,7 @@ async function crawlUrl(url) {
     const response = await fetch(url);
     const html = await response.text();
     if (!GEMINI_API_KEY) throw new Error('Missing GEMINI_API_KEY');
-    const prompt = `Extract product data as JSON from the following HTML:`;
+    const prompt = `Convert the following HTML page to Markdown. Preserve headings, lists and links.`;
     const gemRes = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`,
       {
@@ -33,12 +38,8 @@ async function crawlUrl(url) {
       }
     );
     const gemJson = await gemRes.json();
-    const text = gemJson.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
-    try {
-      return JSON.parse(text);
-    } catch {
-      return { text };
-    }
+    const markdown = gemJson.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    return { markdown };
   } catch (err) {
     console.error('crawlUrl error:', err);
     throw err;

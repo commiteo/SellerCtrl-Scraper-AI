@@ -23,14 +23,14 @@ const queryClient = new QueryClient();
 
 function AppLayout() {
   const location = useLocation();
-  let title = 'SellerCtrl Scraper';
+  const title = 'SellerCtrl Scraper';
   let subtitle = 'Monitor your products & competitors on Amazon & Noon';
   if (location.pathname.startsWith('/scraper')) {
     subtitle = 'Extract product data from Amazon';
   } else if (location.pathname.startsWith('/noon-scraper')) {
     subtitle = 'Extract product data from Noon';
   } else if (location.pathname.startsWith('/crawl')) {
-    subtitle = 'Crawl any link for product data';
+    subtitle = 'Crawl any link and convert to Markdown';
   } else if (location.pathname.startsWith('/history')) {
     subtitle = 'View and export your scraping history';
   } else if (location.pathname.startsWith('/settings')) {
