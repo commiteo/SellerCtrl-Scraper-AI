@@ -5,6 +5,10 @@ const path = require('path');
 const { createClient } = require('@supabase/supabase-js');
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
 
+if (!GEMINI_API_KEY) {
+  console.warn('Warning: GEMINI_API_KEY is not set. /api/crawl will fail.');
+}
+
 const PORT = process.env.API_PORT || 3002;
 
 const supabaseUrl = 'https://aqkaxcwdcqnwzgvaqtne.supabase.co';
