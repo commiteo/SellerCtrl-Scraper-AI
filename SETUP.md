@@ -119,7 +119,6 @@ docker run -d -p 6379:6379 redis:alpine
 - `npm run dev` - Start frontend development server
 - `npm run backend` - Start Node.js backend server
 - `npm run scraper-server` - Start advanced scraper with queue system
-- `npm start` - Run frontend and backend together
 - `npm run dev:full` - Start both frontend and scraper server
 - `npm run build` - Build for production
 - `npm run lint` - Run ESLint
@@ -133,7 +132,6 @@ Create a `.env` file in the root directory:
 # API Configuration
 API_PORT=3002
 PORT=3001
-GEMINI_API_KEY=
 
 # Redis Configuration
 REDIS_HOST=localhost

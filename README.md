@@ -43,7 +43,6 @@ Visit the [Lovable Project](https://lovable.dev/projects/77be9585-29f7-4d03-94b0
 
 ### Run locally (for internal development only)
 SellerCtrl Scraper AI is not an open source project. Running the code locally is intended only for the SellerCtrl team and contributors.
-Create a `.env` file with `GEMINI_API_KEY` and other variables (see SETUP.md) before starting the backend.
 
 ## 🔗 Try it Live
 [https://sellerctrl-ai.lovable.app/scraper](https://sellerctrl-ai.lovable.app/scraper)
@@ -76,19 +75,11 @@ cd <YOUR_PROJECT_NAME>
 # Step 3: Install the necessary dependencies.
 npm i
 
-# Step 4: Create a .env file with GEMINI_API_KEY and other settings (see SETUP.md).
-
-# Step 5: Start the development server with auto-reloading and an instant preview.
+# Step 4: Start the development server with auto-reloading and an instant preview.
 npm run dev
 
-# Step 6: Start the API server in another terminal
-npm run backend
-
-# Optionally, start the scraping server
+# In a separate terminal start the scraping server
 npm run scraper-server
-
-# Tip: you can run frontend and API together with
-# npm start
 ```
 
 **Edit a file directly in GitHub**
@@ -119,7 +110,6 @@ This project is built with:
 - `npm run dev` - Start frontend development server
 - `npm run backend` - Start Node.js backend server
 - `npm run scraper-server` - Start advanced scraper with queue system
-- `npm start` - Run frontend and backend together
 - `npm run dev:full` - Start both frontend and scraper server
 - `npm run build` - Build for production
 - `npm run lint` - Run ESLint
