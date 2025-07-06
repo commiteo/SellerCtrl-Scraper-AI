@@ -55,21 +55,99 @@ async function scrapeAmazon(asin) {
     }
 
     let data = {};
-    try {
-      data = await page.evaluate(() => ({
+    let price = null;
+    let buyBoxWinner = null;
+    // جلب السعر من الصفحة الرئيسية فقط بالسلكتور الدقيق
+    price = await page.evaluate(() => {
+      const priceElement = document.querySelector('#corePrice_feature_div .a-price .a-offscreen');
+      return priceElement ? priceElement.innerText : null;
+    });
+    buyBoxWinner = await page.evaluate(() => {
+      return document.querySelector('#sellerProfileTriggerId')?.innerText || null;
+    });
+
+    // إذا لم يوجد السعر أو البائع، جرب الضغط على زر See All Buying Options
+    if (!price || !buyBoxWinner) {
+      const btnSelector = 'span#buybox-see-all-buying-choices a.a-button-text';
+      const btn = await page.$(btnSelector);
+      if (btn) {
+        await btn.evaluate(b => b.scrollIntoView({ behavior: 'smooth', block: 'center' }));
+        await new Promise(r => setTimeout(r, 500));
+        await btn.click();
+        // انتظر حتى ظهور أول عرض في الـ sidebar
+        await page.waitForSelector('div[id^="aod-offer"] .a-section.a-spacing-none.aok-align-center.aok-relative > span.aok-offscreen', { timeout: 15000 });
+        await new Promise(r => setTimeout(r, 2000)); // انتظار إضافي لتحميل باقي العروض
+        // جلب السعر والبائع من كل العروض في الـ sidebar
+        const sidebarData = await page.evaluate(() => {
+          const offers = Array.from(document.querySelectorAll('div[id^="aod-offer"]'));
+          for (const offer of offers) {
+            const priceEl = offer.querySelector('.a-section.a-spacing-none.aok-align-center.aok-relative > span.aok-offscreen');
+            const sellerEl = offer.querySelector('div#aod-offer-soldBy a.a-size-small.a-link-normal');
+            if (priceEl && sellerEl) {
+              return {
+                price: priceEl.innerText,
+                buyboxWinner: sellerEl.innerText,
+              };
+            }
+          }
+          return { price: null, buyboxWinner: null };
+        });
+        if (sidebarData.price) price = sidebarData.price;
+        if (sidebarData.buyboxWinner) buyBoxWinner = sidebarData.buyboxWinner;
+      }
+    }
+    data.price = price;
+    data.buyboxWinner = buyBoxWinner;
+    // إذا لم يتم العثور على السعر بعد كل المحاولات
+    if (!price) {
+      await page.screenshot({ path: 'debug-screenshot.png', fullPage: true });
+      const sidebar = await page.$('div#aod-offer');
+      if (sidebar) {
+        const sidebarHtml = await page.evaluate(el => el.outerHTML, sidebar);
+        fs.writeFileSync('debug-sidebar.html', sidebarHtml);
+      }
+      throw new Error('لم يتم العثور على السعر! تم حفظ صورة وHTML للمراجعة.');
+    }
+
+    // بعد استخراج السعر والبائع
+    const extracted = await page.evaluate(() => {
+      // Try landingImage first
+      let image = document.querySelector('#landingImage')?.src;
+      // Fallback: first img inside #imgTagWrapperId
+      if (!image) {
+        const img = document.querySelector('#imgTagWrapperId img');
+        if (img) image = img.src;
+      }
+      // Fallback: data-old-hires
+      if (!image) {
+        const img = document.querySelector('img[data-old-hires]');
+        if (img) image = img.getAttribute('data-old-hires');
+      }
+      // Fallback: largest from data-a-dynamic-image
+      if (!image) {
+        const img = document.querySelector('#imgTagWrapperId img');
+        if (img && img.dataset && img.dataset.aDynamicImage) {
+          try {
+            const imgs = JSON.parse(img.dataset.aDynamicImage);
+            const largest = Object.keys(imgs).sort((a, b) => imgs[b][0] - imgs[a][0])[0];
+            if (largest) image = largest;
+          } catch {}
+        }
+      }
+      return {
         title: document.querySelector('#productTitle')?.innerText.trim(),
-        price: document.querySelector('span.a-price span.a-offscreen')?.innerText ||
-               document.querySelector('#priceblock_ourprice')?.innerText ||
-               document.querySelector('#priceblock_dealprice')?.innerText ||
-               document.querySelector('#priceblock_saleprice')?.innerText,
-        image: document.querySelector('#landingImage')?.src,
+        image,
         buyboxWinner: document.querySelector('#sellerProfileTriggerId')?.innerText,
         link: window.location.href,
-      }));
-      console.error('Extracted data:', data);
-    } catch (err) {
-      console.error('Error extracting product data:', err);
-    }
+      };
+    });
+    data = {
+      ...extracted,
+      price,
+      buyboxWinner: buyBoxWinner || extracted.buyboxWinner,
+      asin
+    };
+    console.error('Extracted data:', data);
 
     if (!data.price) {
       console.error('Error: لم يتم العثور على السعر!');

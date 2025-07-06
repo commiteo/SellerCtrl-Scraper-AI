@@ -4,6 +4,9 @@ const { spawn } = require('child_process');
 const path = require('path');
 const { createClient } = require('@supabase/supabase-js');
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
+const puppeteer = require('puppeteer-extra');
+const StealthPlugin = require('puppeteer-extra-plugin-stealth');
+puppeteer.use(StealthPlugin());
 
 if (!GEMINI_API_KEY) {
   console.warn('Warning: GEMINI_API_KEY is not set. /api/crawl will fail.');
@@ -25,24 +28,83 @@ const sendJSON = (res, statusCode, data) => {
 
 async function crawlUrl(url) {
   try {
-    const response = await fetch(url);
-    const html = await response.text();
+    const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox'] });
+    const page = await browser.newPage();
+    await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36');
+    await page.setExtraHTTPHeaders({ 'accept-language': 'en-US,en;q=0.9' });
+    await page.setJavaScriptEnabled(true);
+    await page.goto(url, { waitUntil: 'networkidle2', timeout: 60000 });
+    const pageText = await page.evaluate(() => document.body.innerText);
+    await browser.close();
+
     if (!GEMINI_API_KEY) throw new Error('Missing GEMINI_API_KEY');
-    const prompt = `Convert the following HTML page to Markdown. Preserve headings, lists and links.`;
+    const prompt = `Extract the most important content from the following text and summarize it as a well-structured Markdown document. If the text contains a list of products, show them as a Markdown list with title, price, and description if possible.\n\nTEXT:\n${pageText}`;
     const gemRes = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contents: [{ parts: [{ text: `${prompt}\n${html}` }] }] }),
+        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }),
       }
     );
     const gemJson = await gemRes.json();
     const markdown = gemJson.candidates?.[0]?.content?.parts?.[0]?.text || '';
-    return { markdown };
+    return { text: pageText, markdown };
   } catch (err) {
     console.error('crawlUrl error:', err);
     throw err;
+  }
+}
+
+// --- SYNC COMPETITORS LOGIC ---
+async function syncCompetitors() {
+  // Amazon sellers
+  const { data: amazonSellers, error: amazonErr } = await supabase
+    .from('amazon_scraping_history')
+    .select('current_seller, asin')
+    .neq('current_seller', null);
+  if (amazonErr) throw amazonErr;
+  const amazonMap = {};
+  (amazonSellers || []).forEach(row => {
+    if (!row.current_seller) return;
+    if (!amazonMap[row.current_seller]) amazonMap[row.current_seller] = [];
+    amazonMap[row.current_seller].push(row.asin);
+  });
+  // Noon sellers
+  const { data: noonSellers, error: noonErr } = await supabase
+    .from('noon_scraping_history')
+    .select('seller, product_code')
+    .neq('seller', null);
+  if (noonErr) throw noonErr;
+  const noonMap = {};
+  (noonSellers || []).forEach(row => {
+    if (!row.seller) return;
+    if (!noonMap[row.seller]) noonMap[row.seller] = [];
+    noonMap[row.seller].push(row.product_code);
+  });
+  // Upsert Amazon competitors
+  for (const seller in amazonMap) {
+    await supabase.from('competitors').upsert([
+      {
+        seller_name: seller,
+        platform: 'Amazon',
+        product_count: amazonMap[seller].length,
+        product_codes: amazonMap[seller],
+        is_ignored: false
+      }
+    ], { onConflict: 'seller_name,platform' });
+  }
+  // Upsert Noon competitors
+  for (const seller in noonMap) {
+    await supabase.from('competitors').upsert([
+      {
+        seller_name: seller,
+        platform: 'Noon',
+        product_count: noonMap[seller].length,
+        product_codes: noonMap[seller],
+        is_ignored: false
+      }
+    ], { onConflict: 'seller_name,platform' });
   }
 }
 
@@ -83,7 +145,8 @@ const server = http.createServer((req, res) => {
           console.log(`stdout: ${stdout}`);
           console.log(`stderr: ${stderr}`);
           if (code !== 0 && !stdout) {
-            return sendJSON(res, 500, { error: stderr || 'Scraper failed' });
+            const userError = stderr?.split('\n').find(line => line.startsWith('Error:')) || 'Scraper failed';
+            return sendJSON(res, 500, { error: userError.replace('Error:', '').trim() });
           }
           try {
             const jsonMatch = stdout.match(/{[\s\S]*}/);
@@ -126,14 +189,12 @@ const server = http.createServer((req, res) => {
           console.log(`Noon scraper finished with code: ${code}`);
           console.log(`stdout: ${stdout}`);
           console.log(`stderr: ${stderr}`);
-          
-          if (code !== 0 && !stdout) {
-            return sendJSON(res, 500, { error: stderr || 'Scraper failed' });
-          }
           try {
             const jsonMatch = stdout.match(/{[\s\S]*}/);
             if (!jsonMatch) return sendJSON(res, 500, { error: 'No JSON output' });
             const result = JSON.parse(jsonMatch[0]);
+            const allBlank = Object.values(result).every(v => !v);
+            if (allBlank) return sendJSON(res, 500, { error: 'No data scraped from Noon product.' });
             sendJSON(res, 200, { data: result });
           } catch (err) {
             console.error('JSON parse error:', err);
@@ -161,6 +222,13 @@ const server = http.createServer((req, res) => {
         sendJSON(res, 500, { error: 'Failed to crawl url' });
       }
     });
+  } else if (req.method === 'POST' && req.url === '/api/sync-competitors') {
+    syncCompetitors()
+      .then(() => sendJSON(res, 200, { success: true }))
+      .catch(err => {
+        console.error('syncCompetitors error:', err);
+        sendJSON(res, 500, { error: 'Failed to sync competitors' });
+      });
   } else {
     sendJSON(res, 404, { error: 'Not Found' });
   }

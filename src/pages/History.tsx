@@ -47,18 +47,18 @@ const History = () => {
         title: row.title,
         price: row.price,
         buyboxWinner: row.buybox_winner,
-        seller: undefined,
+        seller: row.current_seller || row.seller,
         url: row.link,
         link: row.link,
         scrapedAt: row.scraped_at,
         status: row.status,
         image: row.image,
-        source: 'Amazon',
+        source: 'Amazon' as 'Amazon',
       }));
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const noonItems = (noon || []).map((row: any) => ({
         id: row.id,
-        code: row.code,
+        code: row.product_code,
         title: row.title,
         price: row.price,
         buyboxWinner: undefined,
@@ -68,10 +68,10 @@ const History = () => {
         scrapedAt: row.scraped_at,
         status: row.status,
         image: row.image,
-        source: 'Noon',
+        source: 'Noon' as 'Noon',
       }));
       // Merge and sort
-      const merged = [...amazonItems, ...noonItems].sort((a, b) => new Date(b.scrapedAt).getTime() - new Date(a.scrapedAt).getTime());
+      const merged = [...amazonItems, ...noonItems].sort((a, b) => new Date(b.scrapedAt).getTime() - new Date(a.scrapedAt).getTime()) as HistoryItem[];
       setHistoryData(merged);
     };
     fetchHistory();
@@ -87,13 +87,14 @@ const History = () => {
 
   const handleExport = () => {
     // Export filteredData to CSV
-    const headers = ['Source', 'Code', 'Title', 'Price', 'Seller', 'Link', 'Scraped At', 'Status'];
+    const headers = ['Source', 'Code', 'Title', 'Price', 'Seller', 'Image', 'Link', 'Scraped At', 'Status'];
     const rows = filteredData.map(item => [
       item.source,
       item.code,
       item.title,
       item.price,
       item.source === 'Amazon' ? (item.buyboxWinner || item.seller) : item.seller,
+      item.image,
       item.link,
       item.scrapedAt,
       item.status

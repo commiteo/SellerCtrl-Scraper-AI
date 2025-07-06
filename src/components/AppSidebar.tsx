@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { ChevronDown, Package, Search, Settings, Home, History, HelpCircle } from "lucide-react";
+import { ChevronDown, Package, Search, Settings, Home, History, HelpCircle, Users } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -23,6 +23,10 @@ export function AppSidebar() {
     window.location.pathname.startsWith("/crawl")
   );
 
+  const [competitorsOpen, setCompetitorsOpen] = useState(
+    window.location.pathname.startsWith("/competitors") || window.location.pathname.startsWith("/my-seller-accounts")
+  );
+
   const menuItems = [
     {
       title: "Home",
@@ -34,6 +38,11 @@ export function AppSidebar() {
       title: "History",
       url: "/history",
       icon: History,
+    },
+    {
+      title: "Competitors",
+      url: "/competitors",
+      icon: Users,
     },
     {
       title: "Settings",
@@ -124,6 +133,33 @@ export function AppSidebar() {
                     <span>History</span>
                   </NavLink>
                 </SidebarMenuButton>
+              </SidebarMenuItem>
+              {/* Competitors Dropdown */}
+              <SidebarMenuItem key="Competitors">
+                <button
+                  type="button"
+                  className={`flex items-center w-full gap-3 px-3 py-2 rounded-lg font-inter text-[#E0E0E0] hover:text-[#FF7A00] hover:bg-[#1F1F1F] transition-colors duration-200 ${competitorsOpen ? 'bg-[#232323]' : ''}`}
+                  onClick={() => setCompetitorsOpen((open) => !open)}
+                  aria-expanded={competitorsOpen}
+                >
+                  <Users className="h-4 w-4" />
+                  <span>Competitors</span>
+                  <ChevronDown className={`h-4 w-4 ml-auto transition-transform ${competitorsOpen ? 'rotate-180' : ''}`} />
+                </button>
+                {competitorsOpen && (
+                  <SidebarMenu>
+                    <SidebarMenuItem key="My Seller Accounts">
+                      <SidebarMenuButton asChild isActive={isActiveRoute("/my-seller-accounts")} className="ml-8 text-[#E0E0E0] hover:text-[#FF7A00] hover:bg-[#232323] transition-colors duration-200">
+                        <NavLink to="/my-seller-accounts" className={({ isActive }) => `flex items-center gap-2 px-2 py-1.5 rounded font-inter w-full ${isActive ? 'bg-[#232323] text-[#FF7A00]' : ''}`}>My Seller Accounts</NavLink>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem key="My Competitors">
+                      <SidebarMenuButton asChild isActive={isActiveRoute("/competitors")} className="ml-8 text-[#E0E0E0] hover:text-[#FF7A00] hover:bg-[#232323] transition-colors duration-200">
+                        <NavLink to="/competitors" className={({ isActive }) => `flex items-center gap-2 px-2 py-1.5 rounded font-inter w-full ${isActive ? 'bg-[#232323] text-[#FF7A00]' : ''}`}>My Competitors</NavLink>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  </SidebarMenu>
+                )}
               </SidebarMenuItem>
               {/* Settings */}
               <SidebarMenuItem key="Settings">

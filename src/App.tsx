@@ -17,6 +17,8 @@ import Notifications from "./pages/Notifications";
 import { UserProvider } from "./components/UserContext";
 import NoonScraperPage from "./pages/NoonScraper";
 import Crawl4AIPage from "./pages/Crawl4AI";
+import Competitors from "./pages/Competitors";
+import MySellerAccounts from "./pages/MySellerAccounts";
 import { Package } from 'lucide-react';
 
 const queryClient = new QueryClient();
@@ -63,11 +65,13 @@ function AppLayout() {
             <Route path="/noon-scraper" element={<NoonScraperPage />} />
             <Route path="/crawl" element={<Crawl4AIPage />} />
             <Route path="/history" element={<History />} />
+            <Route path="/competitors" element={<Competitors />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/help" element={<Help />} />
             <Route path="/account" element={<Account />} />
             <Route path="/billing" element={<Billing />} />
             <Route path="/notifications" element={<Notifications />} />
+            <Route path="/my-seller-accounts" element={<MySellerAccounts />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </div>

@@ -49,13 +49,21 @@ export class NoonScraper {
             title: json.data.title,
             price: json.data.price,
             seller: json.data.seller,
+            image: json.data.image,
+            url: json.data.url,
             scraped_at: new Date().toISOString(),
-            // user_id: أضف هنا user_id إذا كان متوفر من السياق
+            // user_id: أضف هنا user_id إذا كان متوفراً من السياق
           }
         ]);
         if (error) {
           console.error('Supabase insert error (Noon):', error.message, error.details);
           // يمكنك هنا استخدام Toast إذا كان متاحًا في السياق
+        }
+        // --- Sync competitors automatically ---
+        try {
+          await fetch(`${API_BASE_URL}/api/sync-competitors`, { method: 'POST' });
+        } catch (e) {
+          console.error('Failed to sync competitors:', e);
         }
         return { success: true, data: { ...json.data, url } };
       }

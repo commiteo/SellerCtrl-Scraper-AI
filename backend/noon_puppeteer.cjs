@@ -40,45 +40,56 @@ async function scrapeNoon(productCode) {
       console.error('Error extracting title/price:', err);
     }
 
+    // لا تنتظر كل العناصر الأساسية، انتقل مباشرة لاستخراج البيانات
+    // try {
+    //   console.error('Waiting for essential selectors...');
+    //   await Promise.all([
+    //     page.waitForSelector('span.ProductTitle_title__vjUBn', { timeout: 10000 }),
+    //     page.waitForSelector('img.imageMagnify', { timeout: 10000 }),
+    //     page.waitForSelector('span.PriceOfferV2_priceNowText__fk5kK', { timeout: 10000 }),
+    //     page.waitForSelector('strong.PartnerRatingsV2_soldBy__IOCr1', { timeout: 10000 }),
+    //   ]);
+    //   console.error('All selectors found. Extracting product data...');
+    // } catch (e) {
+    //   console.error('Error: Essential elements (title, image, price, or seller) not found.');
+    //   console.error('Closing browser due to error...');
+    //   await browser.close();
+    //   process.exit(1);
+    // }
+
+    let data = {
+      title: '',
+      price: '',
+      image: '',
+      seller: '',
+      url: ''
+    };
     try {
-      console.error('Waiting for essential selectors...');
-      await Promise.all([
-        page.waitForSelector('span.ProductTitle_title__vjUBn', { timeout: 10000 }),
-        page.waitForSelector('img.imageMagnify', { timeout: 10000 }),
-        page.waitForSelector('span.PriceOfferV2_priceNowText__fk5kK', { timeout: 10000 }),
-        page.waitForSelector('strong.PartnerRatingsV2_soldBy__IOCr1', { timeout: 10000 }),
-      ]);
-      console.error('All selectors found. Extracting product data...');
+      data = await page.evaluate(() => {
+        // العنوان
+        let title = document.querySelector('span.ProductTitle_title__vjUBn')?.innerText.trim() || '';
+        // الصورة
+        let image = document.querySelector('img.imageMagnify')?.src || '';
+        if (!image) {
+          // جرب أول صورة كبيرة في الجاليري
+          const galleryImg = document.querySelector('.GalleryV2_imageContainer___p_v2 img')?.src;
+          if (galleryImg) image = galleryImg;
+          else {
+            // جرب صورة الميني فيو
+            const miniImg = document.querySelector('.GalleryV2_miniImg__JACNf')?.src;
+            if (miniImg) image = miniImg;
+          }
+        }
+        // السعر والبائع كما هما
+        const price = document.querySelector('span.PriceOfferV2_priceNowText__fk5kK')?.innerText.trim() || '';
+        const seller = document.querySelector('strong.PartnerRatingsV2_soldBy__IOCr1')?.innerText.trim() || '';
+        return { title, price, image, seller, url: window.location.href };
+      });
     } catch (e) {
-      console.error('Error: Essential elements (title, image, price, or seller) not found.');
-      console.error('Closing browser due to error...');
-      await browser.close();
-      process.exit(1);
+      // لا ترمي خطأ، فقط أكمل
     }
-
-    let data = {};
-    try {
-      data = await page.evaluate(() => ({
-        title: document.querySelector('span.ProductTitle_title__vjUBn')?.innerText.trim(),
-        price: document.querySelector('span.PriceOfferV2_priceNowText__fk5kK')?.innerText.trim(),
-        image: document.querySelector('img.imageMagnify')?.src,
-        seller: document.querySelector('strong.PartnerRatingsV2_soldBy__IOCr1')?.innerText.trim(),
-        url: window.location.href,
-      }));
-      console.error('Extracted data:', data);
-    } catch (e) {
-      console.error('Error extracting product data:', e);
-    }
-
-    if (!data.price) {
-      console.error('Error: Price not found!');
-      console.error('Closing browser due to missing price...');
-      await browser.close();
-      process.exit(1);
-    }
-
-    console.error('Scraping successful!');
-    console.log(JSON.stringify(data, null, 2)); // Only this line prints to stdout
+    // أرسل البيانات حتى لو ناقصة
+    console.log(JSON.stringify(data, null, 2));
     console.error('Closing browser after successful scrape...');
     await browser.close();
   } catch (err) {
