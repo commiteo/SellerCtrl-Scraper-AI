@@ -6,6 +6,7 @@ const { createClient } = require('@supabase/supabase-js');
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
 const puppeteer = require('puppeteer-extra');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
+const express = require('express');
 puppeteer.use(StealthPlugin());
 
 if (!GEMINI_API_KEY) {
@@ -108,132 +109,148 @@ async function syncCompetitors() {
   }
 }
 
-const server = http.createServer((req, res) => {
-  if (req.method === 'OPTIONS') {
-    res.writeHead(204, {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'POST,OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type',
-    });
-    return res.end();
-  }
+const app = express();
 
-  if (req.method === 'POST' && req.url === '/api/scrape') {
-    let body = '';
-    req.on('data', chunk => {
-      body += chunk.toString();
-    });
-    req.on('end', () => {
-      try {
-        const { asin, options } = JSON.parse(body);
-        if (!asin) {
-          return sendJSON(res, 400, { error: 'ASIN is required' });
+app.use(express.json({ limit: '10mb' }));
+
+// Serve static files from dist
+app.use(express.static(path.join(__dirname, '../dist')));
+
+// --- API endpoints ---
+app.options('*', (req, res) => {
+  res.set({
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'POST,OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+  });
+  res.sendStatus(204);
+});
+
+app.post('/api/scrape', (req, res) => {
+  let body = '';
+  req.on('data', chunk => {
+    body += chunk.toString();
+  });
+  req.on('end', () => {
+    try {
+      const { asin, options } = JSON.parse(body);
+      if (!asin) {
+        return sendJSON(res, 400, { error: 'ASIN is required' });
+      }
+
+      const scriptPath = path.join(__dirname, 'amazon_puppeteer.cjs');
+      const args = [scriptPath, asin];
+
+      console.log(`Starting Amazon scraper for ASIN: ${asin}`);
+      const py = spawn('node', args);
+      let stdout = '';
+      py.stdout.on('data', d => (stdout += d.toString()));
+      let stderr = '';
+      py.stderr.on('data', d => (stderr += d.toString()));
+
+      py.on('close', code => {
+        console.log(`Amazon scraper finished with code: ${code}`);
+        console.log(`stdout: ${stdout}`);
+        console.log(`stderr: ${stderr}`);
+        if (code !== 0 && !stdout) {
+          const userError = stderr?.split('\n').find(line => line.startsWith('Error:')) || 'Scraper failed';
+          return sendJSON(res, 500, { error: userError.replace('Error:', '').trim() });
         }
-
-        const scriptPath = path.join(__dirname, 'amazon_puppeteer.cjs');
-        const args = [scriptPath, asin];
-
-        console.log(`Starting Amazon scraper for ASIN: ${asin}`);
-        const py = spawn('node', args);
-        let stdout = '';
-        py.stdout.on('data', d => (stdout += d.toString()));
-        let stderr = '';
-        py.stderr.on('data', d => (stderr += d.toString()));
-
-        py.on('close', code => {
-          console.log(`Amazon scraper finished with code: ${code}`);
-          console.log(`stdout: ${stdout}`);
-          console.log(`stderr: ${stderr}`);
-          if (code !== 0 && !stdout) {
-            const userError = stderr?.split('\n').find(line => line.startsWith('Error:')) || 'Scraper failed';
-            return sendJSON(res, 500, { error: userError.replace('Error:', '').trim() });
-          }
-          try {
-            const jsonMatch = stdout.match(/{[\s\S]*}/);
-            if (!jsonMatch) return sendJSON(res, 500, { error: 'No JSON output' });
-            const result = JSON.parse(jsonMatch[0]);
-            sendJSON(res, 200, { data: result });
-          } catch (err) {
-            console.error('JSON parse error:', err);
-            sendJSON(res, 500, { error: 'Invalid response from scraper' });
-          }
-        });
-      } catch (err) {
-        console.error('Request parse error:', err);
-        sendJSON(res, 400, { error: 'Invalid JSON' });
-      }
-    });
-  } else if (req.method === 'POST' && req.url === '/api/noon-scrape') {
-    let body = '';
-    req.on('data', chunk => {
-      body += chunk.toString();
-    });
-    req.on('end', () => {
-      try {
-        const { productCode, options } = JSON.parse(body);
-        if (!productCode) {
-          return sendJSON(res, 400, { error: 'Product code is required' });
+        try {
+          const jsonMatch = stdout.match(/{[\s\S]*}/);
+          if (!jsonMatch) return sendJSON(res, 500, { error: 'No JSON output' });
+          const result = JSON.parse(jsonMatch[0]);
+          sendJSON(res, 200, { data: result });
+        } catch (err) {
+          console.error('JSON parse error:', err);
+          sendJSON(res, 500, { error: 'Invalid response from scraper' });
         }
-
-        const scriptPath = path.join(__dirname, 'noon_puppeteer.cjs');
-        const args = [scriptPath, productCode];
-
-        console.log(`Starting Noon scraper for product: ${productCode}`);
-        const py = spawn('node', args);
-        let stdout = '';
-        py.stdout.on('data', d => (stdout += d.toString()));
-        let stderr = '';
-        py.stderr.on('data', d => (stderr += d.toString()));
-
-        py.on('close', code => {
-          console.log(`Noon scraper finished with code: ${code}`);
-          console.log(`stdout: ${stdout}`);
-          console.log(`stderr: ${stderr}`);
-          try {
-            const jsonMatch = stdout.match(/{[\s\S]*}/);
-            if (!jsonMatch) return sendJSON(res, 500, { error: 'No JSON output' });
-            const result = JSON.parse(jsonMatch[0]);
-            const allBlank = Object.values(result).every(v => !v);
-            if (allBlank) return sendJSON(res, 500, { error: 'No data scraped from Noon product.' });
-            sendJSON(res, 200, { data: result });
-          } catch (err) {
-            console.error('JSON parse error:', err);
-            sendJSON(res, 500, { error: 'Invalid response from scraper' });
-          }
-        });
-      } catch (err) {
-        console.error('Request parse error:', err);
-        sendJSON(res, 400, { error: 'Invalid JSON' });
-      }
-    });
-  } else if (req.method === 'POST' && req.url === '/api/crawl') {
-    let body = '';
-    req.on('data', chunk => {
-      body += chunk.toString();
-    });
-    req.on('end', async () => {
-      try {
-        const { url } = JSON.parse(body);
-        if (!url) return sendJSON(res, 400, { error: 'URL is required' });
-        const result = await crawlUrl(url);
-        sendJSON(res, 200, { data: result });
-      } catch (err) {
-        console.error('crawl error:', err);
-        sendJSON(res, 500, { error: 'Failed to crawl url' });
-      }
-    });
-  } else if (req.method === 'POST' && req.url === '/api/sync-competitors') {
-    syncCompetitors()
-      .then(() => sendJSON(res, 200, { success: true }))
-      .catch(err => {
-        console.error('syncCompetitors error:', err);
-        sendJSON(res, 500, { error: 'Failed to sync competitors' });
       });
-  } else {
-    sendJSON(res, 404, { error: 'Not Found' });
+    } catch (err) {
+      console.error('Request parse error:', err);
+      sendJSON(res, 400, { error: 'Invalid JSON' });
+    }
+  });
+});
+
+app.post('/api/noon-scrape', (req, res) => {
+  let body = '';
+  req.on('data', chunk => {
+    body += chunk.toString();
+  });
+  req.on('end', () => {
+    try {
+      const { productCode, options } = JSON.parse(body);
+      if (!productCode) {
+        return sendJSON(res, 400, { error: 'Product code is required' });
+      }
+
+      const scriptPath = path.join(__dirname, 'noon_puppeteer.cjs');
+      const args = [scriptPath, productCode];
+
+      console.log(`Starting Noon scraper for product: ${productCode}`);
+      const py = spawn('node', args);
+      let stdout = '';
+      py.stdout.on('data', d => (stdout += d.toString()));
+      let stderr = '';
+      py.stderr.on('data', d => (stderr += d.toString()));
+
+      py.on('close', code => {
+        console.log(`Noon scraper finished with code: ${code}`);
+        console.log(`stdout: ${stdout}`);
+        console.log(`stderr: ${stderr}`);
+        try {
+          const jsonMatch = stdout.match(/{[\s\S]*}/);
+          if (!jsonMatch) return sendJSON(res, 500, { error: 'No JSON output' });
+          const result = JSON.parse(jsonMatch[0]);
+          const allBlank = Object.values(result).every(v => !v);
+          if (allBlank) return sendJSON(res, 500, { error: 'No data scraped from Noon product.' });
+          sendJSON(res, 200, { data: result });
+        } catch (err) {
+          console.error('JSON parse error:', err);
+          sendJSON(res, 500, { error: 'Invalid response from scraper' });
+        }
+      });
+    } catch (err) {
+      console.error('Request parse error:', err);
+      sendJSON(res, 400, { error: 'Invalid JSON' });
+    }
+  });
+});
+
+app.post('/api/crawl', (req, res) => {
+  let body = '';
+  req.on('data', chunk => {
+    body += chunk.toString();
+  });
+  req.on('end', async () => {
+    try {
+      const { url } = JSON.parse(body);
+      if (!url) return sendJSON(res, 400, { error: 'URL is required' });
+      const result = await crawlUrl(url);
+      sendJSON(res, 200, { data: result });
+    } catch (err) {
+      console.error('crawl error:', err);
+      sendJSON(res, 500, { error: 'Failed to crawl url' });
+    }
+  });
+});
+
+app.post('/api/sync-competitors', async (req, res) => {
+  try {
+    await syncCompetitors();
+    sendJSON(res, 200, { success: true });
+  } catch (err) {
+    console.error('syncCompetitors error:', err);
+    sendJSON(res, 500, { error: 'Failed to sync competitors' });
   }
 });
 
-server.listen(PORT, () => {
-  console.log(`API server listening on port ${PORT}`);
+// SPA fallback: serve index.html for any non-API route
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../dist/index.html'));
+});
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
