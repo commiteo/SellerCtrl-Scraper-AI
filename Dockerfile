@@ -16,9 +16,6 @@ RUN npm ci --only=production
 # Copy backend Python files
 COPY backend/ ./backend/
 
-# Install Python dependencies
-RUN pip3 install -r backend/requirements.txt
-
 # Copy source code
 COPY src/ ./src/
 COPY public/ ./public/
