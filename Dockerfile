@@ -9,12 +9,16 @@ RUN apk add --no-cache python3 py3-pip
 
 # Copy package files
 COPY package*.json ./
+COPY bun.lockb ./
 
-# Install Node.js dependencies (including devDependencies for build)
-RUN npm install
+# Install Node.js dependencies
+RUN npm ci --only=production
 
 # Copy backend Python files
 COPY backend/ ./backend/
+
+# Install Python dependencies
+RUN pip3 install -r backend/requirements.txt
 
 # Copy source code
 COPY src/ ./src/
