@@ -4,26 +4,14 @@ FROM node:18-alpine
 # Set working directory
 WORKDIR /app
 
-# Copy package files
+# Copy package files and install dependencies
 COPY package*.json ./
-
-# Install Node.js dependencies
 RUN npm ci
 
-# Copy backend files
-COPY backend/ ./backend/
+# Copy all source files needed for build
+COPY . .
 
-# Copy source code
-COPY src/ ./src/
-COPY public/ ./public/
-COPY index.html ./
-COPY vite.config.ts ./
-COPY tailwind.config.ts ./
-COPY postcss.config.js ./
-COPY tsconfig*.json ./
-COPY components.json ./
-
-# Build the application
+# Build the frontend (creates dist/)
 RUN npm run build
 
 # Expose ports
