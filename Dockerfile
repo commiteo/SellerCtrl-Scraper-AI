@@ -10,8 +10,8 @@ RUN apk add --no-cache python3 py3-pip
 # Copy package files
 COPY package*.json ./
 
-# Install Node.js dependencies
-RUN npm ci --only=production
+# Install Node.js dependencies (including devDependencies for build)
+RUN npm install
 
 # Copy backend Python files
 COPY backend/ ./backend/
