@@ -4,20 +4,14 @@ FROM node:18-alpine
 # Set working directory
 WORKDIR /app
 
-# Install Python and pip
-RUN apk add --no-cache python3 py3-pip
-
 # Copy package files
 COPY package*.json ./
 
 # Install Node.js dependencies
 RUN npm ci --only=production
 
-# Copy backend Python files
+# Copy backend files
 COPY backend/ ./backend/
-
-# Install Python dependencies
-RUN pip3 install -r backend/requirements.txt
 
 # Copy source code
 COPY src/ ./src/
