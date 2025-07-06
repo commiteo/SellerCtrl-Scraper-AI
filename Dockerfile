@@ -26,9 +26,6 @@ COPY components.json ./
 # Build the application
 RUN npm run build
 
-# Copy built frontend
-COPY dist/ ./dist/
-
 # Expose ports
 EXPOSE 3001 3002
 
