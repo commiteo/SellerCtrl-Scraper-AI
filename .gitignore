@@ -1,10 +1,9 @@
 # Dependencies
 node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+.pnp
+.pnp.js
 
-# Production build
+# Production builds
 dist/
 build/
 
@@ -16,15 +15,14 @@ build/
 .env.production.local
 
 # Logs
-logs/
-*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
 lerna-debug.log*
 
 # Runtime data
-pids/
+pids
 *.pid
 *.seed
 *.pid.lock
@@ -37,11 +35,7 @@ coverage/
 .nyc_output
 
 # Dependency directories
-node_modules/
 jspm_packages/
-
-# TypeScript cache
-*.tsbuildinfo
 
 # Optional npm cache directory
 .npm
@@ -75,10 +69,6 @@ jspm_packages/
 .nuxt
 dist
 
-# Gatsby files
-.cache/
-public
-
 # Storybook build outputs
 .out
 .storybook-out
@@ -109,96 +99,24 @@ __pycache__/
 *$py.class
 *.so
 .Python
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
+backend/.venv/
+backend/venv/
+backend/env/
+backend/.env
+*.egg-info/
+.installed.cfg
+*.egg
 
-# Scrapy stuff:
-.scrapy
+# Docker
+.dockerignore
 
-# Sphinx documentation
-docs/_build/
-
-# PyBuilder
-target/
-
-# Jupyter Notebook
-.ipynb_checkpoints
-
-# pyenv
-.python-version
-
-# celery beat schedule file
-celerybeat-schedule
-
-# SageMath parsed files
-*.sage.py
-
-# Environments
-.env
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
-
-# Spyder project settings
-.spyderproject
-.spyproject
-
-# Rope project settings
-.ropeproject
-
-# mkdocs documentation
-/site
-
-# mypy
-.mypy_cache/
-.dmypy.json
-dmypy.json
-
-# Pyre type checker
-.pyre/
-
-# PM2
-.pm2/
-
-# Redis dump
+# Redis
 dump.rdb
 
-# Backup files
-*.backup
-*.bak
-*.tar.gz
-
-# Deployment specific
-deploy.sh
-ecosystem.config.js
-nginx.conf
-.htaccess
-hostinger-deploy.md
-HOSTINGER-DEPLOYMENT.md
-
-# Monitoring and logs
-monitor.sh
-update.sh
+# Browser automation
 *.log
-logs/
-
-# SSL certificates
-*.pem
-*.key
-*.crt
-*.csr
-
-# Database
-*.db
-*.sqlite
-*.sqlite3
-
-# Screenshots and test artifacts
 screenshots/
-test-results/
+downloads/
+
+# Lovable
+.lovable/
