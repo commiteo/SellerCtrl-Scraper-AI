@@ -25,7 +25,7 @@ class ScraperOptimizer {
     
     if (this.browserPool.length < this.maxPoolSize) {
       const browser = await puppeteer.launch({
-        headless: false,
+        headless: true,
         defaultViewport: null,
         args: [
           '--no-sandbox',

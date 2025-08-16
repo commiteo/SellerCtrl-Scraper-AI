@@ -1,5 +1,5 @@
 const puppeteer = require('puppeteer');
-const EDGE_PATH = 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe';
+const CHROME_PATH = process.env.CHROME_EXECUTABLE_PATH || process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/google-chrome';
 
 async function scrapeUSA(asin) {
   console.error('=== USA SCRAPER STARTING ===');
@@ -9,8 +9,8 @@ async function scrapeUSA(asin) {
     console.error(`🇺🇸 USA Single Attempt with ZIP CODE - ASIN: ${asin}`);
       
       browser = await puppeteer.launch({
-        executablePath: EDGE_PATH,
-        headless: false,
+        executablePath: CHROME_PATH,
+        headless: true,
         defaultViewport: null,
         args: [
           '--no-sandbox',

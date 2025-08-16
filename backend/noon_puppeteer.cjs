@@ -1,15 +1,15 @@
 const puppeteer = require('puppeteer');
-const EDGE_PATH = 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe';
+const CHROME_PATH = process.env.CHROME_EXECUTABLE_PATH || process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/google-chrome';
 const fs = require('fs');
 
 async function scrapeNoon(productCode) {
   console.error('=== STARTING NOON SCRAPER ===');
   let browser;
   try {
-    console.error('Launching Edge browser...');
+    console.error('Launching Chrome browser...');
     browser = await puppeteer.launch({
-      executablePath: EDGE_PATH,
-      headless: false,
+      executablePath: CHROME_PATH,
+      headless: true,
       defaultViewport: null,
     });
     const page = await browser.newPage();

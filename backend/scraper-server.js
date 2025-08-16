@@ -189,7 +189,7 @@ async function connectToBrowser() {
   try {
     console.log('Launching new browser instance...');
     browser = await puppeteer.launch({
-      headless: false, // VISIBLE BROWSER
+      headless: true, // HEADLESS MODE FOR SERVER
       defaultViewport: null,
       slowMo: 50, // Reduced slowMo for better performance
       args: [
