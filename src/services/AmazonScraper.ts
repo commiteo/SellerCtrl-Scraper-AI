@@ -30,7 +30,7 @@ export class AmazonScraper {
     region: string // new parameter
   ): Promise<{ success: boolean; data?: ProductData; error?: string }> {
     try {
-      const res = await fetch(`${API_BASE_URL}/api/scrape`, {
+      const res = await fetch(`${API_BASE_URL}/api/scrape-product`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ asin, options, region }), // send region
@@ -50,8 +50,8 @@ export class AmazonScraper {
           asin: json.data.asin,
           title: json.data.title,
           price: json.data.price,
-          current_seller: json.data.buyboxWinner || json.data.seller,
-          image: json.data.image,
+          current_seller: json.data.sellerName || json.data.buyboxWinner || json.data.seller,
+          image: json.data.imageUrl || json.data.image,
           link: json.data.link,
           data_source: json.data.dataSource, // إضافة مصدر البيانات
           scraped_at: new Date().toISOString(),
@@ -62,8 +62,8 @@ export class AmazonScraper {
             asin: json.data.asin,
             title: json.data.title,
             price: json.data.price,
-            current_seller: json.data.buyboxWinner || json.data.seller,
-            image: json.data.image,
+            current_seller: json.data.sellerName || json.data.buyboxWinner || json.data.seller,
+            image: json.data.imageUrl || json.data.image,
             link: json.data.link,
             data_source: json.data.dataSource, // إضافة مصدر البيانات
             scraped_at: new Date().toISOString(),
@@ -80,7 +80,15 @@ export class AmazonScraper {
         } catch (e) {
           console.error('Failed to sync competitors:', e);
         }
-        return { success: true, data: { ...json.data, asin } };
+        return { 
+          success: true, 
+          data: { 
+            ...json.data, 
+            asin,
+            image: json.data.imageUrl || json.data.image, // تعيين الصورة
+            buyboxWinner: json.data.sellerName || json.data.buyboxWinner // تعيين البائع
+          } 
+        };
       }
       return { success: false, error: json.error || 'No data returned' };
     } catch (error) {
