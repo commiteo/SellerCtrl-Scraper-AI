@@ -457,41 +457,78 @@ const server = http.createServer((req, res) => {
           return sendJSON(res, 400, { error: 'Domains array is required' });
         }
 
-        const scriptPath = path.join(__dirname, 'parallel_scraper_crew.cjs');
-        const args = [scriptPath, asin, ...domains];
-
-        console.log(`🚀 Starting Parallel Crew scraper for ASIN: ${asin} across domains: ${domains.join(', ')}`);
-        const crewProcess = spawn('node', args);
-        let stdout = '';
-        let stderr = '';
+        // استخدام multi_domain_scraper.cjs لكل domain منفصل
+        const results = [];
+        let completed = 0;
+        const total = domains.length;
         
-        crewProcess.stdout.on('data', d => (stdout += d.toString()));
-        crewProcess.stderr.on('data', d => (stderr += d.toString()));
-
-        crewProcess.on('close', code => {
-          console.log(`🏁 Parallel Crew scraper finished with code: ${code}`);
-          console.log(`📊 Crew stdout: ${stdout}`);
-          console.log(`📋 Crew stderr: ${stderr}`);
-          
-          try {
-            const result = JSON.parse(stdout.trim());
-            if (result.success) {
-              sendJSON(res, 200, result);
-            } else {
-              sendJSON(res, 500, { error: result.error || 'Crew scraping failed' });
-            }
-          } catch (err) {
-            console.error('🔥 Crew JSON parse error:', err);
-            console.error('🔥 Raw crew stdout:', stdout);
+        if (domains.length === 0) {
+          return sendJSON(res, 400, { error: 'No domains provided' });
+        }
+        
+        // Function to scrape a single domain
+        const scrapeDomain = (domain) => {
+          return new Promise((resolve, reject) => {
+            const scriptPath = path.join(__dirname, 'multi_domain_scraper.cjs');
+            const args = [scriptPath, asin, domain];
             
-            sendJSON(res, 500, { error: 'Invalid response from crew scraper' });
-          }
-        });
-
-        crewProcess.on('error', (error) => {
-          console.error('💥 Crew process spawn error:', error);
-          sendJSON(res, 500, { error: `Crew process failed: ${error.message}` });
-        });
+            console.log(`🌐 Starting scraper for ${domain}...`);
+            const domainProcess = spawn('node', args);
+            let stdout = '';
+            let stderr = '';
+            
+            domainProcess.stdout.on('data', d => (stdout += d.toString()));
+            domainProcess.stderr.on('data', d => (stderr += d.toString()));
+            
+            domainProcess.on('close', code => {
+              try {
+                const result = JSON.parse(stdout.trim());
+                result.domain = domain; // إضافة domain للنتيجة
+                resolve(result);
+              } catch (err) {
+                console.error(`❌ ${domain} JSON parse error:`, err);
+                resolve({
+                  asin,
+                  domain,
+                  status: 'failed',
+                  errorMessage: 'JSON parse error'
+                });
+              }
+            });
+            
+            domainProcess.on('error', (error) => {
+              console.error(`💥 ${domain} process error:`, error);
+              resolve({
+                asin,
+                domain,
+                status: 'failed',
+                errorMessage: error.message
+              });
+            });
+          });
+        };
+        
+        // تشغيل جميع domains بشكل متوازي
+        Promise.all(domains.map(domain => scrapeDomain(domain)))
+          .then(domainResults => {
+            const finalResult = {
+              success: true,
+              results: domainResults,
+              totalTime: Date.now() - Date.now(), // placeholder
+              summary: {
+                total: domainResults.length,
+                successful: domainResults.filter(r => r.status === 'success').length,
+                failed: domainResults.filter(r => r.status === 'failed').length
+              }
+            };
+            sendJSON(res, 200, finalResult);
+          })
+          .catch(error => {
+            console.error('💥 Multi-domain scraping error:', error);
+            sendJSON(res, 500, { error: `Multi-domain scraping failed: ${error.message}` });
+          });
+        
+        return; // خروج مبكر لأننا نتعامل مع Promise
       } catch (err) {
         console.error('🔥 Crew request parse error:', err);
         sendJSON(res, 400, { error: 'Invalid JSON' });
@@ -515,7 +552,8 @@ const server = http.createServer((req, res) => {
           return sendJSON(res, 400, { error: 'Domain is required' });
         }
 
-        const scriptPath = path.join(__dirname, 'parallel_scraper_crew.cjs');
+        // استخدام multi_domain_scraper.cjs للـ single domain
+        const scriptPath = path.join(__dirname, 'multi_domain_scraper.cjs');
         const args = [scriptPath, asin, domain];
 
         console.log(`🔄 Starting Single Domain Crew scraper for ASIN: ${asin} in domain: ${domain}`);
@@ -531,14 +569,29 @@ const server = http.createServer((req, res) => {
           
           try {
             const result = JSON.parse(stdout.trim());
-            if (result.success && result.results && result.results.length > 0) {
-              sendJSON(res, 200, { success: true, data: result.results[0] });
+            if (result && result.status === 'success') {
+              // تحويل format البيانات ليتوافق مع Frontend
+              const formattedData = {
+                success: true,
+                data: {
+                  asin: result.asin,
+                  title: result.title,
+                  price: result.price,
+                  currency: result.currency,
+                  seller: result.seller,
+                  imageUrl: result.imageUrl,
+                  productUrl: result.productUrl,
+                  dataSource: result.dataSource,
+                  status: result.status
+                }
+              };
+              sendJSON(res, 200, formattedData);
             } else {
-              sendJSON(res, 500, { error: result.error || 'Single domain crew scraping failed' });
+              sendJSON(res, 500, { error: result.errorMessage || 'Single domain scraping failed' });
             }
           } catch (err) {
-            console.error('🔥 Single domain crew JSON parse error:', err);
-            sendJSON(res, 500, { error: 'Invalid response from single domain crew scraper' });
+            console.error('🔥 Single domain JSON parse error:', err);
+            sendJSON(res, 500, { error: 'Invalid response from single domain scraper' });
           }
         });
 
