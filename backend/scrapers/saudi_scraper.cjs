@@ -10,7 +10,7 @@ async function scrapeSaudi(asin) {
       
       browser = await puppeteer.launch({
         executablePath: CHROME_PATH,
-        headless: false, // VISIBLE FOR DEBUGGING
+        headless: process.env.HEADLESS === 'false' ? false : true, // Dynamic headless mode
         defaultViewport: null,
         args: [
           '--no-sandbox',
