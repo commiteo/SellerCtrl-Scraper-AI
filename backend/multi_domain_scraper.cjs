@@ -1,5 +1,5 @@
 const puppeteer = require('puppeteer');
-const EDGE_PATH = 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe';
+const CHROME_PATH = process.env.CHROME_EXECUTABLE_PATH || process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/google-chrome';
 
 async function scrapeMultiDomain(asin, domain) {
   // Use stderr for all debug messages to keep stdout clean for JSON
@@ -10,10 +10,10 @@ async function scrapeMultiDomain(asin, domain) {
   
   while (retryCount < maxRetries) {
     try {
-      console.error(`🔄 Attempt ${retryCount + 1}/${maxRetries} - Launching Edge browser for ${domain}...`);
+      console.error(`🔄 Attempt ${retryCount + 1}/${maxRetries} - Launching Chrome browser for ${domain}...`);
     browser = await puppeteer.launch({
-      executablePath: EDGE_PATH,
-      headless: false,
+      executablePath: CHROME_PATH,
+      headless: true,
       defaultViewport: null,
       args: [
         '--no-sandbox',
@@ -28,7 +28,7 @@ async function scrapeMultiDomain(asin, domain) {
         '--disable-renderer-backgrounding',
         '--disable-features=TranslateUI',
         '--disable-ipc-flooding-protection',
-        '--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+        '--user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
       ]
     });
     
