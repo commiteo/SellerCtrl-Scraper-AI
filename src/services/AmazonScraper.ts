@@ -86,7 +86,9 @@ export class AmazonScraper {
             ...json.data, 
             asin,
             image: json.data.imageUrl || json.data.image, // تعيين الصورة
-            buyboxWinner: json.data.sellerName || json.data.buyboxWinner // تعيين البائع
+            buyboxWinner: json.data.sellerName || json.data.buyboxWinner, // تعيين البائع
+            link: json.data.link, // تعيين الرابط
+            dataSource: json.data.dataSource // تعيين مصدر البيانات
           } 
         };
       }
