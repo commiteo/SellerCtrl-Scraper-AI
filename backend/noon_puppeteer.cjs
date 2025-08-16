@@ -9,8 +9,19 @@ async function scrapeNoon(productCode) {
     console.error('Launching Chrome browser...');
     browser = await puppeteer.launch({
       executablePath: CHROME_PATH,
-      headless: false, // VISIBLE FOR DEBUGGING
+      headless: process.env.HEADLESS === 'false' ? false : true, // Dynamic headless mode
       defaultViewport: null,
+      args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+        '--disable-accelerated-2d-canvas',
+        '--no-first-run',
+        '--no-zygote',
+        '--disable-gpu',
+        '--disable-web-security',
+        '--disable-features=VizDisplayCompositor'
+      ]
     });
     const page = await browser.newPage();
     const url = `https://www.noon.com/egypt-en/${productCode}/p`;
@@ -21,24 +32,7 @@ async function scrapeNoon(productCode) {
     await new Promise(r => setTimeout(r, 5000));
     console.error('WAIT DONE');
 
-    // Debug: Save page HTML
-    try {
-      const html = await page.content();
-      fs.writeFileSync('debug.html', html);
-      console.error('Saved page HTML to debug.html');
-    } catch (err) {
-      console.error('Error saving debug.html:', err);
-    }
-
-    // Debug: Try to extract title and price directly
-    try {
-      const title = await page.$eval('h1[data-qa="pdp-title"]', el => el.innerText).catch(() => null);
-      console.error('Title:', title);
-      const price = await page.$eval('div[data-qa="pdp-price"]', el => el.innerText).catch(() => null);
-      console.error('Price:', price);
-    } catch (err) {
-      console.error('Error extracting title/price:', err);
-    }
+    // تبسيط: إزالة debug code والتركيز على البيانات المطلوبة
 
     // لا تنتظر كل العناصر الأساسية، انتقل مباشرة لاستخراج البيانات
     // try {
@@ -57,47 +51,84 @@ async function scrapeNoon(productCode) {
     //   process.exit(1);
     // }
 
+    // استخراج البيانات مع محاولات متعددة
+    console.error('Starting data extraction...');
+    
     let data = {
-      title: '',
-      price: '',
+      title: 'N/A',
+      price: 'N/A', 
       image: '',
-      seller: '',
-      url: ''
+      seller: 'N/A',
+      url: `https://www.noon.com/egypt-en/${productCode}/p`
     };
+    
     try {
       data = await page.evaluate(() => {
-        // العنوان
-        let title = document.querySelector('span.ProductTitle_title__vjUBn')?.innerText.trim() || '';
-        // الصورة
-        let image = document.querySelector('img.imageMagnify')?.src || '';
-        if (!image) {
-          // جرب أول صورة كبيرة في الجاليري
-          const galleryImg = document.querySelector('.GalleryV2_imageContainer___p_v2 img')?.src;
-          if (galleryImg) image = galleryImg;
-          else {
-            // جرب صورة الميني فيو
-            const miniImg = document.querySelector('.GalleryV2_miniImg__JACNf')?.src;
-            if (miniImg) image = miniImg;
-          }
-        }
-        // السعر والبائع كما هما
-        const price = document.querySelector('span.PriceOfferV2_priceNowText__fk5kK')?.innerText.trim() || '';
-        const seller = document.querySelector('strong.PartnerRatingsV2_soldBy__IOCr1')?.innerText.trim() || '';
+        // محاولة متعددة للعنوان
+        let title = document.querySelector('span.ProductTitle_title__vjUBn')?.innerText?.trim() ||
+                   document.querySelector('h1[data-qa="pdp-title"]')?.innerText?.trim() ||
+                   document.querySelector('.productName')?.innerText?.trim() ||
+                   document.querySelector('h1')?.innerText?.trim() ||
+                   'N/A';
+        
+        // محاولة متعددة للسعر
+        let price = document.querySelector('span.PriceOfferV2_priceNowText__fk5kK')?.innerText?.trim() ||
+                   document.querySelector('div[data-qa="pdp-price"]')?.innerText?.trim() ||
+                   document.querySelector('.price')?.innerText?.trim() ||
+                   document.querySelector('[class*="price"]')?.innerText?.trim() ||
+                   'N/A';
+        
+        // محاولة متعددة للصورة
+        let image = document.querySelector('img.imageMagnify')?.src ||
+                   document.querySelector('.GalleryV2_imageContainer___p_v2 img')?.src ||
+                   document.querySelector('.GalleryV2_miniImg__JACNf')?.src ||
+                   document.querySelector('.productImage img')?.src ||
+                   document.querySelector('img[alt*="product"]')?.src ||
+                   '';
+        
+        // محاولة متعددة للبائع
+        let seller = document.querySelector('strong.PartnerRatingsV2_soldBy__IOCr1')?.innerText?.trim() ||
+                     document.querySelector('.sellerName')?.innerText?.trim() ||
+                     document.querySelector('[class*="seller"]')?.innerText?.trim() ||
+                     'N/A';
+        
         return { title, price, image, seller, url: window.location.href };
       });
+      
+      console.error('Data extracted successfully:', JSON.stringify(data));
     } catch (e) {
-      // لا ترمي خطأ، فقط أكمل
+      console.error('Error during data extraction:', e);
     }
     // أرسل البيانات حتى لو ناقصة
-    console.log(JSON.stringify(data, null, 2));
+    if (data && typeof data === 'object') {
+      console.log(JSON.stringify(data, null, 2));
+    } else {
+      // في حالة فشل استخراج البيانات، أرسل بيانات فارغة
+      console.log(JSON.stringify({
+        title: 'N/A',
+        price: 'N/A',
+        image: '',
+        seller: 'N/A',
+        url: `https://www.noon.com/egypt-en/${productCode}/p`
+      }, null, 2));
+    }
     console.error('Closing browser after successful scrape...');
     await browser.close();
   } catch (err) {
     console.error('UNEXPECTED ERROR:', err);
+    // حتى في حالة الخطأ، أرسل JSON ليتمكن server من معالجته
+    console.log(JSON.stringify({
+      title: 'N/A',
+      price: 'N/A', 
+      image: '',
+      seller: 'N/A',
+      url: `https://www.noon.com/egypt-en/${productCode || 'unknown'}/p`,
+      error: err.message
+    }, null, 2));
     if (browser) {
       await browser.close();
     }
-    process.exit(1);
+    process.exit(0); // خروج طبيعي مع JSON
   }
 }
 
