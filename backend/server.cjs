@@ -43,7 +43,7 @@ async function crawlUrl(url) {
   try {
     const browser = await puppeteer.launch({ 
       executablePath: process.env.CHROME_EXECUTABLE_PATH || process.env.PUPPETEER_EXECUTABLE_PATH || "/usr/bin/google-chrome",
-      headless: true, // HEADLESS MODE FOR SERVER
+      headless: false, // VISIBLE FOR DEBUGGING
       defaultViewport: null,
       slowMo: 50,
       args: [

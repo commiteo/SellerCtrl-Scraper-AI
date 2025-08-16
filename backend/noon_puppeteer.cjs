@@ -9,7 +9,7 @@ async function scrapeNoon(productCode) {
     console.error('Launching Chrome browser...');
     browser = await puppeteer.launch({
       executablePath: CHROME_PATH,
-      headless: true,
+      headless: false, // VISIBLE FOR DEBUGGING
       defaultViewport: null,
     });
     const page = await browser.newPage();

@@ -13,7 +13,7 @@ async function scrapeMultiDomain(asin, domain) {
       console.error(`🔄 Attempt ${retryCount + 1}/${maxRetries} - Launching Chrome browser for ${domain}...`);
     browser = await puppeteer.launch({
       executablePath: CHROME_PATH,
-      headless: true,
+      headless: false, // VISIBLE FOR DEBUGGING
       defaultViewport: null,
       args: [
         '--no-sandbox',

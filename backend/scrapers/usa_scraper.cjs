@@ -10,7 +10,7 @@ async function scrapeUSA(asin) {
       
       browser = await puppeteer.launch({
         executablePath: CHROME_PATH,
-        headless: true,
+        headless: false, // VISIBLE FOR DEBUGGING
         defaultViewport: null,
         args: [
           '--no-sandbox',

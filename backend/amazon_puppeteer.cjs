@@ -9,7 +9,7 @@ async function scrapeAmazon(asin, region) {
     console.error('Launching Chrome browser...');
     browser = await puppeteer.launch({
       executablePath: CHROME_PATH,
-      headless: true,
+      headless: false, // VISIBLE FOR DEBUGGING
       defaultViewport: null,
       args: [
         '--no-sandbox',

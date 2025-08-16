@@ -20,7 +20,7 @@ module.exports = {
   // Browser Configuration
   browser: {
     // Browser launch options
-    headless: true,
+    headless: false, // VISIBLE FOR DEBUGGING
     slowMo: 50,
     defaultViewport: null,
     executablePath: process.env.CHROME_EXECUTABLE_PATH || process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/google-chrome',
