@@ -34,7 +34,9 @@ export interface MultiDomainOptions {
   findBestDeals: boolean;
 }
 
-const API_BASE_URL = ''; // Use Vite proxy
+import { API_CONFIG } from '../lib/api';
+
+const API_BASE_URL = API_CONFIG.BASE_URL;
 
 export class MultiDomainScraper {
   static readonly SUPPORTED_DOMAINS = [
@@ -500,7 +502,7 @@ export class MultiDomainScraper {
     try {
       console.log('🔍 Testing backend connection...');
       
-      const response = await fetch('/api/multi-domain-scrape', {
+      const response = await fetch(`${API_BASE_URL}/api/multi-domain-scrape`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
