@@ -7,6 +7,7 @@ interface ProductData {
   price?: string;
   buyboxWinner?: string;
   link?: string;
+  dataSource?: string; // إضافة مصدر البيانات
 }
 
 interface ScrapingOptions {
@@ -24,12 +25,13 @@ export class AmazonScraper {
   static async scrapeProduct(
     asin: string,
     options: ScrapingOptions,
+    region: string // new parameter
   ): Promise<{ success: boolean; data?: ProductData; error?: string }> {
     try {
       const res = await fetch(`${API_BASE_URL}/api/scrape`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ asin, options }),
+        body: JSON.stringify({ asin, options, region }), // send region
       });
 
       if (!res.ok) {
@@ -49,6 +51,7 @@ export class AmazonScraper {
           current_seller: json.data.buyboxWinner || json.data.seller,
           image: json.data.image,
           link: json.data.link,
+          data_source: json.data.dataSource, // إضافة مصدر البيانات
           scraped_at: new Date().toISOString(),
         });
         // Save to amazon_scraping_history
@@ -60,6 +63,7 @@ export class AmazonScraper {
             current_seller: json.data.buyboxWinner || json.data.seller,
             image: json.data.image,
             link: json.data.link,
+            data_source: json.data.dataSource, // إضافة مصدر البيانات
             scraped_at: new Date().toISOString(),
             // user_id: أضف هنا user_id إذا كان متوفراً من السياق
           }

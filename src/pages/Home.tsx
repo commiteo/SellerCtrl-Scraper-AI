@@ -13,7 +13,9 @@ const Home = () => {
     totalScraped: 0,
     todayScraped: 0,
     successRate: 0,
-    avgResponseTime: 0
+    avgResponseTime: 0,
+    mainPageCount: 0,
+    buyingOptionsCount: 0
   });
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [recentActivity, setRecentActivity] = useState<any[]>([]);
@@ -65,13 +67,19 @@ const Home = () => {
       // Success rate
       const successCount = all.filter(item => item.status === 'success').length;
       const successRate = totalScraped ? Math.round((successCount / totalScraped) * 100) : 0;
+      // Data source statistics for Amazon
+      const amazonData = amazon || [];
+      const mainPageCount = amazonData.filter(item => item.data_source === 'main_page').length;
+      const buyingOptionsCount = amazonData.filter(item => item.data_source === 'buying_options').length;
       // Recent activity (last 5)
       const recent = all.sort((a, b) => new Date(b.scraped_at).getTime() - new Date(a.scraped_at).getTime()).slice(0, 5);
       setStats({
         totalScraped,
         todayScraped,
         successRate,
-        avgResponseTime: 0 // Not tracked
+        avgResponseTime: 0, // Not tracked
+        mainPageCount,
+        buyingOptionsCount
       });
       setRecentActivity(recent);
       setLoading(false);
@@ -103,7 +111,7 @@ const Home = () => {
                 </div>
                 <div>
                   <p className="text-[#A3A3A3] text-sm">Total Scraped</p>
-                  <p className="text-2xl font-bold text-[#FFFFFF]">{loading ? '...' : stats.totalScraped.toLocaleString()}</p>
+                  <p className="text-2xl font-bold text-[#FFFFFF]">{loading ? '...' : stats.totalScraped.toLocaleString('en-US')}</p>
                 </div>
               </div>
             </CardContent>
@@ -146,6 +154,39 @@ const Home = () => {
                 <div>
                   <p className="text-[#A3A3A3] text-sm">Avg Response</p>
                   <p className="text-2xl font-bold text-[#FFFFFF]">-</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Amazon Data Source Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Card className="dashboard-card">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-[#00A8E8] rounded-lg">
+                  <Package className="h-6 w-6 text-[#FFFFFF]" />
+                </div>
+                <div>
+                  <p className="text-[#A3A3A3] text-sm">Main Page Data</p>
+                  <p className="text-2xl font-bold text-[#FFFFFF]">{loading ? '...' : stats.mainPageCount}</p>
+                  <p className="text-xs text-[#A3A3A3]">Amazon products from main page</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="dashboard-card">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-[#FF6B6B] rounded-lg">
+                  <Package className="h-6 w-6 text-[#FFFFFF]" />
+                </div>
+                <div>
+                  <p className="text-[#A3A3A3] text-sm">Buying Options Data</p>
+                  <p className="text-2xl font-bold text-[#FFFFFF]">{loading ? '...' : stats.buyingOptionsCount}</p>
+                  <p className="text-xs text-[#A3A3A3]">Amazon products from sidebar</p>
                 </div>
               </div>
             </CardContent>
@@ -197,7 +238,7 @@ const Home = () => {
                   <Badge variant={activity.status === 'success' ? 'default' : 'destructive'} className={activity.status === 'success' ? 'bg-[#FF7A00] text-[#FFFFFF]' : ''}>
                     {activity.status}
                   </Badge>
-                  <span className="text-[#A3A3A3] text-sm">{new Date(activity.scraped_at).toLocaleString()}</span>
+                  <span className="text-[#A3A3A3] text-sm">{new Date(activity.scraped_at).toLocaleString('en-US')}</span>
                 </div>
               </div>
             ))}

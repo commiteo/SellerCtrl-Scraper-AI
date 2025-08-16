@@ -6,10 +6,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
-import { Settings as SettingsIcon, Save, Bell, Database, Download, Trash2 } from 'lucide-react';
+import { Settings as SettingsIcon, Save, Bell, Database, Download, Trash2, Volume2, VolumeX, Play } from 'lucide-react';
+import { useSoundSettings } from '@/contexts/SoundContext';
+import { AudioGenerator } from '@/utils/audioGenerator';
 
 const Settings = () => {
   const { toast } = useToast();
+  const { settings: soundSettings, updateSettings: updateSoundSettings, playSuccess, playError } = useSoundSettings();
+  
   const [settings, setSettings] = useState({
     maxRetries: 3,
     requestDelay: 1000,
@@ -33,6 +37,8 @@ const Settings = () => {
       description: "Your preferences have been updated successfully.",
       duration: 3000,
     });
+    // Play success sound when settings are saved
+    playSuccess();
   };
 
   const handleClearHistory = () => {
@@ -53,6 +59,24 @@ const Settings = () => {
       description: "Your data export will be ready shortly.",
       duration: 3000,
     });
+  };
+
+  const handleTestSound = (type: 'success' | 'error') => {
+    if (type === 'success') {
+      playSuccess();
+    } else {
+      playError();
+    }
+  };
+
+  const handleTestGeneratedSound = (type: 'success' | 'error' | 'notification') => {
+    if (type === 'success') {
+      AudioGenerator.playSuccessSound();
+    } else if (type === 'error') {
+      AudioGenerator.playErrorSound();
+    } else {
+      AudioGenerator.playNotificationSound();
+    }
   };
 
   return (
@@ -168,6 +192,106 @@ const Settings = () => {
                 onCheckedChange={(checked) => setSettings(prev => ({...prev, enableErrorReporting: checked}))}
               />
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Sound Settings */}
+        <Card className="dashboard-card border-[#2A2A2A]">
+          <CardHeader>
+            <CardTitle className="text-[#FFFFFF] flex items-center gap-2">
+              <Volume2 className="h-5 w-5 text-[#FF7A00]" />
+              Sound Settings
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <Label className="text-[#E0E0E0]">Enable Sounds</Label>
+                <p className="text-sm text-[#E0E0E0]/60">Play sounds when scraping completes or fails</p>
+              </div>
+              <Switch
+                checked={soundSettings.enableSounds}
+                onCheckedChange={(checked) => updateSoundSettings({ enableSounds: checked })}
+              />
+            </div>
+            {soundSettings.enableSounds && (
+              <div className="space-y-2">
+                <Label htmlFor="soundVolume" className="text-[#E0E0E0]">Sound Volume</Label>
+                <div className="flex items-center gap-3">
+                  <VolumeX className="h-4 w-4 text-[#A3A3A3]" />
+                  <Input
+                    id="soundVolume"
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.1"
+                    value={soundSettings.soundVolume}
+                    onChange={(e) => updateSoundSettings({ soundVolume: parseFloat(e.target.value) })}
+                    className="flex-1"
+                  />
+                  <Volume2 className="h-4 w-4 text-[#A3A3A3]" />
+                  <span className="text-sm text-[#E0E0E0] w-12 text-right">
+                    {Math.round(soundSettings.soundVolume * 100)}%
+                  </span>
+                </div>
+                <p className="text-sm text-[#E0E0E0]/60">
+                  Sounds will play when scraping completes successfully or encounters errors
+                </p>
+                <div className="flex gap-2 pt-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => handleTestSound('success')}
+                    className="border-[#00A8E8] text-[#00A8E8] hover:bg-[#00A8E8]/10"
+                  >
+                    Test Success Sound
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => handleTestSound('error')}
+                    className="border-[#FF6B6B] text-[#FF6B6B] hover:bg-[#FF6B6B]/10"
+                  >
+                    Test Error Sound
+                  </Button>
+                </div>
+                
+                <div className="border-t border-[#2A2A2A] pt-4 mt-4">
+                  <p className="text-sm text-[#E0E0E0]/60 mb-3">
+                    Generated Sounds (works without audio files):
+                  </p>
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleTestGeneratedSound('success')}
+                      className="border-[#00A8E8] text-[#00A8E8] hover:bg-[#00A8E8]/10"
+                    >
+                      <Play className="h-3 w-3 mr-1" />
+                      Generated Success
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleTestGeneratedSound('error')}
+                      className="border-[#FF6B6B] text-[#FF6B6B] hover:bg-[#FF6B6B]/10"
+                    >
+                      <Play className="h-3 w-3 mr-1" />
+                      Generated Error
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleTestGeneratedSound('notification')}
+                      className="border-[#FFD600] text-[#FFD600] hover:bg-[#FFD600]/10"
+                    >
+                      <Play className="h-3 w-3 mr-1" />
+                      Notification
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
 

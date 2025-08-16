@@ -115,6 +115,14 @@ async function scrapeProductDetails(asin, browser, options = {}) {
       const url = `https://www.amazon.eg/dp/${asin}?language=en_AE`;
       await page.goto(url, { waitUntil: 'networkidle2', timeout: 120000 });
 
+      // Set zoom to 75% for better content display
+      await page.evaluate(() => {
+        document.body.style.zoom = '75%';
+        document.body.style.transform = 'scale(0.75)';
+        document.body.style.transformOrigin = 'top left';
+      });
+      console.log(`🔍 Zoom set to 75% for better content display`);
+
       if (await page.$('#captchacharacters')) {
         const captchaImageElement = await page.$('div.a-row.a-text-center img');
         if (captchaImageElement) {
@@ -181,7 +189,9 @@ async function connectToBrowser() {
   try {
     console.log('Launching new browser instance...');
     browser = await puppeteer.launch({
-      headless: true,
+      headless: false, // VISIBLE BROWSER
+      defaultViewport: null,
+      slowMo: 50, // Reduced slowMo for better performance
       args: [
         '--no-sandbox',
         '--disable-setuid-sandbox',
@@ -189,7 +199,16 @@ async function connectToBrowser() {
         '--disable-accelerated-2d-canvas',
         '--no-first-run',
         '--no-zygote',
-        '--disable-gpu'
+        '--disable-gpu',
+        '--disable-background-timer-throttling',
+        '--disable-backgrounding-occluded-windows',
+        '--disable-renderer-backgrounding',
+        '--disable-features=TranslateUI',
+        '--disable-ipc-flooding-protection',
+        '--window-size=800,600', // SMALL WINDOW FOR DISPLAY ONLY
+        '--disable-web-security', // Disable web security
+        '--disable-features=VizDisplayCompositor', // Fix display issues
+        '--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
       ]
     });
     console.log('Browser launched successfully');

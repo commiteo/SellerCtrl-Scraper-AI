@@ -1,127 +1,192 @@
-[![Live App](https://img.shields.io/badge/Visit%20App-sellerctrl--ai.lovable.app-orange?style=for-the-badge)](https://sellerctrl-ai.lovable.app/scraper)
+# 🚀 SellerCtrl Scraper AI
 
-# SellerCtrl Scraper AI
+## 📖 نظرة عامة
 
-SellerCtrl Scraper AI is a smart Amazon product data extractor powered by OpenAI. It scrapes detailed data using ASINs — including title, image, price, buybox winner, link, reviews, bullet points, rank, and more.
+**SellerCtrl Scraper AI** هو تطبيق متقدم ومتكامل لمراقبة المنتجات والمنافسين على منصات التجارة الإلكترونية. يوفر التطبيق أدوات شاملة لاستخراج البيانات، مراقبة الأسعار، وتحليل المنافسين عبر منصات متعددة.
 
-## Project Structure
+## ✨ الميزات الرئيسية
 
-```
-asin-amazon-oracle/
-├── backend/                 # Backend services and scrapers
-│   ├── server.cjs          # Main Node.js server
-│   ├── scraper-server.js   # Advanced scraper with queue system
-│   ├── main.py             # FastAPI server
-│   ├── amazon_puppeteer.cjs # Amazon scraper
-│   ├── noon_puppeteer.cjs  # Noon scraper
-│   ├── amazon_scrape.py    # Python Amazon scraper
-│   ├── noon_scrape.py      # Python Noon scraper
-│   ├── solve_captcha.py    # CAPTCHA solver
-│   └── requirements.txt    # Python dependencies
-├── src/                    # Frontend React application
-│   ├── components/         # React components
-│   ├── pages/             # Page components
-│   ├── services/          # API services
-│   ├── lib/               # Utilities and configurations
-│   └── hooks/             # Custom React hooks
-├── public/                # Static assets
-└── package.json           # Node.js dependencies and scripts
-```
+### 🔍 **استخراج البيانات المتقدم**
+- دعم منصات متعددة: Amazon (5 مناطق) + Noon
+- استخراج معلومات شاملة: الأسعار، البائعين، التقييمات، الصور
+- تجاوز أنظمة الحماية والـ CAPTCHAs
 
-## Tool Overview
-- **Backend**: Node.js server (`backend/server.cjs`) launching scrapers
-- **Scraping**: Uses Puppeteer and Python with BeautifulSoup to parse Amazon/Noon pages
-- **Frontend**: React, Vite, Tailwind CSS and shadcn-ui
-- **Usage**: Submit an ASIN to get product details including title, price, image and buy box
+### 💰 **مراقبة الأسعار الذكية**
+- مراقبة تلقائية للأسعار على مدار الساعة
+- تنبيهات فورية عند تغير الأسعار
+- تتبع تاريخ التغييرات والاتجاهات
 
-**Important:** SellerCtrl Scraper AI is proprietary software. The code in this repository is provided for reference only and is **not** licensed for public installation or redistribution.
+### 🌐 **مقارنة متعددة المناطق**
+- مقارنة الأسعار عبر 5 مناطق Amazon
+- تحديد أفضل العروض والفرص
+- تحليل استراتيجيات المنافسين
 
-## Getting Started
+### 📱 **إشعارات Telegram**
+- تنبيهات فورية عبر Telegram
+- تقارير دورية مفصلة
+- إرسال الصور والمعلومات الكاملة
 
-### Run on Lovable
-Visit the [Lovable Project](https://lovable.dev/projects/77be9585-29f7-4d03-94b0-0ce9b51d6b84) and start prompting.
+### 📊 **تحليلات متقدمة**
+- تحليل اتجاهات السوق
+- تقارير الأداء والربحية
+- رؤى تنافسية شاملة
 
-### Run locally (for internal development only)
-SellerCtrl Scraper AI is not an open source project. Running the code locally is intended only for the SellerCtrl team and contributors.
+## 🛠️ التقنيات المستخدمة
 
-## 🔗 Try it Live
-[https://sellerctrl-ai.lovable.app/scraper](https://sellerctrl-ai.lovable.app/scraper)
+### Frontend
+- **React 18** مع TypeScript
+- **Vite** للبناء السريع
+- **shadcn/ui** للمكونات الحديثة
+- **Tailwind CSS** للتصميم
+- **Recharts** للرسوم البيانية
 
-## How can I edit this code?
+### Backend
+- **Node.js** مع Express
+- **Puppeteer** للتحكم في المتصفح
+- **Microsoft Edge WebDriver**
+- **RESTful APIs**
 
-There are several ways of editing your application.
+### قاعدة البيانات
+- **Supabase** (PostgreSQL)
+- **Real-time subscriptions**
+- **Row Level Security**
 
-**Use Lovable**
+## 🚀 التثبيت والتشغيل
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/77be9585-29f7-4d03-94b0-0ce9b51d6b84) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable. These instructions are intended for authorized SellerCtrl developers only.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-
-# In a separate terminal start the scraping server
-npm run scraper-server
+### المتطلبات الأساسية
+```bash
+- Node.js 18+ 
+- npm أو yarn
+- Microsoft Edge متصفح
+- Git
 ```
 
-**Edit a file directly in GitHub**
+### 1. استنساخ المشروع
+```bash
+git clone https://github.com/your-username/SellerCtrl-Scraper.git
+cd SellerCtrl-Scraper
+```
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### 2. تثبيت التبعيات
+```bash
+npm install
+```
 
-**Use GitHub Codespaces**
+### 3. إعداد متغيرات البيئة
+```bash
+# انسخ ملف المثال
+cp .env.example .env
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+# أدخل معلومات قاعدة البيانات
+VITE_SUPABASE_URL=your-supabase-url
+VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
+```
 
-## What technologies are used for this project?
+### 4. تشغيل التطبيق
+```bash
+# تشغيل الواجهة والخادم معاً
+npm run dev:all
 
-This project is built with:
+# أو تشغيلهما منفصلين
+npm run dev        # الواجهة الأمامية
+npm run backend    # الخادم الخلفي
+```
 
-- **Frontend**: Vite, TypeScript, React, shadcn-ui, Tailwind CSS
-- **Backend**: Node.js, Express, Puppeteer, Python, FastAPI
-- **Database**: Redis (for job queues)
-- **Deployment**: Docker, Render
+## 📱 الاستخدام
 
-## Available Scripts
+### 1. **استخراج بيانات Amazon**
+- أدخل ASIN المنتج
+- اختر المنطقة المطلوبة
+- اضغط "Scrape" للحصول على البيانات
 
-- `npm run dev` - Start frontend development server
-- `npm run backend` - Start Node.js backend server
-- `npm run scraper-server` - Start advanced scraper with queue system
-- `npm run dev:full` - Start both frontend and scraper server
-- `npm run build` - Build for production
-- `npm run lint` - Run ESLint
+### 2. **مراقبة الأسعار**
+- أضف المنتجات للمراقبة
+- اضبط تكرار المراقبة
+- فعّل التنبيهات
 
-## How can I deploy this project?
+### 3. **المقارنة متعددة المناطق**
+- أدخل ASIN واحد
+- اختر المناطق للمقارنة
+- احصل على تقرير شامل
 
-This project is now a live production tool with a hosted frontend. Simply open [Lovable](https://lovable.dev/projects/77be9585-29f7-4d03-94b0-0ce9b51d6b84) and click on **Share -> Publish** to deploy your updates.
+### 4. **إعداد Telegram**
+- احصل على Bot Token
+- أدخل Chat ID
+- فعّل الإشعارات
 
-## Can I connect a custom domain to my Lovable project?
+## 📊 لقطات الشاشة
 
-Yes, you can!
+### الصفحة الرئيسية
+![الصفحة الرئيسية](screenshots/home.png)
 
-To connect a domain, navigate to **Project > Settings > Domains** and click **Connect Domain**.
+### استخراج البيانات
+![استخراج البيانات](screenshots/scraper.png)
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+### مراقبة الأسعار
+![مراقبة الأسعار](screenshots/monitor.png)
+
+## 🔧 الإعدادات المتقدمة
+
+### تخصيص Selectors
+```javascript
+// في backend/amazon_puppeteer.cjs
+const selectors = {
+  title: '#productTitle',
+  price: '.a-price-whole',
+  seller: '#merchant-info'
+};
+```
+
+### إعداد Rate Limiting
+```javascript
+// في backend/middleware/rateLimit.cjs
+const rateLimit = {
+  windowMs: 15 * 60 * 1000, // 15 دقيقة
+  max: 100 // حد أقصى 100 طلب
+};
+```
+
+## 🛡️ الأمان
+
+- 🔐 حماية API Keys في متغيرات البيئة
+- 🚫 منع تسريب البيانات الحساسة
+- ⚡ Rate limiting للطلبات
+- 🛡️ CORS configuration آمن
+
+## 🤝 المساهمة
+
+نرحب بمساهماتكم! يرجى اتباع هذه الخطوات:
+
+1. Fork المشروع
+2. إنشاء branch جديد (`git checkout -b feature/amazing-feature`)
+3. Commit التغييرات (`git commit -m 'Add amazing feature'`)
+4. Push للـ branch (`git push origin feature/amazing-feature`)
+5. فتح Pull Request
+
+## 📝 الترخيص
+
+هذا المشروع مرخص تحت [MIT License](LICENSE).
+
+## 📞 التواصل
+
+- **المطور:** [اسمك]
+- **البريد الإلكتروني:** [email@example.com]
+- **GitHub:** [github.com/your-username]
+- **LinkedIn:** [linkedin.com/in/your-profile]
+
+## 🔄 التحديثات الأخيرة
+
+### الإصدار 2.0.0
+- ✅ إضافة مراقبة الأسعار التلقائية
+- ✅ دعم منصة Noon
+- ✅ تحسين واجهة المستخدم
+- ✅ إضافة تنبيهات Telegram
+- ✅ تحسين الأداء والاستقرار
+
+## ⚠️ إخلاء المسؤولية
+
+هذا التطبيق مخصص للأغراض التعليمية والبحثية فقط. يرجى احترام شروط الخدمة الخاصة بالمواقع المستهدفة واستخدام التطبيق بشكل مسؤول.
+
+---
+
+⭐ **إذا أعجبك المشروع، لا تنس إعطاؤه نجمة على GitHub!** ⭐

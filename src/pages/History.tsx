@@ -4,8 +4,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Search, ExternalLink, Download, Trash2, Calendar, Filter } from 'lucide-react';
+import { Search, ExternalLink, Download, Trash2, Calendar, Filter, FileText } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
+import { exportToCSV, formatDataForExport } from '@/utils/exportUtils';
 
 interface HistoryItem {
   id: string;
@@ -20,6 +21,7 @@ interface HistoryItem {
   status: 'success' | 'failed';
   image?: string;
   source: 'Amazon' | 'Noon';
+  dataSource?: string;
 }
 
 const History = () => {
@@ -42,33 +44,35 @@ const History = () => {
         .order('scraped_at', { ascending: false });
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const amazonItems = (amazon || []).map((row: any) => ({
-        id: row.id,
-        code: row.asin,
-        title: row.title,
-        price: row.price,
-        buyboxWinner: row.buybox_winner,
-        seller: row.current_seller || row.seller,
-        url: row.link,
-        link: row.link,
-        scrapedAt: row.scraped_at,
-        status: row.status,
-        image: row.image,
+        id: row.id || `amazon_${row.asin}_${Date.now()}`,
+        code: row.asin || 'N/A',
+        title: row.title || 'N/A',
+        price: row.price ? String(row.price) : 'N/A',
+        buyboxWinner: row.buybox_winner || null,
+        seller: row.current_seller || row.seller || null,
+        url: row.link || null,
+        link: row.link || null,
+        scrapedAt: row.scraped_at || new Date().toISOString(),
+        status: row.status || 'success',
+        image: row.image || null,
         source: 'Amazon' as 'Amazon',
+        dataSource: row.data_source || 'main_page',
       }));
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const noonItems = (noon || []).map((row: any) => ({
-        id: row.id,
-        code: row.product_code,
-        title: row.title,
-        price: row.price,
-        buyboxWinner: undefined,
-        seller: row.seller,
-        url: row.url,
-        link: row.url,
-        scrapedAt: row.scraped_at,
-        status: row.status,
-        image: row.image,
+        id: row.id || `noon_${row.product_code}_${Date.now()}`,
+        code: row.product_code || 'N/A',
+        title: row.title || 'N/A',
+        price: row.price ? String(row.price) : 'N/A',
+        buyboxWinner: null,
+        seller: row.seller || 'N/A',
+        url: row.url || null,
+        link: row.url || null,
+        scrapedAt: row.scraped_at || new Date().toISOString(),
+        status: row.status || 'success',
+        image: row.image || null,
         source: 'Noon' as 'Noon',
+        dataSource: null,
       }));
       // Merge and sort
       const merged = [...amazonItems, ...noonItems].sort((a, b) => new Date(b.scrapedAt).getTime() - new Date(a.scrapedAt).getTime()) as HistoryItem[];
@@ -85,104 +89,87 @@ const History = () => {
     return matchesSearch && matchesSource && matchesStatus;
   });
 
-  const handleExport = () => {
-    // Export filteredData to CSV
-    const headers = ['Source', 'Code', 'Title', 'Price', 'Seller', 'Image', 'Link', 'Scraped At', 'Status'];
-    const rows = filteredData.map(item => [
-      item.source,
-      item.code,
-      item.title,
-      item.price,
-      item.source === 'Amazon' ? (item.buyboxWinner || item.seller) : item.seller,
-      item.image,
-      item.link,
-      item.scrapedAt,
-      item.status
-    ]);
-    const csv = [headers, ...rows].map(r => r.map(x => '"' + (x ?? '') + '"').join(',')).join('\n');
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'scraping_history.csv';
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-
   return (
-    <div className="min-h-full bg-[#0D0D0D] p-6 font-inter">
-      <div className="max-w-7xl mx-auto space-y-6">
+    <div className="min-h-full bg-[#0D0D0D] p-2 sm:p-4 md:p-6 font-inter">
+      <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6">
         {/* Header */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-[#FFFFFF] font-inter">Scraping History</h1>
-            <p className="text-[#E0E0E0]/80">View and manage your scraped product data</p>
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-[#FFFFFF] font-inter">Scraping History</h1>
+            <p className="text-sm sm:text-base text-[#E0E0E0]/80">View and manage your scraped product data</p>
           </div>
           <Button
-            onClick={handleExport}
-            className="bg-[#FF7A00] hover:bg-[#ff9100] text-white shadow-orange-500/40 shadow-md transition-all"
+            onClick={() => {
+              const formattedData = formatDataForExport(filteredData);
+              exportToCSV(formattedData, `scraping_history_${new Date().toISOString().split('T')[0]}`, {
+                format: 'csv',
+                encoding: 'utf-8-bom',
+                includeBOM: true
+              });
+            }}
+            className="bg-[#FF7A00] hover:bg-[#ff9100] text-white shadow-orange-500/40 shadow-md transition-all h-9 sm:h-10"
           >
-            <Download className="h-4 w-4 mr-2" />
-            Export to CSV
+            <FileText className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
+            Export CSV
           </Button>
         </div>
         {/* Filters */}
         <Card className="dashboard-card border-[#2A2A2A]">
-          <CardContent className="p-6">
-            <div className="flex flex-col md:flex-row gap-4">
+          <CardContent className="p-4 sm:p-6">
+            <div className="flex flex-col lg:flex-row gap-3 sm:gap-4">
               <div className="flex-1">
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[#E0E0E0]/60" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-3 w-3 sm:h-4 sm:w-4 text-[#E0E0E0]/60" />
                   <Input
                     placeholder="Search by code or product title..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 bg-[#1F1F1F] border-[#2A2A2A] text-[#E0E0E0]"
+                    className="pl-9 sm:pl-10 bg-[#1F1F1F] border-[#2A2A2A] text-[#E0E0E0] h-9 sm:h-10 text-sm"
                   />
                 </div>
               </div>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 <Button
                   variant={filterSource === 'all' ? 'default' : 'outline'}
                   onClick={() => setFilterSource('all')}
-                  className={`text-[#FAFAFA]  ${filterSource === 'all' ? 'bg-[#FF7A00] hover:bg-[#ff9100]' : 'border-[#2A2A2A] hover:bg-[#181818]'}`}
+                  className={`text-[#FAFAFA] text-xs sm:text-sm h-8 sm:h-9 ${filterSource === 'all' ? 'bg-[#FF7A00] hover:bg-[#ff9100]' : 'border-[#2A2A2A] hover:bg-[#181818]'}`}
                 >
                   All ({historyData.length})
                 </Button>
                 <Button
                   variant={filterSource === 'Amazon' ? 'default' : 'outline'}
                   onClick={() => setFilterSource('Amazon')}
-                  className={`text-[#FAFAFA]  ${filterSource === 'Amazon' ? 'bg-[#FF7A00] hover:bg-[#ff9100]' : 'border-[#2A2A2A] hover:bg-[#181818]'}`}
+                  className={`text-[#FAFAFA] text-xs sm:text-sm h-8 sm:h-9 ${filterSource === 'Amazon' ? 'bg-[#FF7A00] hover:bg-[#ff9100]' : 'border-[#2A2A2A] hover:bg-[#181818]'}`}
                 >
                   Amazon ({historyData.filter(item => item.source === 'Amazon').length})
                 </Button>
                 <Button
                   variant={filterSource === 'Noon' ? 'default' : 'outline'}
                   onClick={() => setFilterSource('Noon')}
-                  className={`text-[#FAFAFA]  ${filterSource === 'Noon' ? 'bg-[#FFD600] hover:bg-[#ffe066] text-black' : 'border-[#2A2A2A] hover:bg-[#181818]'}`}
+                  className={`text-[#FAFAFA] text-xs sm:text-sm h-8 sm:h-9 ${filterSource === 'Noon' ? 'bg-[#FFD600] hover:bg-[#ffe066] text-black' : 'border-[#2A2A2A] hover:bg-[#181818]'}`}
                 >
                   Noon ({historyData.filter(item => item.source === 'Noon').length})
                 </Button>
               </div>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 <Button
                   variant={filterStatus === 'all' ? 'default' : 'outline'}
                   onClick={() => setFilterStatus('all')}
-                  className={`text-[#FAFAFA]  ${filterStatus === 'all' ? 'bg-[#FF7A00] hover:bg-[#ff9100]' : 'border-[#2A2A2A] hover:bg-[#181818]'}`}
+                  className={`text-[#FAFAFA] text-xs sm:text-sm h-8 sm:h-9 ${filterStatus === 'all' ? 'bg-[#FF7A00] hover:bg-[#ff9100]' : 'border-[#2A2A2A] hover:bg-[#181818]'}`}
                 >
                   All Status
                 </Button>
                 <Button
                   variant={filterStatus === 'success' ? 'default' : 'outline'}
                   onClick={() => setFilterStatus('success')}
-                  className={`text-[#FAFAFA]  ${filterStatus === 'success' ? 'bg-[#FF7A00] hover:bg-[#ff9100]' : 'border-[#2A2A2A] hover:bg-[#181818]'}`}
+                  className={`text-[#FAFAFA] text-xs sm:text-sm h-8 sm:h-9 ${filterStatus === 'success' ? 'bg-[#FF7A00] hover:bg-[#ff9100]' : 'border-[#2A2A2A] hover:bg-[#181818]'}`}
                 >
                   Success
                 </Button>
                 <Button
                   variant={filterStatus === 'failed' ? 'default' : 'outline'}
                   onClick={() => setFilterStatus('failed')}
-                  className={`text-[#FAFAFA]  ${filterStatus === 'failed' ? 'bg-[#FF7A00] hover:bg-[#ff9100]' : 'border-[#2A2A2A] hover:bg-[#181818]'}`}
+                  className={`text-[#FAFAFA] text-xs sm:text-sm h-8 sm:h-9 ${filterStatus === 'failed' ? 'bg-[#FF7A00] hover:bg-[#ff9100]' : 'border-[#2A2A2A] hover:bg-[#181818]'}`}
                 >
                   Failed
                 </Button>
@@ -192,79 +179,115 @@ const History = () => {
         </Card>
         {/* Results */}
         <Card className="dashboard-card border-[#2A2A2A]">
-          <CardHeader>
-            <CardTitle className="text-[#FFFFFF] flex items-center gap-2">
-              <Calendar className="h-5 w-5" />
+          <CardHeader className="pb-3 sm:pb-4">
+            <CardTitle className="text-[#FFFFFF] flex items-center gap-2 text-base sm:text-lg">
+              <Calendar className="h-4 w-4 sm:h-5 sm:w-5" />
               Scraped Products ({filteredData.length})
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-0 sm:p-6">
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow className="border-[#2A2A2A]">
-                    <TableHead className="text-[#E0E0E0]/90">Product</TableHead>
-                    <TableHead className="text-[#E0E0E0]/90">Code</TableHead>
-                    <TableHead className="text-[#E0E0E0]/90">Price</TableHead>
-                    <TableHead className="text-[#E0E0E0]/90">Seller</TableHead>
-                    <TableHead className="text-[#E0E0E0]/90">Source</TableHead>
-                    <TableHead className="text-[#E0E0E0]/90">Scraped At</TableHead>
-                    <TableHead className="text-[#E0E0E0]/90">Status</TableHead>
-                    <TableHead className="text-[#E0E0E0]/90">Actions</TableHead>
+                    <TableHead className="text-[#E0E0E0]/90 text-xs sm:text-sm">Product</TableHead>
+                    <TableHead className="text-[#E0E0E0]/90 text-xs sm:text-sm">Code</TableHead>
+                    <TableHead className="text-[#E0E0E0]/90 text-xs sm:text-sm">Price</TableHead>
+                    <TableHead className="text-[#E0E0E0]/90 text-xs sm:text-sm">Seller</TableHead>
+                    <TableHead className="text-[#E0E0E0]/90 text-xs sm:text-sm hidden sm:table-cell">Source</TableHead>
+                    <TableHead className="text-[#E0E0E0]/90 text-xs sm:text-sm hidden lg:table-cell">Data Source</TableHead>
+                    <TableHead className="text-[#E0E0E0]/90 text-xs sm:text-sm hidden md:table-cell">Scraped At</TableHead>
+                    <TableHead className="text-[#E0E0E0]/90 text-xs sm:text-sm">Status</TableHead>
+                    <TableHead className="text-[#E0E0E0]/90 text-xs sm:text-sm">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filteredData.map((item) => (
                     <TableRow key={item.id} className="border-[#2A2A2A] hover:bg-[#171717]">
-                      <TableCell>
-                        <div className="flex items-center gap-3">
+                      <TableCell className="py-2 sm:py-4">
+                        <div className="flex items-center gap-2 sm:gap-3">
+                          {item.image ? (
                           <img 
                             src={item.image} 
-                            alt={item.title}
-                            className="w-10 h-10 object-cover rounded"
+                              alt={item.title || 'Product'}
+                            className="w-8 h-8 sm:w-10 sm:h-10 object-cover rounded"
+                              onError={(e) => {
+                                e.currentTarget.style.display = 'none';
+                              }}
                           />
-                          <div>
-                            <p className="font-medium text-[#FAFAFA] text-sm max-w-xs truncate font-inter">
-                              {item.title}
+                          ) : (
+                            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-[#2A2A2A] rounded flex items-center justify-center">
+                              <span className="text-[#A3A3A3] text-xs">N/A</span>
+                            </div>
+                          )}
+                          <div className="min-w-0">
+                            <p className="font-medium text-[#FAFAFA] text-xs sm:text-sm max-w-[120px] sm:max-w-xs truncate font-inter">
+                              {item.title || 'N/A'}
                             </p>
                           </div>
                         </div>
                       </TableCell>
-                      <TableCell className="text-[#E0E0E0] font-mono text-sm">
-                        {item.code}
+                      <TableCell className="text-[#E0E0E0] font-mono text-xs sm:text-sm">
+                        {item.code || 'N/A'}
                       </TableCell>
-                      <TableCell className="text-[#FF7A00] font-semibold">
-                        {item.price}
+                      <TableCell className="text-[#FF7A00] font-semibold text-xs sm:text-sm">
+                        {item.price || (item.dataSource === 'unavailable' ? 'Unavailable' : 'N/A')}
                       </TableCell>
-                      <TableCell className="text-[#E0E0E0]">
-                        {item.source === 'Amazon' ? (item.buyboxWinner || item.seller) : item.seller}
+                      <TableCell className="text-[#E0E0E0] text-xs sm:text-sm">
+                        {item.source === 'Amazon' ? (item.buyboxWinner || item.seller || (item.dataSource === 'unavailable' ? 'Unavailable' : 'N/A')) : (item.seller || 'N/A')}
                       </TableCell>
-                      <TableCell className="text-[#E0E0E0]">
+                      <TableCell className="text-[#E0E0E0] text-xs sm:text-sm hidden sm:table-cell">
                         {item.source}
                       </TableCell>
-                      <TableCell className="text-[#E0E0E0]/60 text-sm">
-                        {new Date(item.scrapedAt).toLocaleString()}
+                      <TableCell className="text-[#E0E0E0] text-xs sm:text-sm hidden lg:table-cell">
+                        {item.source === 'Amazon' && item.dataSource ? (
+                          item.dataSource === 'unavailable' ? (
+                            <Badge variant="destructive" className="text-xs">
+                              Unavailable
+                            </Badge>
+                          ) : (
+                            <Badge variant={item.dataSource === 'buying_options' ? 'secondary' : 'default'} className="text-xs">
+                              {item.dataSource === 'buying_options' ? 'Buying Options' : 'Main Page'}
+                            </Badge>
+                          )
+                        ) : (
+                          <span className="text-[#E0E0E0]/60 text-xs">N/A</span>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-[#E0E0E0]/60 text-xs sm:text-sm hidden md:table-cell">
+                        {item.scrapedAt ? new Date(item.scrapedAt).toLocaleString('en-US') : 'N/A'}
                       </TableCell>
                       <TableCell>
-                        <Badge variant={item.status === 'success' ? 'default' : 'destructive'}>
-                          {item.status}
+                        <Badge variant={item.status === 'success' ? 'default' : 'destructive'} className="text-xs">
+                          {item.status || 'N/A'}
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        <div className="flex gap-2">
+                        <div className="flex gap-1 sm:gap-2">
+                          {item.link ? (
                           <Button
                             size="sm"
                             variant="outline"
                             onClick={() => window.open(item.link, '_blank')}
-                            className="text-white border-[#2A2A2A] hover:bg-[#1F1F1F]"
+                            className="text-white border-[#2A2A2A] hover:bg-[#1F1F1F] h-7 w-7 sm:h-8 sm:w-8 p-0"
                           >
                             <ExternalLink className="h-3 w-3" />
                           </Button>
+                          ) : (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              disabled
+                              className="text-[#A3A3A3] border-[#2A2A2A] cursor-not-allowed h-7 w-7 sm:h-8 sm:w-8 p-0"
+                            >
+                              <ExternalLink className="h-3 w-3" />
+                            </Button>
+                          )}
                           <Button
                             size="sm"
                             variant="outline"
                             onClick={() => {}}
-                            className="text-[#EB5F01] border-[#EB5F01] hover:bg-[#1f150a]"
+                            className="text-[#EB5F01] border-[#EB5F01] hover:bg-[#1f150a] h-7 w-7 sm:h-8 sm:w-8 p-0"
                           >
                             <Trash2 className="h-3 w-3" />
                           </Button>
