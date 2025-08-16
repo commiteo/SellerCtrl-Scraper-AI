@@ -42,7 +42,8 @@ const sendJSON = (res, statusCode, data) => {
 async function crawlUrl(url) {
   try {
     const browser = await puppeteer.launch({ 
-      headless: false, // VISIBLE BROWSER
+      executablePath: process.env.CHROME_EXECUTABLE_PATH || process.env.PUPPETEER_EXECUTABLE_PATH || "/usr/bin/google-chrome",
+      headless: true, // HEADLESS MODE FOR SERVER
       defaultViewport: null,
       slowMo: 50,
       args: [

@@ -1,15 +1,15 @@
 const puppeteer = require('puppeteer');
-const EDGE_PATH = 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe';
+const CHROME_PATH = process.env.CHROME_EXECUTABLE_PATH || process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/google-chrome';
 const fs = require('fs');
 
 async function scrapeAmazon(asin, region) {
   console.error('=== STARTING AMAZON SCRAPER ===');
   let browser;
   try {
-    console.error('Launching Edge browser...');
+    console.error('Launching Chrome browser...');
     browser = await puppeteer.launch({
-      executablePath: EDGE_PATH,
-      headless: false,
+      executablePath: CHROME_PATH,
+      headless: true,
       defaultViewport: null,
       args: [
         '--no-sandbox',
@@ -55,7 +55,19 @@ async function scrapeAmazon(asin, region) {
       productUrl = `https://www.amazon.${region}/dp/${asin}?language=en_AE`;
     }
     console.error('Opening product page:', productUrl);
-    await page.goto(productUrl, { waitUntil: 'domcontentloaded' });
+    
+    // انتظار تحميل الصفحة مع إعدادات أفضل
+    await page.goto(productUrl, { 
+      waitUntil: 'domcontentloaded', 
+      timeout: 60000 
+    });
+    
+    // انتظار إضافي للتأكد من التحميل
+    await new Promise(resolve => setTimeout(resolve, 3000));
+    
+    // انتظار body للتأكد من تحميل الصفحة
+    await page.waitForSelector('body', { timeout: 10000 });
+    
     console.error('PAGE LOADED');
 
     // التعامل مع صفحة الأمان في أمازون أمريكا

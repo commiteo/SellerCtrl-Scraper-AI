@@ -3,7 +3,7 @@ export const API_CONFIG = {
   // Dynamic API base URL based on environment
   BASE_URL: import.meta.env.VITE_API_URL || 
            import.meta.env.VITE_BACKEND_URL || 
-           (import.meta.env.PROD ? 'https://your-railway-app.railway.app' : 'http://localhost:3002'),
+           (import.meta.env.PROD ? 'http://91.108.112.75:3002' : 'http://localhost:3002'),
   
   // API Endpoints
   ENDPOINTS: {
