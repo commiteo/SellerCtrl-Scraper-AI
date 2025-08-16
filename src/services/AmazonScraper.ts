@@ -18,7 +18,9 @@ interface ScrapingOptions {
   includeLink: boolean;
 }
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || '';
+import { API_CONFIG, apiCall } from '../lib/api';
+
+const API_BASE_URL = API_CONFIG.BASE_URL;
 
 export class AmazonScraper {
 

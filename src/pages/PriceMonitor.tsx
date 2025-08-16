@@ -172,7 +172,8 @@ const PriceMonitor = () => {
   // Check monitoring status
   const checkMonitoringStatus = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3002'}/api/price-monitor/status`);
+      const API_BASE = import.meta.env.VITE_API_URL || import.meta.env.VITE_BACKEND_URL || 'http://localhost:3002';
+      const response = await fetch(`${API_BASE}/api/price-monitor/status`);
       const result = await response.json();
       
       if (result.success) {
@@ -237,7 +238,8 @@ const PriceMonitor = () => {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 seconds timeout
       
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3002'}/api/seller-info/all`, {
+      const API_BASE = import.meta.env.VITE_API_URL || import.meta.env.VITE_BACKEND_URL || 'http://localhost:3002';
+      const response = await fetch(`${API_BASE}/api/seller-info/all`, {
         signal: controller.signal,
         headers: {
           'Content-Type': 'application/json',
@@ -284,7 +286,8 @@ const PriceMonitor = () => {
       const timeoutId = setTimeout(() => controller.abort(), 120000); // 2 minutes timeout for scraping
       
       // Use the enhanced scraper from backend
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3002'}/api/scrape-product`, {
+      const API_BASE = import.meta.env.VITE_API_URL || import.meta.env.VITE_BACKEND_URL || 'http://localhost:3002';
+      const response = await fetch(`${API_BASE}/api/scrape-product`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
