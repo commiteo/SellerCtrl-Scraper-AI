@@ -27,7 +27,7 @@ echo "🔐 Creating environment file..."
 cat > .env << EOL
 # Production Environment
 NODE_ENV=production
-PORT=3002
+API_PORT=3002
 
 # Supabase Configuration
 VITE_SUPABASE_URL=https://aqkaxcwdcqnwzgvaqtne.supabase.co
@@ -36,7 +36,7 @@ VITE_SUPABASE_ANON_KEY=your-supabase-anon-key-here
 # Scraper Configuration
 SCRAPER_DELAY_MS=2000
 MAX_CONCURRENT_SCRAPERS=3
-CHROME_EXECUTABLE_PATH=/usr/bin/google-chrome
+CHROME_EXECUTABLE_PATH=/usr/bin/google-chrome-stable
 
 # Monitoring Configuration
 PRICE_MONITOR_INTERVAL=3600000

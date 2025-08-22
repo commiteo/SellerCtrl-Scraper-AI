@@ -9,8 +9,8 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 5173,
     proxy: {
-      "/api": "http://localhost:3002",
-      "/job-status": "http://localhost:3001",
+      "/api": "http://91.108.112.75:3002",
+      "/job-status": "http://91.108.112.75:3001",
     },
   },
   plugins: [

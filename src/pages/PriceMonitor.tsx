@@ -174,7 +174,7 @@ const PriceMonitor = () => {
   // Check monitoring status
   const checkMonitoringStatus = async () => {
     try {
-      const API_BASE = import.meta.env.VITE_API_URL || import.meta.env.VITE_BACKEND_URL || 'http://localhost:3002';
+      const API_BASE = import.meta.env.VITE_API_URL || import.meta.env.VITE_BACKEND_URL || 'http://91.108.112.75:3002';
       const response = await fetch(`${API_BASE}/api/price-monitor/status`);
       const result = await response.json();
       
@@ -240,7 +240,7 @@ const PriceMonitor = () => {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 seconds timeout
       
-      const API_BASE = import.meta.env.VITE_API_URL || import.meta.env.VITE_BACKEND_URL || 'http://localhost:3002';
+      const API_BASE = import.meta.env.VITE_API_URL || import.meta.env.VITE_BACKEND_URL || 'http://91.108.112.75:3002';
       const response = await fetch(`${API_BASE}/api/seller-info/all`, {
         signal: controller.signal,
         headers: {
@@ -288,7 +288,7 @@ const PriceMonitor = () => {
       const timeoutId = setTimeout(() => controller.abort(), 120000); // 2 minutes timeout for scraping
       
       // Use the enhanced scraper from backend
-      const API_BASE = import.meta.env.VITE_API_URL || import.meta.env.VITE_BACKEND_URL || 'http://localhost:3002';
+      const API_BASE = import.meta.env.VITE_API_URL || import.meta.env.VITE_BACKEND_URL || 'http://91.108.112.75:3002';
       const response = await fetch(`${API_BASE}/api/scrape-product`, {
         method: 'POST',
         headers: {
@@ -401,7 +401,7 @@ const PriceMonitor = () => {
           });
 
           // Use the new endpoint that adds product immediately after scraping
-          const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3002'}/api/add-product-immediately`, {
+          const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://91.108.112.75:3002'}/api/add-product-immediately`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -564,7 +564,7 @@ const PriceMonitor = () => {
     try {
       setLoading(true);
       
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3002'}/api/price-monitor/start`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://91.108.112.75:3002'}/api/price-monitor/start`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -617,7 +617,7 @@ const PriceMonitor = () => {
     try {
       setLoading(true);
       
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3002'}/api/price-monitor/stop`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://91.108.112.75:3002'}/api/price-monitor/stop`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -667,7 +667,7 @@ const PriceMonitor = () => {
         duration: 3000,
       });
 
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3002'}/api/price-monitor/run-cycle`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://91.108.112.75:3002'}/api/price-monitor/run-cycle`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
