@@ -343,6 +343,7 @@ const Index = () => {
                       onClick={handleStopScraping}
                       variant="destructive"
                       className="w-full h-10 sm:h-11"
+                      data-testid="stop-scraping"
                     >
                       <Square className="h-4 w-4 mr-2" />
                       Stop Scraping
@@ -441,6 +442,7 @@ const Index = () => {
                   }}
                   className="bg-[#FF7A00] hover:bg-[#ff9100] text-white h-9 sm:h-10"
                   size="sm"
+                  data-testid="export-data"
                 >
                   <Download className="w-3 h-3 sm:w-4 sm:h-4 mr-2" /> Export
                 </Button>

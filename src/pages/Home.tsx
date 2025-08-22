@@ -88,72 +88,72 @@ const Home = () => {
   }, []);
 
   return (
-    <div className="min-h-full bg-[#0D0D0D] p-6 font-inter">
-      <div className="max-w-7xl mx-auto space-y-8">
+    <div className="min-h-full bg-[#0D0D0D] p-3 sm:p-4 md:p-6 font-inter">
+      <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6 md:space-y-8">
         {/* Welcome Section */}
-        <div className="text-center space-y-4">
-          <h1 className="text-4xl font-bold text-[#FFFFFF] font-inter">
+        <div className="text-center space-y-3 sm:space-y-4">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#FFFFFF] font-inter">
             Welcome to SellerCtrl Scraper
           </h1>
-          <p className="text-xl text-[#E0E0E0]/80 max-w-3xl mx-auto font-inter">
+          <p className="text-base sm:text-lg md:text-xl text-[#E0E0E0]/80 max-w-3xl mx-auto font-inter px-4">
             Your all-in-one tool for extracting product data from <span className='text-[#FFD600] font-bold'>Noon</span> and <span className='text-[#FF7A00] font-bold'>Amazon</span>.<br/>
             SellerCtrl Scraper helps sellers monitor their own products and keep an eye on competitors—track prices, sellers, and more with ease.
           </p>
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           <Card className="dashboard-card">
-            <CardContent className="p-6">
+            <CardContent className="p-4 sm:p-5 md:p-6">
               <div className="flex items-center gap-4">
-                <div className="p-3 bg-[#FF7A00] rounded-lg">
-                  <Package className="h-6 w-6 text-[#FFFFFF]" />
+                <div className="p-2 sm:p-3 bg-[#FF7A00] rounded-lg">
+                  <Package className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-[#FFFFFF]" />
                 </div>
                 <div>
-                  <p className="text-[#A3A3A3] text-sm">Total Scraped</p>
-                  <p className="text-2xl font-bold text-[#FFFFFF]">{loading ? '...' : stats.totalScraped.toLocaleString('en-US')}</p>
+                  <p className="text-[#A3A3A3] text-xs sm:text-sm">Total Scraped</p>
+                  <p className="text-lg sm:text-xl md:text-2xl font-bold text-[#FFFFFF]">{loading ? '...' : stats.totalScraped.toLocaleString('en-US')}</p>
                 </div>
               </div>
             </CardContent>
           </Card>
 
           <Card className="dashboard-card">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-[#FF7A00] rounded-lg">
-                  <TrendingUp className="h-6 w-6 text-[#FFFFFF]" />
+            <CardContent className="p-4 sm:p-5 md:p-6">
+              <div className="flex items-center gap-3 sm:gap-4">
+                <div className="p-2 sm:p-3 bg-[#FF7A00] rounded-lg">
+                  <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-[#FFFFFF]" />
                 </div>
                 <div>
-                  <p className="text-[#A3A3A3] text-sm">Today</p>
-                  <p className="text-2xl font-bold text-[#FFFFFF]">{loading ? '...' : stats.todayScraped}</p>
+                  <p className="text-[#A3A3A3] text-xs sm:text-sm">Today</p>
+                  <p className="text-lg sm:text-xl md:text-2xl font-bold text-[#FFFFFF]">{loading ? '...' : stats.todayScraped}</p>
                 </div>
               </div>
             </CardContent>
           </Card>
 
           <Card className="dashboard-card">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-[#FF7A00] rounded-lg">
-                  <Database className="h-6 w-6 text-[#FFFFFF]" />
+            <CardContent className="p-4 sm:p-5 md:p-6">
+              <div className="flex items-center gap-3 sm:gap-4">
+                <div className="p-2 sm:p-3 bg-[#FF7A00] rounded-lg">
+                  <Database className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-[#FFFFFF]" />
                 </div>
                 <div>
-                  <p className="text-[#A3A3A3] text-sm">Success Rate</p>
-                  <p className="text-2xl font-bold text-[#FFFFFF]">{loading ? '...' : stats.successRate + '%'}</p>
+                  <p className="text-[#A3A3A3] text-xs sm:text-sm">Success Rate</p>
+                  <p className="text-lg sm:text-xl md:text-2xl font-bold text-[#FFFFFF]">{loading ? '...' : stats.successRate + '%'}</p>
                 </div>
               </div>
             </CardContent>
           </Card>
 
           <Card className="dashboard-card">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-[#FF7A00] rounded-lg">
-                  <Zap className="h-6 w-6 text-[#FFFFFF]" />
+            <CardContent className="p-4 sm:p-5 md:p-6">
+              <div className="flex items-center gap-3 sm:gap-4">
+                <div className="p-2 sm:p-3 bg-[#FF7A00] rounded-lg">
+                  <Zap className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-[#FFFFFF]" />
                 </div>
                 <div>
-                  <p className="text-[#A3A3A3] text-sm">Avg Response</p>
-                  <p className="text-2xl font-bold text-[#FFFFFF]">-</p>
+                  <p className="text-[#A3A3A3] text-xs sm:text-sm">Avg Response</p>
+                  <p className="text-lg sm:text-xl md:text-2xl font-bold text-[#FFFFFF]">-</p>
                 </div>
               </div>
             </CardContent>
@@ -161,16 +161,16 @@ const Home = () => {
         </div>
 
         {/* Amazon Data Source Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           <Card className="dashboard-card">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-[#00A8E8] rounded-lg">
-                  <Package className="h-6 w-6 text-[#FFFFFF]" />
+            <CardContent className="p-4 sm:p-5 md:p-6">
+              <div className="flex items-center gap-3 sm:gap-4">
+                <div className="p-2 sm:p-3 bg-[#00A8E8] rounded-lg">
+                  <Package className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-[#FFFFFF]" />
                 </div>
                 <div>
-                  <p className="text-[#A3A3A3] text-sm">Main Page Data</p>
-                  <p className="text-2xl font-bold text-[#FFFFFF]">{loading ? '...' : stats.mainPageCount}</p>
+                  <p className="text-[#A3A3A3] text-xs sm:text-sm">Main Page Data</p>
+                  <p className="text-lg sm:text-xl md:text-2xl font-bold text-[#FFFFFF]">{loading ? '...' : stats.mainPageCount}</p>
                   <p className="text-xs text-[#A3A3A3]">Amazon products from main page</p>
                 </div>
               </div>
@@ -178,14 +178,14 @@ const Home = () => {
           </Card>
 
           <Card className="dashboard-card">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-[#FF6B6B] rounded-lg">
-                  <Package className="h-6 w-6 text-[#FFFFFF]" />
+            <CardContent className="p-4 sm:p-5 md:p-6">
+              <div className="flex items-center gap-3 sm:gap-4">
+                <div className="p-2 sm:p-3 bg-[#FF6B6B] rounded-lg">
+                  <Package className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-[#FFFFFF]" />
                 </div>
                 <div>
-                  <p className="text-[#A3A3A3] text-sm">Buying Options Data</p>
-                  <p className="text-2xl font-bold text-[#FFFFFF]">{loading ? '...' : stats.buyingOptionsCount}</p>
+                  <p className="text-[#A3A3A3] text-xs sm:text-sm">Buying Options Data</p>
+                  <p className="text-lg sm:text-xl md:text-2xl font-bold text-[#FFFFFF]">{loading ? '...' : stats.buyingOptionsCount}</p>
                   <p className="text-xs text-[#A3A3A3]">Amazon products from sidebar</p>
                 </div>
               </div>
@@ -194,17 +194,17 @@ const Home = () => {
         </div>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {quickActions.map((action, index) => (
             <Card key={index} className="dashboard-card hover:shadow-xl cursor-pointer transition-shadow" onClick={action.action}>
-              <CardContent className="p-6">
-                <div className="flex items-center gap-4">
-                  <div className={`p-3 ${action.color} rounded-lg`}>
-                    <action.icon className="h-6 w-6 text-[#FFFFFF]" />
+              <CardContent className="p-4 sm:p-5 md:p-6">
+                <div className="flex items-center gap-3 sm:gap-4">
+                  <div className={`p-2 sm:p-3 ${action.color} rounded-lg`}>
+                    <action.icon className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-[#FFFFFF]" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-[#FFFFFF] font-inter">{action.title}</h3>
-                    <p className="text-[#E0E0E0]/80">{action.description}</p>
+                    <h3 className="text-base sm:text-lg font-semibold text-[#FFFFFF] font-inter">{action.title}</h3>
+                    <p className="text-xs sm:text-sm text-[#E0E0E0]/80">{action.description}</p>
                   </div>
                 </div>
               </CardContent>
@@ -250,7 +250,7 @@ const Home = () => {
           <CardContent className="p-8 text-center">
             <h2 className="text-2xl font-bold text-[#FFFFFF] mb-4 font-inter">Ready to Start Scraping?</h2>
             <p className="text-[#FFFFFF]/90 mb-6 font-inter">Enter an Amazon ASIN or Noon product code and get detailed product information in seconds.</p>
-            <Button onClick={() => setOpenDialog(true)} className="btn-glow px-8 py-3 text-lg font-inter">
+            <Button onClick={() => setOpenDialog(true)} className="btn-glow px-8 py-3 text-lg font-inter" data-testid="start-scrape">
               Start Scraping Now
             </Button>
           </CardContent>

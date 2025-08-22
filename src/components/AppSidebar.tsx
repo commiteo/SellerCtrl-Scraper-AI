@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { ChevronDown, Package, Search, Settings, Home, History, HelpCircle, Users, Monitor, BarChart } from "lucide-react";
+import { ChevronDown, Package, Search, Settings, Home, History, HelpCircle, Users, Monitor, BarChart, Keyboard } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -15,12 +15,15 @@ import {
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { UserAccountSidebarCard } from "./UserAccountSidebarCard";
 import { useState } from "react";
+import useKeyboardShortcuts from "../hooks/useKeyboardShortcuts";
 
 export function AppSidebar() {
+  const { showShortcutsHelp } = useKeyboardShortcuts();
+  
   const [scraperOpen, setScraperOpen] = useState(
     window.location.pathname.startsWith("/scraper") ||
     window.location.pathname.startsWith("/noon-scraper") ||
-    window.location.pathname.startsWith("/crawl") ||
+
     window.location.pathname.startsWith("/multi-domain")
   );
 
@@ -66,6 +69,11 @@ export function AppSidebar() {
       title: "Help & Support",
       url: "/help",
       icon: HelpCircle,
+    },
+    {
+      title: "Keyboard Shortcuts",
+      action: showShortcutsHelp,
+      icon: Keyboard,
     },
   ];
 
@@ -127,11 +135,7 @@ export function AppSidebar() {
                         <NavLink to="/noon-scraper" className={({ isActive }) => `flex items-center gap-2 px-2 py-1.5 rounded font-inter w-full text-xs sm:text-sm ${isActive ? 'bg-[#232323] text-[#FF7A00]' : ''}`}>Noon</NavLink>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
-                    <SidebarMenuItem key="Crawl">
-                      <SidebarMenuButton asChild isActive={isActiveRoute("/crawl")} className="ml-4 sm:ml-8 text-[#E0E0E0] hover:text-[#FF7A00] hover:bg-[#232323] transition-colors duration-200">
-                        <NavLink to="/crawl" className={({ isActive }) => `flex items-center gap-2 px-2 py-1.5 rounded font-inter w-full text-xs sm:text-sm ${isActive ? 'bg-[#232323] text-[#FF7A00]' : ''}`}>Any Link</NavLink>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
+
                     <SidebarMenuItem key="Multi-Domain">
                       <SidebarMenuButton asChild isActive={isActiveRoute("/multi-domain")} className="ml-4 sm:ml-8 text-[#E0E0E0] hover:text-[#FF7A00] hover:bg-[#232323] transition-colors duration-200">
                         <NavLink to="/multi-domain" className={({ isActive }) => `flex items-center gap-2 px-2 py-1.5 rounded font-inter w-full text-xs sm:text-sm ${isActive ? 'bg-[#232323] text-[#FF7A00]' : ''}`}>🌍 Multi-Domain</NavLink>
@@ -223,12 +227,21 @@ export function AppSidebar() {
             <SidebarMenu>
               {helpItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild isActive={isActiveRoute(item.url)} className="text-[#E0E0E0] hover:text-[#FF7A00] hover:bg-[#1F1F1F] transition-colors duration-200">
-                    <NavLink to={item.url} className={({ isActive }) => `flex items-center gap-2 sm:gap-3 px-2 sm:px-3 py-2 rounded-lg font-inter text-sm sm:text-base ${isActive ? 'bg-[#232323] text-[#FF7A00]' : ''}`} end>
-                      <item.icon className="h-3 w-3 sm:h-4 sm:w-4" />
-                      <span>{item.title}</span>
-                    </NavLink>
-                  </SidebarMenuButton>
+                  {item.url ? (
+                    <SidebarMenuButton asChild isActive={isActiveRoute(item.url)} className="text-[#E0E0E0] hover:text-[#FF7A00] hover:bg-[#1F1F1F] transition-colors duration-200">
+                      <NavLink to={item.url} className={({ isActive }) => `flex items-center gap-2 sm:gap-3 px-2 sm:px-3 py-2 rounded-lg font-inter text-sm sm:text-base ${isActive ? 'bg-[#232323] text-[#FF7A00]' : ''}`} end>
+                        <item.icon className="h-3 w-3 sm:h-4 sm:w-4" />
+                        <span>{item.title}</span>
+                      </NavLink>
+                    </SidebarMenuButton>
+                  ) : (
+                    <SidebarMenuButton onClick={item.action} className="text-[#E0E0E0] hover:text-[#FF7A00] hover:bg-[#1F1F1F] transition-colors duration-200">
+                      <div className="flex items-center gap-2 sm:gap-3 px-2 sm:px-3 py-2 rounded-lg font-inter text-sm sm:text-base w-full">
+                        <item.icon className="h-3 w-3 sm:h-4 sm:w-4" />
+                        <span>{item.title}</span>
+                      </div>
+                    </SidebarMenuButton>
+                  )}
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>

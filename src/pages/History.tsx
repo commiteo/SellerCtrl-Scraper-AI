@@ -107,7 +107,8 @@ const History = () => {
                 includeBOM: true
               });
             }}
-            className="bg-[#FF7A00] hover:bg-[#ff9100] text-white shadow-orange-500/40 shadow-md transition-all h-9 sm:h-10"
+            className="bg-[#FF7A00] hover:bg-[#ff9100] text-white shadow-orange-500/40 shadow-md transition-all h-9 sm:h-10 w-full sm:w-auto"
+            data-testid="export-csv"
           >
             <FileText className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
             Export CSV
@@ -116,60 +117,60 @@ const History = () => {
         {/* Filters */}
         <Card className="dashboard-card border-[#2A2A2A]">
           <CardContent className="p-4 sm:p-6">
-            <div className="flex flex-col lg:flex-row gap-3 sm:gap-4">
-              <div className="flex-1">
+            <div className="flex flex-col gap-3 sm:gap-4">
+              <div className="w-full">
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-3 w-3 sm:h-4 sm:w-4 text-[#E0E0E0]/60" />
                   <Input
                     placeholder="Search by code or product title..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-9 sm:pl-10 bg-[#1F1F1F] border-[#2A2A2A] text-[#E0E0E0] h-9 sm:h-10 text-sm"
+                    className="pl-9 sm:pl-10 bg-[#1F1F1F] border-[#2A2A2A] text-[#E0E0E0] h-9 sm:h-10 text-sm w-full"
                   />
                 </div>
               </div>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <Button
                   variant={filterSource === 'all' ? 'default' : 'outline'}
                   onClick={() => setFilterSource('all')}
-                  className={`text-[#FAFAFA] text-xs sm:text-sm h-8 sm:h-9 ${filterSource === 'all' ? 'bg-[#FF7A00] hover:bg-[#ff9100]' : 'border-[#2A2A2A] hover:bg-[#181818]'}`}
+                  className={`text-[#FAFAFA] text-xs sm:text-sm h-8 sm:h-9 flex-1 sm:flex-none ${filterSource === 'all' ? 'bg-[#FF7A00] hover:bg-[#ff9100]' : 'border-[#2A2A2A] hover:bg-[#181818]'}`}
                 >
                   All ({historyData.length})
                 </Button>
                 <Button
                   variant={filterSource === 'Amazon' ? 'default' : 'outline'}
                   onClick={() => setFilterSource('Amazon')}
-                  className={`text-[#FAFAFA] text-xs sm:text-sm h-8 sm:h-9 ${filterSource === 'Amazon' ? 'bg-[#FF7A00] hover:bg-[#ff9100]' : 'border-[#2A2A2A] hover:bg-[#181818]'}`}
+                  className={`text-[#FAFAFA] text-xs sm:text-sm h-8 sm:h-9 flex-1 sm:flex-none ${filterSource === 'Amazon' ? 'bg-[#FF7A00] hover:bg-[#ff9100]' : 'border-[#2A2A2A] hover:bg-[#181818]'}`}
                 >
                   Amazon ({historyData.filter(item => item.source === 'Amazon').length})
                 </Button>
                 <Button
                   variant={filterSource === 'Noon' ? 'default' : 'outline'}
                   onClick={() => setFilterSource('Noon')}
-                  className={`text-[#FAFAFA] text-xs sm:text-sm h-8 sm:h-9 ${filterSource === 'Noon' ? 'bg-[#FFD600] hover:bg-[#ffe066] text-black' : 'border-[#2A2A2A] hover:bg-[#181818]'}`}
+                  className={`text-[#FAFAFA] text-xs sm:text-sm h-8 sm:h-9 flex-1 sm:flex-none ${filterSource === 'Noon' ? 'bg-[#FFD600] hover:bg-[#ffe066] text-black' : 'border-[#2A2A2A] hover:bg-[#181818]'}`}
                 >
                   Noon ({historyData.filter(item => item.source === 'Noon').length})
                 </Button>
               </div>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <Button
                   variant={filterStatus === 'all' ? 'default' : 'outline'}
                   onClick={() => setFilterStatus('all')}
-                  className={`text-[#FAFAFA] text-xs sm:text-sm h-8 sm:h-9 ${filterStatus === 'all' ? 'bg-[#FF7A00] hover:bg-[#ff9100]' : 'border-[#2A2A2A] hover:bg-[#181818]'}`}
+                  className={`text-[#FAFAFA] text-xs sm:text-sm h-8 sm:h-9 flex-1 sm:flex-none ${filterStatus === 'all' ? 'bg-[#FF7A00] hover:bg-[#ff9100]' : 'border-[#2A2A2A] hover:bg-[#181818]'}`}
                 >
                   All Status
                 </Button>
                 <Button
                   variant={filterStatus === 'success' ? 'default' : 'outline'}
                   onClick={() => setFilterStatus('success')}
-                  className={`text-[#FAFAFA] text-xs sm:text-sm h-8 sm:h-9 ${filterStatus === 'success' ? 'bg-[#FF7A00] hover:bg-[#ff9100]' : 'border-[#2A2A2A] hover:bg-[#181818]'}`}
+                  className={`text-[#FAFAFA] text-xs sm:text-sm h-8 sm:h-9 flex-1 sm:flex-none ${filterStatus === 'success' ? 'bg-[#FF7A00] hover:bg-[#ff9100]' : 'border-[#2A2A2A] hover:bg-[#181818]'}`}
                 >
                   Success
                 </Button>
                 <Button
                   variant={filterStatus === 'failed' ? 'default' : 'outline'}
                   onClick={() => setFilterStatus('failed')}
-                  className={`text-[#FAFAFA] text-xs sm:text-sm h-8 sm:h-9 ${filterStatus === 'failed' ? 'bg-[#FF7A00] hover:bg-[#ff9100]' : 'border-[#2A2A2A] hover:bg-[#181818]'}`}
+                  className={`text-[#FAFAFA] text-xs sm:text-sm h-8 sm:h-9 flex-1 sm:flex-none ${filterStatus === 'failed' ? 'bg-[#FF7A00] hover:bg-[#ff9100]' : 'border-[#2A2A2A] hover:bg-[#181818]'}`}
                 >
                   Failed
                 </Button>
@@ -185,20 +186,20 @@ const History = () => {
               Scraped Products ({filteredData.length})
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-0 sm:p-6">
+          <CardContent className="p-0">
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
-                  <TableRow className="border-[#2A2A2A]">
-                    <TableHead className="text-[#E0E0E0]/90 text-xs sm:text-sm">Product</TableHead>
-                    <TableHead className="text-[#E0E0E0]/90 text-xs sm:text-sm">Code</TableHead>
-                    <TableHead className="text-[#E0E0E0]/90 text-xs sm:text-sm">Price</TableHead>
-                    <TableHead className="text-[#E0E0E0]/90 text-xs sm:text-sm">Seller</TableHead>
-                    <TableHead className="text-[#E0E0E0]/90 text-xs sm:text-sm hidden sm:table-cell">Source</TableHead>
-                    <TableHead className="text-[#E0E0E0]/90 text-xs sm:text-sm hidden lg:table-cell">Data Source</TableHead>
-                    <TableHead className="text-[#E0E0E0]/90 text-xs sm:text-sm hidden md:table-cell">Scraped At</TableHead>
-                    <TableHead className="text-[#E0E0E0]/90 text-xs sm:text-sm">Status</TableHead>
-                    <TableHead className="text-[#E0E0E0]/90 text-xs sm:text-sm">Actions</TableHead>
+                  <TableRow className="border-[#2A2A2A] hover:bg-[#2A2A2A]/50">
+                    <TableHead className="text-[#E0E0E0] font-medium text-xs sm:text-sm">Product</TableHead>
+                    <TableHead className="text-[#E0E0E0] font-medium text-xs sm:text-sm hidden sm:table-cell">Code</TableHead>
+                    <TableHead className="text-[#E0E0E0] font-medium text-xs sm:text-sm">Price</TableHead>
+                    <TableHead className="text-[#E0E0E0] font-medium text-xs sm:text-sm hidden sm:table-cell">Seller</TableHead>
+                    <TableHead className="text-[#E0E0E0] font-medium text-xs sm:text-sm hidden md:table-cell">Source</TableHead>
+                    <TableHead className="text-[#E0E0E0] font-medium text-xs sm:text-sm hidden lg:table-cell">Data Source</TableHead>
+                    <TableHead className="text-[#E0E0E0] font-medium text-xs sm:text-sm hidden md:table-cell">Scraped At</TableHead>
+                    <TableHead className="text-[#E0E0E0] font-medium text-xs sm:text-sm">Status</TableHead>
+                    <TableHead className="text-[#E0E0E0] font-medium text-xs sm:text-sm">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -224,20 +225,29 @@ const History = () => {
                             <p className="font-medium text-[#FAFAFA] text-xs sm:text-sm max-w-[120px] sm:max-w-xs truncate font-inter">
                               {item.title || 'N/A'}
                             </p>
+                            <div className="sm:hidden">
+                              <p className="text-[#E0E0E0]/60 text-xs">{item.code || 'N/A'}</p>
+                            </div>
                           </div>
                         </div>
                       </TableCell>
-                      <TableCell className="text-[#E0E0E0] font-mono text-xs sm:text-sm">
+                      <TableCell className="text-[#E0E0E0] font-mono text-xs sm:text-sm hidden sm:table-cell">
                         {item.code || 'N/A'}
                       </TableCell>
                       <TableCell className="text-[#FF7A00] font-semibold text-xs sm:text-sm">
                         {item.price || (item.dataSource === 'unavailable' ? 'Unavailable' : 'N/A')}
                       </TableCell>
-                      <TableCell className="text-[#E0E0E0] text-xs sm:text-sm">
+                      <TableCell className="text-[#E0E0E0] text-xs sm:text-sm hidden sm:table-cell">
                         {item.source === 'Amazon' ? (item.buyboxWinner || item.seller || (item.dataSource === 'unavailable' ? 'Unavailable' : 'N/A')) : (item.seller || 'N/A')}
                       </TableCell>
-                      <TableCell className="text-[#E0E0E0] text-xs sm:text-sm hidden sm:table-cell">
-                        {item.source}
+                      <TableCell className="text-[#E0E0E0] text-xs sm:text-sm hidden md:table-cell">
+                        <Badge variant="outline" className={`text-xs ${
+                          item.source === 'Amazon' 
+                            ? 'border-[#FF7A00] text-[#FF7A00]' 
+                            : 'border-[#FFD600] text-[#FFD600]'
+                        }`}>
+                          {item.source}
+                        </Badge>
                       </TableCell>
                       <TableCell className="text-[#E0E0E0] text-xs sm:text-sm hidden lg:table-cell">
                         {item.source === 'Amazon' && item.dataSource ? (
@@ -261,6 +271,13 @@ const History = () => {
                         <Badge variant={item.status === 'success' ? 'default' : 'destructive'} className="text-xs">
                           {item.status || 'N/A'}
                         </Badge>
+                        <div className="md:hidden mt-1">
+                          <div className="flex items-center gap-1 text-xs text-[#E0E0E0]/60">
+                            <span>{item.source}</span>
+                            <span>•</span>
+                            <span>{item.scrapedAt ? new Date(item.scrapedAt).toLocaleDateString() : 'N/A'}</span>
+                          </div>
+                        </div>
                       </TableCell>
                       <TableCell>
                         <div className="flex gap-1 sm:gap-2">

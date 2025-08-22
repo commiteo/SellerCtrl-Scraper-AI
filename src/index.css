@@ -10,6 +10,7 @@
 
 @layer base {
   :root {
+    /* Dark Mode (Default) */
     --background: 13 13 13; /* #0D0D0D */
     --foreground: 224 224 224; /* #E0E0E0 */
 
@@ -47,6 +48,44 @@
     --sidebar-border: 42 42 42; /* #2A2A2A */
     --sidebar-ring: 255 122 0; /* #FF7A00 */
   }
+
+  .light {
+    /* Light Mode */
+    --background: 255 255 255; /* #FFFFFF */
+    --foreground: 15 23 42; /* #0F172A */
+
+    --card: 255 255 255; /* #FFFFFF */
+    --card-foreground: 15 23 42; /* #0F172A */
+    --popover: 255 255 255; /* #FFFFFF */
+    --popover-foreground: 15 23 42; /* #0F172A */
+
+    --primary: 255 122 0; /* #FF7A00 */
+    --primary-foreground: 255 255 255; /* #FFFFFF */
+
+    --secondary: 241 245 249; /* #F1F5F9 */
+    --secondary-foreground: 15 23 42; /* #0F172A */
+
+    --muted: 241 245 249; /* #F1F5F9 */
+    --muted-foreground: 100 116 139; /* #64748B */
+
+    --accent: 241 245 249; /* #F1F5F9 */
+    --accent-foreground: 15 23 42; /* #0F172A */
+    --destructive: 239 68 68; /* #EF4444 */
+    --destructive-foreground: 255 255 255; /* #FFFFFF */
+
+    --border: 226 232 240; /* #E2E8F0 */
+    --input: 226 232 240; /* #E2E8F0 */
+    --ring: 255 122 0; /* #FF7A00 */
+
+    --sidebar-background: 255 255 255; /* #FFFFFF */
+    --sidebar-foreground: 15 23 42; /* #0F172A */
+    --sidebar-primary: 255 122 0; /* #FF7A00 */
+    --sidebar-primary-foreground: 255 255 255; /* #FFFFFF */
+    --sidebar-accent: 241 245 249; /* #F1F5F9 */
+    --sidebar-accent-foreground: 15 23 42; /* #0F172A */
+    --sidebar-border: 226 232 240; /* #E2E8F0 */
+    --sidebar-ring: 255 122 0; /* #FF7A00 */
+  }
 }
 
 @layer base {
@@ -56,26 +95,26 @@
   }
 
   body {
-    @apply bg-[#0D0D0D] text-[#E0E0E0];
+    @apply bg-background text-foreground;
   }
 
   * {
     @apply border-border;
   }
 
-  /* Custom scrollbar for dark theme */
+  /* Custom scrollbar for both themes */
   ::-webkit-scrollbar {
     width: 7px;
   }
   ::-webkit-scrollbar-track {
-    background: #0D0D0D;
+    background: hsl(var(--background));
   }
   ::-webkit-scrollbar-thumb {
-    background: #2A2A2A;
+    background: hsl(var(--border));
     border-radius: 6px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #FF7A00;
+    background: hsl(var(--primary));
   }
 
   /* Enhanced Toast/Error Messages */
@@ -709,12 +748,6 @@ select:focus-visible {
   }
 }
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 :root {
   /* Custom Color Variables */
   --primary: #FF7A00;
@@ -822,31 +855,31 @@ a {
 }
 
 ::-webkit-scrollbar-track {
-  background: #1A1A1A;
+  background: hsl(var(--muted));
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #404040;
+  background: hsl(var(--border));
   border-radius: 4px;
-  transition: background var(--transition-normal);
+  transition: background 0.2s ease;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #FF7A00;
+  background: hsl(var(--primary));
 }
 
 /* Custom Focus Styles */
 *:focus-visible {
-  outline: 2px solid var(--primary);
+  outline: 2px solid hsl(var(--primary));
   outline-offset: 2px;
   border-radius: 4px;
 }
 
 /* Custom Selection */
 ::selection {
-  background: var(--primary);
-  color: white;
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
 }
 
 /* Custom Animations */

@@ -10,6 +10,8 @@ import { Switch } from '@/components/ui/switch';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { ValidatedTextarea } from '@/components/ui/validated-input';
+import { ValidationSchemas } from '@/lib/validation';
 
 interface DomainOption {
   code: string;
@@ -564,9 +566,10 @@ const MultiDomainScraperPage = () => {
                 onClick={handleStopScraping}
                 variant="destructive"
                 className="w-full h-10 sm:h-11"
+                data-testid="stop-multi-scraping"
               >
                 <StopCircle className="h-4 w-4 mr-2" />
-                Stop Scraping
+                Stop Multi-Domain Scraping
               </Button>
             )}
           </div>
@@ -580,13 +583,15 @@ const MultiDomainScraperPage = () => {
               </CardHeader>
               <CardContent className="space-y-3 sm:space-y-4">
                 <div className="space-y-2">
-                  <textarea
+                  <ValidatedTextarea
                     value={asinInput}
                     onChange={(e) => setAsinInput(e.target.value)}
                     rows={3}
                     className="w-full bg-[#1F1F1F] border-[#2A2A2A] text-[#FFFFFF] placeholder-[#A3A3A3] focus:border-[#FF7A00] font-inter rounded resize-y text-sm sm:text-base"
                     placeholder="Enter ASINs separated by commas, spaces, or new lines (e.g., B08N5WRWNW, B002QYW8LW)"
                     disabled={isScraping}
+                    validationType="asin"
+                    schema={ValidationSchemas.multiDomainScraping}
                   />
                   <div className="flex items-center justify-between">
                     <p className="text-xs sm:text-sm text-[#A3A3A3]">
@@ -598,6 +603,7 @@ const MultiDomainScraperPage = () => {
                   onClick={handleScrape}
                   disabled={isScraping || !asinInput.trim() || selectedDomains.length === 0}
                   className="w-full bg-[#FF7A00] hover:bg-[#ff9100] text-white font-semibold h-10 sm:h-11"
+                  data-testid="start-multi-scraping"
                 >
                   <Play className="h-4 w-4 mr-2" />
                   {isScraping ? 'Scraping...' : 'Start Multi-Domain Scraping'}
@@ -804,4 +810,4 @@ const MultiDomainScraperPage = () => {
   );
 };
 
-export default MultiDomainScraperPage; 
+export default MultiDomainScraperPage;

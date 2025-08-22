@@ -44,6 +44,8 @@ export class AmazonScraper {
       const json = await res.json();
       // Debug: print the full data object received from backend
       console.log('Received from backend:', json.data);
+      console.log('Backend response link:', json.data?.link);
+      console.log('Backend response dataSource:', json.data?.dataSource);
       if (json.data) {
         // Debug: print all fields before saving
         console.log('Saving to DB:', {
@@ -80,16 +82,20 @@ export class AmazonScraper {
         } catch (e) {
           console.error('Failed to sync competitors:', e);
         }
-        return { 
-          success: true, 
-          data: { 
+        const finalData = { 
             ...json.data, 
             asin,
             image: json.data.imageUrl || json.data.image, // تعيين الصورة
             buyboxWinner: json.data.sellerName || json.data.buyboxWinner, // تعيين البائع
             link: json.data.link, // تعيين الرابط
             dataSource: json.data.dataSource // تعيين مصدر البيانات
-          } 
+          };
+        console.log('Final data being returned:', finalData);
+        console.log('Final link:', finalData.link);
+        console.log('Final dataSource:', finalData.dataSource);
+        return { 
+          success: true, 
+          data: finalData
         };
       }
       return { success: false, error: json.error || 'No data returned' };

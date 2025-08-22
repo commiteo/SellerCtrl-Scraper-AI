@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
+import { ValidatedInput } from '@/components/ui/validated-input';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
@@ -181,39 +181,43 @@ const TelegramSettings: React.FC = () => {
           </CardHeader>
           <CardContent className="space-y-6">
             {/* Bot Token */}
-            <div className="space-y-2">
-              <Label htmlFor="bot_token" className="text-[#E0E0E0]">
-                Bot Token
-              </Label>
-              <Input
-                id="bot_token"
-                type="password"
-                placeholder="1234567890:ABCdefGHIjklMNOpqrsTUVwxyz"
-                value={config.bot_token}
-                onChange={(e) => setConfig(prev => ({ ...prev, bot_token: e.target.value }))}
-                className="bg-[#1F1F1F] border-[#2A2A2A] text-[#E0E0E0]"
-              />
-              <p className="text-[#A3A3A3] text-xs">
-                Get this from @BotFather on Telegram
-              </p>
-            </div>
+            <ValidatedInput
+              fieldName="bot_token"
+              label="Bot Token"
+              type="password"
+              placeholder="1234567890:ABCdefGHIjklMNOpqrsTUVwxyz"
+              value={config.bot_token}
+              onChange={(value) => setConfig(prev => ({ ...prev, bot_token: value }))}
+              schema={{
+                bot_token: {
+                  required: true,
+                  type: 'telegram_token' as const,
+                  message: 'Please enter a valid Telegram bot token'
+                }
+              }}
+              className="bg-[#1F1F1F] border-[#2A2A2A] text-[#E0E0E0]"
+              helperText="Get this from @BotFather on Telegram"
+              required
+            />
 
             {/* Chat ID */}
-            <div className="space-y-2">
-              <Label htmlFor="chat_id" className="text-[#E0E0E0]">
-                Chat ID
-              </Label>
-              <Input
-                id="chat_id"
-                placeholder="123456789 or @channel_username"
-                value={config.chat_id}
-                onChange={(e) => setConfig(prev => ({ ...prev, chat_id: e.target.value }))}
-                className="bg-[#1F1F1F] border-[#2A2A2A] text-[#E0E0E0]"
-              />
-              <p className="text-[#A3A3A3] text-xs">
-                Your personal chat ID or channel username (with @)
-              </p>
-            </div>
+            <ValidatedInput
+              fieldName="chat_id"
+              label="Chat ID"
+              placeholder="123456789 or @channel_username"
+              value={config.chat_id}
+              onChange={(value) => setConfig(prev => ({ ...prev, chat_id: value }))}
+              schema={{
+                chat_id: {
+                  required: true,
+                  type: 'telegram_chat_id' as const,
+                  message: 'Please enter a valid chat ID or channel username'
+                }
+              }}
+              className="bg-[#1F1F1F] border-[#2A2A2A] text-[#E0E0E0]"
+              helperText="Your personal chat ID or channel username (with @)"
+              required
+            />
 
             {/* Action Buttons */}
             <div className="flex gap-3 pt-4">
@@ -349,4 +353,4 @@ const TelegramSettings: React.FC = () => {
   );
 };
 
-export default TelegramSettings; 
+export default TelegramSettings;

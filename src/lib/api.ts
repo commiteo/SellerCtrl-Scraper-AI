@@ -21,7 +21,7 @@ export const API_CONFIG = {
     MULTI_DOMAIN_SCRAPE: '/api/multi-domain-scrape',
     PARALLEL_MULTI_DOMAIN_SCRAPE: '/api/parallel-multi-domain-scrape',
     CREW_PARALLEL_SCRAPE: '/api/crew-parallel-scrape',
-    CRAWL: '/api/crawl',
+  
     
     // Analytics
     ANALYTICS_PERFORMANCE: '/api/analytics/performance',

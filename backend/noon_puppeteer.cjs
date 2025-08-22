@@ -1,14 +1,37 @@
 const puppeteer = require('puppeteer');
-const CHROME_PATH = process.env.CHROME_EXECUTABLE_PATH || process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/google-chrome';
+// Windows Chrome paths
+const WINDOWS_CHROME_PATHS = [
+  'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+  'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
+  process.env.LOCALAPPDATA + '\\Google\\Chrome\\Application\\chrome.exe'
+];
+
+// Find available Chrome path
 const fs = require('fs');
+let CHROME_PATH = process.env.CHROME_EXECUTABLE_PATH || process.env.PUPPETEER_EXECUTABLE_PATH;
+
+if (!CHROME_PATH) {
+  // Try to find Chrome on Windows
+  for (const path of WINDOWS_CHROME_PATHS) {
+    if (fs.existsSync(path)) {
+      CHROME_PATH = path;
+      break;
+    }
+  }
+}
+
+// Fallback to default puppeteer if no Chrome found
+if (!CHROME_PATH || !fs.existsSync(CHROME_PATH)) {
+  console.error('Chrome not found at specified paths, using default puppeteer');
+  CHROME_PATH = null;
+}
 
 async function scrapeNoon(productCode) {
   console.error('=== STARTING NOON SCRAPER ===');
   let browser;
   try {
     console.error('Launching Chrome browser...');
-    browser = await puppeteer.launch({
-      executablePath: CHROME_PATH,
+    const launchOptions = {
       headless: process.env.HEADLESS === 'false' ? false : true, // Dynamic headless mode
       defaultViewport: null,
       args: [
@@ -25,7 +48,17 @@ async function scrapeNoon(productCode) {
         '--disable-http3',
         '--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
       ]
-    });
+    };
+    
+    // Only set executablePath if we found Chrome
+    if (CHROME_PATH) {
+      launchOptions.executablePath = CHROME_PATH;
+      console.error('Using Chrome at:', CHROME_PATH);
+    } else {
+      console.error('Using default Puppeteer Chromium');
+    }
+    
+    browser = await puppeteer.launch(launchOptions);
     const page = await browser.newPage();
     const url = `https://www.noon.com/egypt-en/${productCode}/p`;
     console.error('Opening product page:', url);
@@ -140,4 +173,4 @@ if (!productCode) {
   console.error('Usage: node noon_puppeteer.cjs <PRODUCT_CODE>');
   process.exit(1);
 }
-scrapeNoon(productCode); 
+scrapeNoon(productCode);

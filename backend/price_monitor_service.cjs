@@ -665,7 +665,9 @@ class PriceMonitorService {
           sellerName, 
           sellerId: null, 
           hasBuybox, 
-          totalOffers 
+          totalOffers,
+          link: window.location.href, // رابط المنتج
+          dataSource: 'main_page' // مصدر البيانات
         };
       });
 
@@ -683,7 +685,10 @@ class PriceMonitorService {
           sellerName: pageData.sellerName,
           sellerId: pageData.sellerId,
           hasBuybox: pageData.hasBuybox,
-          totalOffers: pageData.totalOffers
+          totalOffers: pageData.totalOffers,
+          link: pageData.link, // رابط المنتج
+          dataSource: pageData.dataSource, // مصدر البيانات
+          asin: asin // ASIN المنتج
         }
       };
 
@@ -1329,4 +1334,4 @@ if (require.main === module) {
     console.error('❌ Failed to start monitoring service:', error);
     process.exit(1);
   });
-} 
+}

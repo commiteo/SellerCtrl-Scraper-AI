@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { ValidatedInput, ValidatedTextarea } from "@/components/ui/validated-input";
+import { ValidationSchemas } from "@/lib/validation";
 
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -1319,12 +1321,12 @@ const PriceMonitor = () => {
             <CardHeader className="pb-3 sm:pb-4">
               <CardTitle className="text-[#FFFFFF] text-base sm:text-lg">Add Product to Monitor</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-2">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                <div className="space-y-1">
+            <CardContent className="space-y-3 sm:space-y-4">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4">
+                <div className="space-y-2">
                   <Label className="text-[#E0E0E0] text-sm">My Account</Label>
                   <Select value={selectedAccount} onValueChange={setSelectedAccount}>
-                    <SelectTrigger className="bg-[#1F1F1F] border-[#2A2A2A] text-[#FFFFFF] h-10">
+                    <SelectTrigger className="bg-[#1F1F1F] border-[#2A2A2A] text-[#FFFFFF] h-10 sm:h-11">
                       <SelectValue placeholder="Select Account" />
                     </SelectTrigger>
                     <SelectContent className="bg-[#2A2A2A] border-[#3A3A3A]">
@@ -1335,10 +1337,10 @@ const PriceMonitor = () => {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="space-y-1">
+                <div className="space-y-2">
                   <Label className="text-[#E0E0E0] text-sm">Region</Label>
                   <Select value={newProduct.region} onValueChange={(value) => setNewProduct(prev => ({ ...prev, region: value }))}>
-                    <SelectTrigger className="bg-[#1F1F1F] border-[#2A2A2A] text-[#FFFFFF] h-10">
+                    <SelectTrigger className="bg-[#1F1F1F] border-[#2A2A2A] text-[#FFFFFF] h-10 sm:h-11">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="bg-[#2A2A2A] border-[#3A3A3A]">
@@ -1350,9 +1352,9 @@ const PriceMonitor = () => {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="space-y-1 md:col-span-2">
+                <div className="space-y-2 lg:col-span-2">
                   <Label className="text-[#E0E0E0] text-sm">Amazon ASIN</Label>
-                  <Textarea
+                  <ValidatedTextarea
                     value={newProduct.asin}
                     onChange={(e) => setNewProduct(prev => ({ ...prev, asin: e.target.value.toUpperCase() }))}
                     placeholder="Enter ASINs (one per line or separated by commas):
@@ -1365,15 +1367,17 @@ B08N5WRWNW - iPhone 12
 B09LH36816 - Samsung Galaxy"
                     className="bg-[#1F1F1F] border-[#2A2A2A] text-[#FFFFFF] min-h-[80px]"
                     rows={4}
+                    validationType="asin"
+                    schema={ValidationSchemas.priceMonitor}
                   />
                   <p className="text-xs text-[#A3A3A3]">
                     Enter one ASIN per line or separate by commas. Each ASIN must be exactly 10 characters.
                   </p>
                 </div>
-                <div className="space-y-1">
+                <div className="space-y-2">
                   <Label className="text-[#E0E0E0] text-sm">Scrape Interval (minutes)</Label>
                   <Select value={newProduct.scrapeInterval.toString()} onValueChange={(value) => setNewProduct(prev => ({ ...prev, scrapeInterval: parseInt(value) }))}>
-                    <SelectTrigger className="bg-[#1F1F1F] border-[#2A2A2A] text-[#FFFFFF] h-10">
+                    <SelectTrigger className="bg-[#1F1F1F] border-[#2A2A2A] text-[#FFFFFF] h-10 sm:h-11">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="bg-[#2A2A2A] border-[#3A3A3A]">
@@ -1387,9 +1391,9 @@ B09LH36816 - Samsung Galaxy"
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="space-y-1">
+                <div className="space-y-2">
                   <Label className="text-[#E0E0E0] text-sm">Alert Threshold (%)</Label>
-                  <Input
+                  <ValidatedInput
                     type="number"
                     value={newProduct.alertThreshold}
                     onChange={(e) => setNewProduct(prev => ({ ...prev, alertThreshold: parseInt(e.target.value) || 0 }))}
@@ -1397,10 +1401,12 @@ B09LH36816 - Samsung Galaxy"
                     className="bg-[#1F1F1F] border-[#2A2A2A] text-[#FFFFFF] h-10"
                     min="0"
                     max="100"
+                    validationType="number"
+                    schema={ValidationSchemas.priceMonitor}
                   />
                 </div>
               </div>
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-2 sm:space-x-3">
                 <Switch
                   id="isActive"
                   checked={newProduct.isActive}
@@ -1408,11 +1414,11 @@ B09LH36816 - Samsung Galaxy"
                 />
                 <Label htmlFor="isActive" className="text-[#E0E0E0] text-sm">Active monitoring</Label>
               </div>
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
                 <Button
                   onClick={addProductToMonitor}
                   disabled={isLoading || !newProduct.asin.trim()}
-                  className="bg-[#FF7A00] hover:bg-[#ff9100] text-white h-10"
+                  className="bg-[#FF7A00] hover:bg-[#ff9100] text-white h-10 sm:h-11 w-full sm:w-auto"
                 >
                   {isLoading ? (
                     <>
@@ -1429,7 +1435,7 @@ B09LH36816 - Samsung Galaxy"
                 <Button
                   onClick={() => toggleAddForm(false)}
                   variant="outline"
-                  className="border-[#2A2A2A] text-[#E0E0E0] hover:bg-[#2A2A2A] h-10"
+                  className="border-[#2A2A2A] text-[#E0E0E0] hover:bg-[#2A2A2A] h-10 sm:h-11 w-full sm:w-auto"
                 >
                   Cancel
                 </Button>
@@ -1843,4 +1849,4 @@ B09LH36816 - Samsung Galaxy"
   );
 };
 
-export default PriceMonitor; 
+export default PriceMonitor;

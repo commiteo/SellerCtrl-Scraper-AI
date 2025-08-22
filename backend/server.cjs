@@ -8,6 +8,20 @@ const puppeteer = require('puppeteer-extra');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 puppeteer.use(StealthPlugin());
 
+// Import enhanced rate limiting middleware
+const {
+  generalLimiter,
+  scrapingLimiter,
+  amazonScrapingLimiter,
+  noonScrapingLimiter,
+
+  adminLimiter,
+  authLimiter,
+  apiKeyLimiter,
+  getRateLimitStats,
+  clearRateLimit
+} = require('./middleware/rateLimit.cjs');
+
 const PORT = process.env.API_PORT || 3002;
 
 const supabaseUrl = 'https://aqkaxcwdcqnwzgvaqtne.supabase.co';
@@ -31,66 +45,71 @@ const advancedTelegramService = services.advancedTelegramService;
 
 
 
-const sendJSON = (res, statusCode, data) => {
-  res.writeHead(statusCode, {
+// Enhanced sendJSON with rate limit headers
+const sendJSON = (res, statusCode, data, rateLimitInfo = null) => {
+  const headers = {
     'Content-Type': 'application/json',
     'Access-Control-Allow-Origin': '*',
-  });
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-API-Key, X-API-Tier',
+  };
+  
+  // Add rate limit headers if available
+  if (rateLimitInfo) {
+    headers['X-RateLimit-Limit'] = rateLimitInfo.limit;
+    headers['X-RateLimit-Remaining'] = rateLimitInfo.remaining;
+    headers['X-RateLimit-Reset'] = rateLimitInfo.reset;
+  }
+  
+  res.writeHead(statusCode, headers);
   res.end(JSON.stringify(data));
 };
 
-async function crawlUrl(url) {
+// Authentication middleware
+const authenticateUser = async (req) => {
   try {
-    const browser = await puppeteer.launch({ 
-      executablePath: process.env.CHROME_EXECUTABLE_PATH || process.env.PUPPETEER_EXECUTABLE_PATH || "/usr/bin/google-chrome",
-      headless: process.env.HEADLESS === 'false' ? false : true, // Dynamic headless mode
-      defaultViewport: null,
-      slowMo: 50,
-      args: [
-        '--no-sandbox', 
-        '--disable-setuid-sandbox',
-        '--disable-dev-shm-usage',
-        '--disable-accelerated-2d-canvas',
-        '--no-first-run',
-        '--no-zygote',
-        '--disable-gpu',
-        '--disable-background-timer-throttling',
-        '--disable-backgrounding-occluded-windows',
-        '--disable-renderer-backgrounding',
-        '--disable-features=TranslateUI',
-        '--disable-ipc-flooding-protection',
-        '--window-size=800,600', // SMALL WINDOW FOR DISPLAY ONLY
-        '--disable-web-security',
-        '--disable-features=VizDisplayCompositor',
-        '--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-      ] 
-    });
-    const page = await browser.newPage();
-    await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36');
-    await page.setExtraHTTPHeaders({ 'accept-language': 'en-US,en;q=0.9' });
-    await page.setJavaScriptEnabled(true);
-    await page.goto(url, { waitUntil: 'networkidle2', timeout: 60000 });
-    const pageText = await page.evaluate(() => document.body.innerText);
-    await browser.close();
-
-    if (!GEMINI_API_KEY) throw new Error('Missing GEMINI_API_KEY');
-    const prompt = `Extract the most important content from the following text and summarize it as a well-structured Markdown document. If the text contains a list of products, show them as a Markdown list with title, price, and description if possible.\n\nTEXT:\n${pageText}`;
-    const gemRes = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }),
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return null;
+    }
+    
+    const token = authHeader.substring(7);
+    const decoded = authService.verifyToken(token);
+    
+    if (decoded && decoded.id) {
+      // Fetch user details from database
+      const { data: user, error } = await supabase
+        .from('users')
+        .select('id, email, name, role')
+        .eq('id', decoded.id)
+        .single();
+      
+      if (!error && user) {
+        return user;
       }
-    );
-    const gemJson = await gemRes.json();
-    const markdown = gemJson.candidates?.[0]?.content?.parts?.[0]?.text || '';
-    return { text: pageText, markdown };
-  } catch (err) {
-    console.error('crawlUrl error:', err);
-    throw err;
+    }
+    
+    return null;
+  } catch (error) {
+    console.error('Authentication error:', error);
+    return null;
   }
-}
+};
+
+// Rate limiting wrapper function
+const applyRateLimit = (limiter) => {
+  return new Promise((resolve, reject) => {
+    limiter(req, res, (err) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve();
+      }
+    });
+  });
+};
+
+
 
 // --- SYNC COMPETITORS LOGIC ---
 async function syncCompetitors() {
@@ -144,17 +163,46 @@ async function syncCompetitors() {
   }
 }
 
-const server = http.createServer((req, res) => {
+const server = http.createServer(async (req, res) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     res.writeHead(204, {
       'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'POST,OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-API-Key, X-API-Tier',
     });
     return res.end();
   }
 
+  // Authenticate user for all requests
+  req.user = await authenticateUser(req);
+  
+  // Apply general rate limiting to all requests
+  try {
+    await new Promise((resolve, reject) => {
+      generalLimiter(req, res, (err) => {
+        if (err) reject(err);
+        else resolve();
+      });
+    });
+  } catch (rateLimitError) {
+    // Rate limit exceeded, response already sent by middleware
+    return;
+  }
+
   if (req.method === 'POST' && req.url === '/api/scrape') {
+    // Apply Amazon scraping rate limit
+    try {
+      await new Promise((resolve, reject) => {
+        amazonScrapingLimiter(req, res, (err) => {
+          if (err) reject(err);
+          else resolve();
+        });
+      });
+    } catch (rateLimitError) {
+      return; // Rate limit exceeded, response already sent
+    }
+    
     let body = '';
     req.on('data', chunk => {
       body += chunk.toString();
@@ -206,6 +254,18 @@ const server = http.createServer((req, res) => {
       }
     });
   } else if (req.method === 'POST' && req.url === '/api/noon-scrape') {
+    // Apply Noon scraping rate limit
+    try {
+      await new Promise((resolve, reject) => {
+        noonScrapingLimiter(req, res, (err) => {
+          if (err) reject(err);
+          else resolve();
+        });
+      });
+    } catch (rateLimitError) {
+      return; // Rate limit exceeded, response already sent
+    }
+    
     let body = '';
     req.on('data', chunk => {
       body += chunk.toString();
@@ -248,22 +308,7 @@ const server = http.createServer((req, res) => {
         sendJSON(res, 400, { error: 'Invalid JSON' });
       }
     });
-  } else if (req.method === 'POST' && req.url === '/api/crawl') {
-    let body = '';
-    req.on('data', chunk => {
-      body += chunk.toString();
-    });
-    req.on('end', async () => {
-      try {
-        const { url } = JSON.parse(body);
-        if (!url) return sendJSON(res, 400, { error: 'URL is required' });
-        const result = await crawlUrl(url);
-        sendJSON(res, 200, { data: result });
-      } catch (err) {
-        console.error('crawl error:', err);
-        sendJSON(res, 500, { error: 'Failed to crawl url' });
-      }
-    });
+
   } else if (req.method === 'GET' && req.url === '/api/analytics/performance') {
     (async () => {
       try {
@@ -756,6 +801,8 @@ const server = http.createServer((req, res) => {
 
         const result = await priceMonitorService.scrapeProductPrice(asin, region);
         console.log('🔍 Backend scrape result for', asin, ':', result);
+        console.log('🔍 Backend result.data.link:', result.data?.link);
+        console.log('🔍 Backend result.data.dataSource:', result.data?.dataSource);
         sendJSON(res, 200, result);
       } catch (error) {
         console.error('Error scraping product:', error);
@@ -1173,6 +1220,163 @@ const server = http.createServer((req, res) => {
       }
     });
     return;
+  }
+
+  // 📊 Rate Limiting Management Endpoints
+  else if (req.method === 'GET' && req.url === '/api/admin/rate-limit-stats') {
+    // Apply admin rate limit
+    try {
+      await new Promise((resolve, reject) => {
+        adminLimiter(req, res, (err) => {
+          if (err) reject(err);
+          else resolve();
+        });
+      });
+    } catch (rateLimitError) {
+      return;
+    }
+    
+    // Check if user is admin
+    if (!req.user || req.user.role !== 'admin') {
+      return sendJSON(res, 403, { error: 'Admin access required' });
+    }
+    
+    try {
+      const stats = await getRateLimitStats();
+      sendJSON(res, 200, { success: true, data: stats });
+    } catch (error) {
+      console.error('Error getting rate limit stats:', error);
+      sendJSON(res, 500, { error: 'Failed to get rate limit statistics' });
+    }
+  }
+  
+  else if (req.method === 'POST' && req.url === '/api/admin/clear-rate-limit') {
+    // Apply admin rate limit
+    try {
+      await new Promise((resolve, reject) => {
+        adminLimiter(req, res, (err) => {
+          if (err) reject(err);
+          else resolve();
+        });
+      });
+    } catch (rateLimitError) {
+      return;
+    }
+    
+    // Check if user is admin
+    if (!req.user || req.user.role !== 'admin') {
+      return sendJSON(res, 403, { error: 'Admin access required' });
+    }
+    
+    let body = '';
+    req.on('data', chunk => {
+      body += chunk.toString();
+    });
+    req.on('end', async () => {
+      try {
+        const { key } = JSON.parse(body);
+        
+        if (!key) {
+          return sendJSON(res, 400, { error: 'Rate limit key is required' });
+        }
+        
+        const success = await clearRateLimit(key);
+        
+        if (success) {
+          sendJSON(res, 200, { 
+            success: true, 
+            message: `Rate limit cleared for key: ${key}` 
+          });
+        } else {
+          sendJSON(res, 500, { 
+            success: false, 
+            error: 'Failed to clear rate limit' 
+          });
+        }
+      } catch (error) {
+        console.error('Error clearing rate limit:', error);
+        sendJSON(res, 500, { error: 'Failed to clear rate limit' });
+      }
+    });
+  }
+  
+  // 🔐 Authentication Endpoints with Rate Limiting
+  else if (req.method === 'POST' && req.url === '/api/auth/login') {
+    // Apply authentication rate limit
+    try {
+      await new Promise((resolve, reject) => {
+        authLimiter(req, res, (err) => {
+          if (err) reject(err);
+          else resolve();
+        });
+      });
+    } catch (rateLimitError) {
+      return;
+    }
+    
+    let body = '';
+    req.on('data', chunk => {
+      body += chunk.toString();
+    });
+    req.on('end', async () => {
+      try {
+        const { email, password } = JSON.parse(body);
+        
+        if (!email || !password) {
+          return sendJSON(res, 400, { error: 'Email and password are required' });
+        }
+        
+        const result = await authService.login(email, password);
+        
+        if (result.success) {
+          sendJSON(res, 200, result);
+        } else {
+          sendJSON(res, 401, result);
+        }
+      } catch (error) {
+        console.error('Login error:', error);
+        sendJSON(res, 500, { error: 'Login failed' });
+      }
+    });
+  }
+  
+  else if (req.method === 'POST' && req.url === '/api/auth/register') {
+    // Apply authentication rate limit
+    try {
+      await new Promise((resolve, reject) => {
+        authLimiter(req, res, (err) => {
+          if (err) reject(err);
+          else resolve();
+        });
+      });
+    } catch (rateLimitError) {
+      return;
+    }
+    
+    let body = '';
+    req.on('data', chunk => {
+      body += chunk.toString();
+    });
+    req.on('end', async () => {
+      try {
+        const { email, password, name } = JSON.parse(body);
+        
+        if (!email || !password || !name) {
+          return sendJSON(res, 400, { error: 'Email, password, and name are required' });
+        }
+        
+        const result = await authService.register(email, password, name);
+        
+        if (result.success) {
+          sendJSON(res, 201, result);
+        } else {
+          sendJSON(res, 400, result);
+        }
+      } catch (error) {
+        console.error('Registration error:', error);
+        sendJSON(res, 500, { error: 'Registration failed' });
+      }
+    });
   }
 
   else {

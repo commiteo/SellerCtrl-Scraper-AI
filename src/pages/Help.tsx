@@ -2,8 +2,9 @@
 import { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { ValidatedForm } from "@/components/ui/validated-form";
+import { ValidatedInput, ValidatedTextarea } from "@/components/ui/validated-input";
+import { ValidationSchemas } from "@/lib/validation";
 import { Badge } from "@/components/ui/badge";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -84,9 +85,9 @@ const Help = () => {
     }
   ];
 
-  const handleContactSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log('Contact form submitted:', contactForm);
+  const handleContactSubmit = async (data: any) => {
+    console.log('Contact form submitted:', data);
+    // Here you would typically send the data to your backend
     // Reset form
     setContactForm({ name: '', email: '', subject: '', message: '' });
     alert('Thank you for your message! We\'ll get back to you within 24 hours.');
@@ -216,49 +217,49 @@ const Help = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <form onSubmit={handleContactSubmit} className="space-y-4">
-                    <div>
-                      <label className="block text-[#E0E0E0] text-sm font-medium mb-2">Name</label>
-                      <Input
-                        value={contactForm.name}
-                        onChange={(e) => setContactForm({...contactForm, name: e.target.value})}
-                        className="bg-[#171717] border-[#2A2A2A] text-[#FAFAFA] font-inter"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[#E0E0E0] text-sm font-medium mb-2">Email</label>
-                      <Input
-                        type="email"
-                        value={contactForm.email}
-                        onChange={(e) => setContactForm({...contactForm, email: e.target.value})}
-                        className="bg-[#171717] border-[#2A2A2A] text-[#FAFAFA] font-inter"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[#E0E0E0] text-sm font-medium mb-2">Subject</label>
-                      <Input
-                        value={contactForm.subject}
-                        onChange={(e) => setContactForm({...contactForm, subject: e.target.value})}
-                        className="bg-[#171717] border-[#2A2A2A] text-[#FAFAFA] font-inter"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[#E0E0E0] text-sm font-medium mb-2">Message</label>
-                      <Textarea
-                        value={contactForm.message}
-                        onChange={(e) => setContactForm({...contactForm, message: e.target.value})}
-                        className="bg-[#171717] border-[#2A2A2A] text-[#FAFAFA] min-h-[120px] font-inter"
-                        required
-                      />
-                    </div>
-                    <Button type="submit" className="w-full bg-[#FF7A00] hover:bg-[#FF9100] text-white shadow-[0_0_8px_2px_#FF7A00] font-inter">
-                      <Send className="h-4 w-4 mr-2" />
-                      Send Message
-                    </Button>
-                  </form>
+                  <ValidatedForm
+                    schema={ValidationSchemas.contactForm}
+                    initialData={contactForm}
+                    onSubmit={handleContactSubmit}
+                    submitText="Send Message"
+                    showValidationSummary={false}
+                    className="space-y-4"
+                  >
+                    <ValidatedInput
+                      fieldName="name"
+                      label="Name"
+                      placeholder="Enter your full name"
+                      className="bg-[#171717] border-[#2A2A2A] text-[#FAFAFA] font-inter"
+                      required
+                    />
+                    
+                    <ValidatedInput
+                      fieldName="email"
+                      label="Email"
+                      type="email"
+                      placeholder="Enter your email address"
+                      className="bg-[#171717] border-[#2A2A2A] text-[#FAFAFA] font-inter"
+                      required
+                    />
+                    
+                    <ValidatedInput
+                      fieldName="subject"
+                      label="Subject"
+                      placeholder="Enter the subject of your message"
+                      className="bg-[#171717] border-[#2A2A2A] text-[#FAFAFA] font-inter"
+                      required
+                    />
+                    
+                    <ValidatedTextarea
+                      fieldName="message"
+                      label="Message"
+                      placeholder="Enter your message here..."
+                      className="bg-[#171717] border-[#2A2A2A] text-[#FAFAFA] min-h-[120px] font-inter"
+                      showCharacterCount
+                      maxLength={1000}
+                      required
+                    />
+                  </ValidatedForm>
                 </CardContent>
               </Card>
 
