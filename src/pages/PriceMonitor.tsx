@@ -1355,19 +1355,20 @@ const PriceMonitor = () => {
                 <div className="space-y-2 lg:col-span-2">
                   <Label className="text-[#E0E0E0] text-sm">Amazon ASIN</Label>
                   <ValidatedTextarea
+                    fieldName="asin"
                     value={newProduct.asin}
-                    onChange={(e) => setNewProduct(prev => ({ ...prev, asin: e.target.value.toUpperCase() }))}
+                    onChange={(value) => setNewProduct(prev => ({ ...prev, asin: value.toUpperCase() }))}
                     placeholder="Enter ASINs (one per line or separated by commas):
+B0C42HJRBF
 B08N5WRWNW
-B09LH36816
-B0BZ15MXRZ
+B002QYW8LW
 
 Or with descriptions:
+B0C42HJRBF - Lip Butter Balm
 B08N5WRWNW - iPhone 12
-B09LH36816 - Samsung Galaxy"
+B002QYW8LW - Kindle"
                     className="bg-[#1F1F1F] border-[#2A2A2A] text-[#FFFFFF] min-h-[80px]"
                     rows={4}
-                    validationType="asin"
                     schema={ValidationSchemas.priceMonitor}
                   />
                   <p className="text-xs text-[#A3A3A3]">
@@ -1394,14 +1395,14 @@ B09LH36816 - Samsung Galaxy"
                 <div className="space-y-2">
                   <Label className="text-[#E0E0E0] text-sm">Alert Threshold (%)</Label>
                   <ValidatedInput
+                    fieldName="alertThreshold"
                     type="number"
-                    value={newProduct.alertThreshold}
-                    onChange={(e) => setNewProduct(prev => ({ ...prev, alertThreshold: parseInt(e.target.value) || 0 }))}
+                    value={newProduct.alertThreshold.toString()}
+                    onChange={(value) => setNewProduct(prev => ({ ...prev, alertThreshold: parseInt(value) || 0 }))}
                     placeholder="5"
                     className="bg-[#1F1F1F] border-[#2A2A2A] text-[#FFFFFF] h-10"
                     min="0"
                     max="100"
-                    validationType="number"
                     schema={ValidationSchemas.priceMonitor}
                   />
                 </div>
@@ -1582,7 +1583,7 @@ B09LH36816 - Samsung Galaxy"
                             return seller ? (
                               <div className="space-y-1">
                                 <div className="text-[#E0E0E0] text-xs sm:text-sm font-medium truncate max-w-[120px]">
-                                  {seller.seller_name}
+                                  {seller.seller_name || 'N/A'}
                                 </div>
                                 <div className="flex items-center gap-1">
                                   {seller.has_buybox && (
@@ -1590,7 +1591,7 @@ B09LH36816 - Samsung Galaxy"
                                       Buy Box
                                     </Badge>
                                   )}
-                                  {seller.total_offers > 0 && (
+                                  {seller.total_offers && seller.total_offers > 0 && (
                                     <Badge variant="outline" className="text-xs">
                                       {seller.total_offers} offers
                                     </Badge>

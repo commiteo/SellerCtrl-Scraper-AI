@@ -1,14 +1,17 @@
 import { supabase } from '@/lib/supabaseClient';
+import { API_CONFIG } from '../lib/api';
 
-interface NoonProductData {
-  url: string;
+interface ProductData {
+  productCode: string;
   title?: string;
   image?: string;
   price?: string;
   seller?: string;
+  link?: string;
+  dataSource?: string;
 }
 
-interface NoonScrapingOptions {
+interface ScrapingOptions {
   includeTitle: boolean;
   includeImage: boolean;
   includePrice: boolean;
@@ -16,22 +19,14 @@ interface NoonScrapingOptions {
   includeLink: boolean;
 }
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || '';
-
 export class NoonScraper {
-  static async scrapeProduct(
-    url: string,
-    options: NoonScrapingOptions
-  ): Promise<{ success: boolean; data?: NoonProductData; error?: string }> {
-    try {
-      // Extract product code from URL
-      let productCode = url;
-      const match = url.match(/noon\.com\/.*\/(.*?)\/p/);
-      if (match) {
-        productCode = match[1];
-      }
 
-      const res = await fetch(`${API_BASE_URL}/api/noon-scrape`, {
+  static async scrapeProduct(
+    productCode: string,
+    options: ScrapingOptions
+  ): Promise<{ success: boolean; data?: ProductData; error?: string }> {
+    try {
+      const res = await fetch(`${API_CONFIG.BASE_URL}/api/noon-scrape`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ productCode, options }),
@@ -61,11 +56,11 @@ export class NoonScraper {
         }
         // --- Sync competitors automatically ---
         try {
-          await fetch(`${API_BASE_URL}/api/sync-competitors`, { method: 'POST' });
+          await fetch(`${API_CONFIG.BASE_URL}/api/sync-competitors`, { method: 'POST' });
         } catch (e) {
           console.error('Failed to sync competitors:', e);
         }
-        return { success: true, data: { ...json.data, url } };
+        return { success: true, data: { ...json.data, productCode } };
       }
       return { success: false, error: json.error || 'No data returned' };
     } catch (error) {

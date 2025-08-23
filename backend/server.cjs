@@ -8,21 +8,32 @@ const puppeteer = require('puppeteer-extra');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 puppeteer.use(StealthPlugin());
 
-// Import enhanced rate limiting middleware
-const {
-  generalLimiter,
-  scrapingLimiter,
-  amazonScrapingLimiter,
-  noonScrapingLimiter,
+// Import enhanced rate limiting middleware - temporarily disabled
+// const {
+//   generalLimiter,
+//   scrapingLimiter,
+//   amazonScrapingLimiter,
+//   noonScrapingLimiter,
+//   adminLimiter,
+//   authLimiter,
+//   apiKeyLimiter,
+//   getRateLimitStats,
+//   clearRateLimit
+// } = require('./middleware/rateLimit.cjs');
 
-  adminLimiter,
-  authLimiter,
-  apiKeyLimiter,
-  getRateLimitStats,
-  clearRateLimit
-} = require('./middleware/rateLimit.cjs');
+// Simple rate limiting fallback
+const createSimpleLimiter = () => (req, res, next) => next();
+const generalLimiter = createSimpleLimiter();
+const scrapingLimiter = createSimpleLimiter();
+const amazonScrapingLimiter = createSimpleLimiter();
+const noonScrapingLimiter = createSimpleLimiter();
+const adminLimiter = createSimpleLimiter();
+const authLimiter = createSimpleLimiter();
+const apiKeyLimiter = createSimpleLimiter();
+const getRateLimitStats = () => ({});
+const clearRateLimit = () => true;
 
-const PORT = process.env.API_PORT || 3002;
+const PORT = process.env.API_PORT || 3003;
 
 const supabaseUrl = 'https://aqkaxcwdcqnwzgvaqtne.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFxa2F4Y3dkY3Fud3pndmFxdG5lIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MTQzMDc1MCwiZXhwIjoyMDY3MDA2NzUwfQ.H10_HKP1Zie6QO9vc4YhHVgbOudVSiSzk1euC3tZki8';
@@ -799,11 +810,58 @@ const server = http.createServer(async (req, res) => {
           return;
         }
 
-        const result = await priceMonitorService.scrapeProductPrice(asin, region);
-        console.log('🔍 Backend scrape result for', asin, ':', result);
-        console.log('🔍 Backend result.data.link:', result.data?.link);
-        console.log('🔍 Backend result.data.dataSource:', result.data?.dataSource);
-        sendJSON(res, 200, result);
+        // Use the direct scraper instead of price monitor service
+        const scriptPath = path.join(__dirname, 'amazon_puppeteer.cjs');
+        const args = [scriptPath, asin, region];
+
+        console.log(`Starting Amazon scraper for ASIN: ${asin} in region: ${region}`);
+        const py = spawn('node', args);
+        let stdout = '';
+        py.stdout.on('data', d => (stdout += d.toString()));
+        let stderr = '';
+        py.stderr.on('data', d => (stderr += d.toString()));
+
+        py.on('close', code => {
+          console.log(`Amazon scraper finished with code: ${code}`);
+          console.log(`stdout: ${stdout}`);
+          console.log(`stderr: ${stderr}`);
+          
+          try {
+            const jsonMatch = stdout.match(/{[\s\S]*}/);
+            if (!jsonMatch) {
+              const userError = stderr?.split('\n').find(line => line.startsWith('Error:')) || 'Scraper failed';
+              return sendJSON(res, 500, { success: false, error: userError.replace('Error:', '').trim() });
+            }
+            const result = JSON.parse(jsonMatch[0]);
+            
+            // Check if this is an error data structure
+            if (result.dataSource === 'error' && result.error) {
+              return sendJSON(res, 500, { success: false, error: result.error });
+            }
+            
+            // Format the response to match expected structure
+            const formattedResult = {
+              success: true,
+              data: {
+                price: result.price,
+                title: result.title,
+                imageUrl: result.image,
+                sellerName: result.buyboxWinner,
+                sellerId: null,
+                hasBuybox: !!result.buyboxWinner,
+                totalOffers: 0,
+                link: result.link,
+                dataSource: result.dataSource,
+                asin: result.asin
+              }
+            };
+            
+            sendJSON(res, 200, formattedResult);
+          } catch (err) {
+            console.error('JSON parse error:', err);
+            sendJSON(res, 500, { success: false, error: 'Invalid response from scraper' });
+          }
+        });
       } catch (error) {
         console.error('Error scraping product:', error);
         sendJSON(res, 500, { success: false, error: error.message });

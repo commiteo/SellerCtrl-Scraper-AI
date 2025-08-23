@@ -20,8 +20,6 @@ interface ScrapingOptions {
 
 import { API_CONFIG, apiCall } from '../lib/api';
 
-const API_BASE_URL = API_CONFIG.BASE_URL;
-
 export class AmazonScraper {
 
   static async scrapeProduct(
@@ -30,7 +28,7 @@ export class AmazonScraper {
     region: string // new parameter
   ): Promise<{ success: boolean; data?: ProductData; error?: string }> {
     try {
-      const res = await fetch(`${API_BASE_URL}/api/scrape-product`, {
+      const res = await fetch(`${API_CONFIG.BASE_URL}/api/scrape-product`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ asin, options, region }), // send region
@@ -78,7 +76,7 @@ export class AmazonScraper {
         }
         // --- Sync competitors automatically ---
         try {
-          await fetch(`${API_BASE_URL}/api/sync-competitors`, { method: 'POST' });
+          await fetch(`${API_CONFIG.BASE_URL}/api/sync-competitors`, { method: 'POST' });
         } catch (e) {
           console.error('Failed to sync competitors:', e);
         }

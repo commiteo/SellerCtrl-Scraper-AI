@@ -588,7 +588,7 @@ const MultiDomainScraperPage = () => {
                     onChange={(e) => setAsinInput(e.target.value)}
                     rows={3}
                     className="w-full bg-[#1F1F1F] border-[#2A2A2A] text-[#FFFFFF] placeholder-[#A3A3A3] focus:border-[#FF7A00] font-inter rounded resize-y text-sm sm:text-base"
-                    placeholder="Enter ASINs separated by commas, spaces, or new lines (e.g., B08N5WRWNW, B002QYW8LW)"
+                    placeholder="Enter ASINs separated by commas, spaces, or new lines (e.g., B08N5WRWNW, B0C42HJRBF, B002QYW8LW)"
                     disabled={isScraping}
                     validationType="asin"
                     schema={ValidationSchemas.multiDomainScraping}

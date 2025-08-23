@@ -51,7 +51,12 @@ const generalLimiter = rateLimit({
     if (req.user && req.user.id) {
       return `user:${req.user.id}`;
     }
-    return req.headers['x-forwarded-for'] || req.ip;
+    const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.ip || 'unknown';
+    // Handle IPv6 localhost
+    if (ip === '::1') return '127.0.0.1';
+    // Handle IPv4-mapped IPv6 addresses
+    if (ip.startsWith('::ffff:')) return ip.substring(7);
+    return ip;
   },
   handler: (req, res) => {
     const resetTime = new Date(req.rateLimit.resetTime);
@@ -92,7 +97,12 @@ const scrapingLimiter = rateLimit({
     if (req.user && req.user.id) {
       return `scraping:user:${req.user.id}`;
     }
-    return `scraping:${req.headers['x-forwarded-for'] || req.ip}`;
+    const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.ip || 'unknown';
+    // Handle IPv6 localhost
+    if (ip === '::1') return 'scraping:127.0.0.1';
+    // Handle IPv4-mapped IPv6 addresses
+    if (ip.startsWith('::ffff:')) return `scraping:${ip.substring(7)}`;
+    return `scraping:${ip}`;
   },
   handler: (req, res) => {
     const resetTime = new Date(req.rateLimit.resetTime);
@@ -295,8 +305,15 @@ const createRateLimiter = (baseLimiter) => {
     skip: (req) => isWhitelisted(req.ip),
     keyGenerator: (req) => {
       // Use X-Forwarded-For header if available (for proxy support)
-      return req.headers['x-forwarded-for'] || req.ip;
-    }
+      const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.ip || 'unknown';
+      // Handle IPv6 localhost
+      if (ip === '::1') return '127.0.0.1';
+      // Handle IPv4-mapped IPv6 addresses
+      if (ip.startsWith('::ffff:')) return ip.substring(7);
+      return ip;
+    },
+    standardHeaders: true,
+    legacyHeaders: false
   });
 };
 

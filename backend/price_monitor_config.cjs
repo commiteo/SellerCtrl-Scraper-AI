@@ -23,7 +23,8 @@ module.exports = {
     headless: process.env.HEADLESS === 'false' ? false : true, // Dynamic headless mode
     slowMo: 50,
     defaultViewport: null,
-    executablePath: process.env.CHROME_EXECUTABLE_PATH || process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/google-chrome',
+    executablePath: process.env.CHROME_EXECUTABLE_PATH || process.env.PUPPETEER_EXECUTABLE_PATH || 
+      (process.platform === 'win32' ? 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe' : '/usr/bin/google-chrome'),
     
     // Browser arguments
     args: [

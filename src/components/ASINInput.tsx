@@ -37,7 +37,7 @@ export const ASINInput = ({ onScrape, isLoading }: ASINInputProps) => {
             onChange={(e) => setAsinInput(e.target.value)}
             rows={3}
             className="pl-10 text-sm sm:text-lg bg-[#1F1F1F] border-[#2A2A2A] text-[#FFFFFF] placeholder-[#A3A3A3] focus:border-[#FF7A00] font-inter rounded w-full resize-y min-h-[48px] max-h-[150px] transition-colors"
-            placeholder="e.g., B08N5WRWNW, B002QYW8LW or one ASIN per line"
+            placeholder="e.g., B0C42HJRBF, B08N5WRWNW, B002QYW8LW or one ASIN per line"
             required
           />
           <Search className="absolute left-3 top-3 h-3 w-3 sm:h-4 sm:w-4 text-[#A3A3A3] pointer-events-none" />

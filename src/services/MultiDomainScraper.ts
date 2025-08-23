@@ -36,8 +36,6 @@ export interface MultiDomainOptions {
 
 import { API_CONFIG } from '../lib/api';
 
-const API_BASE_URL = API_CONFIG.BASE_URL;
-
 export class MultiDomainScraper {
   static readonly SUPPORTED_DOMAINS = [
     { code: 'eg', name: 'Egypt', currency: 'EGP', flag: '🇪🇬' },
@@ -174,12 +172,12 @@ export class MultiDomainScraper {
   ): Promise<MultiDomainProductData> {
     try {
       console.log(`🌐 Starting scrape for ASIN ${asin} from domain ${domain}`);
-      console.log(`🔗 API_BASE_URL: ${API_BASE_URL}`);
+      console.log(`🔗 API_BASE_URL: ${API_CONFIG.BASE_URL}`);
       
       const requestBody = { asin, domain, options };
       console.log(`📤 Request body:`, requestBody);
       
-      const response = await fetch(`${API_BASE_URL}/api/parallel-multi-domain-scrape`, {
+      const response = await fetch(`${API_CONFIG.BASE_URL}/api/parallel-multi-domain-scrape`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(requestBody)
@@ -260,7 +258,7 @@ export class MultiDomainScraper {
     try {
       console.log(`🚀 Starting parallel crew scraping for ASIN ${asin} across domains: ${domains.join(', ')}`);
       
-      const response = await fetch(`${API_BASE_URL}/api/crew-parallel-scrape`, {
+      const response = await fetch(`${API_CONFIG.BASE_URL}/api/crew-parallel-scrape`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ asin, domains, options })
@@ -502,7 +500,7 @@ export class MultiDomainScraper {
     try {
       console.log('🔍 Testing backend connection...');
       
-      const response = await fetch(`${API_BASE_URL}/api/multi-domain-scrape`, {
+      const response = await fetch(`${API_CONFIG.BASE_URL}/api/multi-domain-scrape`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 

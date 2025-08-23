@@ -1,5 +1,6 @@
 const puppeteer = require('puppeteer');
-const CHROME_PATH = process.env.CHROME_EXECUTABLE_PATH || process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/google-chrome';
+const CHROME_PATH = process.env.CHROME_EXECUTABLE_PATH || process.env.PUPPETEER_EXECUTABLE_PATH || 
+  (process.platform === 'win32' ? 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe' : '/usr/bin/google-chrome');
 const fs = require('fs');
 
 async function scrapeAmazon(asin, region) {
@@ -7,26 +8,51 @@ async function scrapeAmazon(asin, region) {
   let browser;
   try {
     console.error('Launching Chrome browser...');
-    browser = await puppeteer.launch({
-      executablePath: CHROME_PATH,
-      headless: process.env.HEADLESS === 'false' ? false : true, // Dynamic headless mode
-      defaultViewport: null,
-      args: [
-        '--no-sandbox',
-        '--disable-setuid-sandbox',
-        '--disable-dev-shm-usage',
-        '--disable-accelerated-2d-canvas',
-        '--no-first-run',
-        '--no-zygote',
-        '--disable-gpu',
-        '--disable-background-timer-throttling',
-        '--disable-backgrounding-occluded-windows',
-        '--disable-renderer-backgrounding',
-        '--disable-features=TranslateUI',
-        '--disable-ipc-flooding-protection',
-        '--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-      ]
-    });
+    // Try to launch browser with executable path first
+    try {
+      browser = await puppeteer.launch({
+        executablePath: CHROME_PATH,
+        headless: process.env.HEADLESS === 'false' ? false : true, // Dynamic headless mode
+        defaultViewport: null,
+        args: [
+          '--no-sandbox',
+          '--disable-setuid-sandbox',
+          '--disable-dev-shm-usage',
+          '--disable-accelerated-2d-canvas',
+          '--no-first-run',
+          '--no-zygote',
+          '--disable-gpu',
+          '--disable-background-timer-throttling',
+          '--disable-backgrounding-occluded-windows',
+          '--disable-renderer-backgrounding',
+          '--disable-features=TranslateUI',
+          '--disable-ipc-flooding-protection',
+          '--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+        ]
+      });
+    } catch (error) {
+      console.error('Failed to launch with executable path, trying without...');
+      // Fallback: try without executable path (uses bundled Chromium)
+      browser = await puppeteer.launch({
+        headless: process.env.HEADLESS === 'false' ? false : true,
+        defaultViewport: null,
+        args: [
+          '--no-sandbox',
+          '--disable-setuid-sandbox',
+          '--disable-dev-shm-usage',
+          '--disable-accelerated-2d-canvas',
+          '--no-first-run',
+          '--no-zygote',
+          '--disable-gpu',
+          '--disable-background-timer-throttling',
+          '--disable-backgrounding-occluded-windows',
+          '--disable-renderer-backgrounding',
+          '--disable-features=TranslateUI',
+          '--disable-ipc-flooding-protection',
+          '--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+        ]
+      });
+    }
     const page = await browser.newPage();
     
     // تعيين headers إضافية لتجنب اكتشاف السكرابر
@@ -730,6 +756,16 @@ async function scrapeAmazon(asin, region) {
       if (sidebar) {
         const sidebarHtml = await page.evaluate(el => el.outerHTML, sidebar);
         fs.writeFileSync('debug-sidebar.html', sidebarHtml);
+      }
+      
+      // Check if this is a "Page Not Found" error
+      const pageContent = await page.content();
+      if (pageContent.includes('Page Not Found') || pageContent.includes('not a functioning page')) {
+        data.error = 'Product not found or no longer available';
+        data.dataSource = 'error';
+      } else {
+        data.error = 'Price not available for this product';
+        data.dataSource = 'partial';
       }
       // Do not throw or exit, just continue
     }

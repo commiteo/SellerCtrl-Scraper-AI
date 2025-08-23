@@ -52,12 +52,25 @@ class PriceMonitorService {
         this.browser = null;
       }
       
-      this.browser = await puppeteer.launch({
-        headless: config.browser.headless,
-        defaultViewport: config.browser.defaultViewport,
-        slowMo: config.browser.slowMo,
-        args: config.browser.args
-      });
+      // Try to launch browser with executable path first
+      try {
+        this.browser = await puppeteer.launch({
+          executablePath: config.browser.executablePath,
+          headless: config.browser.headless,
+          defaultViewport: config.browser.defaultViewport,
+          slowMo: config.browser.slowMo,
+          args: config.browser.args
+        });
+      } catch (error) {
+        console.log('Failed to launch with executable path, trying without...');
+        // Fallback: try without executable path (uses bundled Chromium)
+        this.browser = await puppeteer.launch({
+          headless: config.browser.headless,
+          defaultViewport: config.browser.defaultViewport,
+          slowMo: config.browser.slowMo,
+          args: config.browser.args
+        });
+      }
 
       const testPage = await this.browser.newPage();
       await testPage.close();
@@ -675,6 +688,14 @@ class PriceMonitorService {
 
       console.log('📊 Extracted data:', pageData);
       console.log('🔍 Debug - pageData.imageUrl:', pageData.imageUrl);
+
+      // Check if we have valid data
+      if (!pageData.price && !pageData.title) {
+        return {
+          success: false,
+          error: 'Product not found or no longer available. Please check the ASIN and try again.'
+        };
+      }
 
       return {
         success: true,
